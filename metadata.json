@@ -1,0 +1,7 @@
+{
+  "name": "DeutschFlow",
+  "description": "A modern, AI-powered companion for learning German. Features Daily Words, an interactive Tutor Chat with corrections, and Text-to-Speech pronunciation practice.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
