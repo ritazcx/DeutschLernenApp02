@@ -1,7 +1,7 @@
 import { GoogleGenAI, Type, Modality, Chat } from "@google/genai";
-import { DictionaryEntry } from "../types";
+import { DictionaryEntry } from '@/types';
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const ai = new GoogleGenAI({ apiKey: import.meta.env.VITE_GEMINI_API_KEY });
 
 // --- Dictionary (Search & Word of Day) ---
 

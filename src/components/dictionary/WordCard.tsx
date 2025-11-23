@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { DictionaryEntry } from '../types';
-import { IconVolume, IconRefresh } from './Icons';
-import { generateSpeech } from '../services/geminiService';
-import { playAudioData } from '../utils/audioUtils';
+import { DictionaryEntry } from '@/types';
+import { IconVolume, IconRefresh } from "@/components/ui/Icons";
+import { generateSpeech } from "@/services/apiAdapter";
+import { playAudioData } from "@/utils/audioUtils";
+
 
 interface WordCardProps {
   data: DictionaryEntry | null;

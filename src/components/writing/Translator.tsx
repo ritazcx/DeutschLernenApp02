@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { translateOrExplain } from '../services/geminiService';
-import { IconPen } from './Icons';
+import { translateOrExplain } from "@/services/apiAdapter";
+import { IconPen } from "@/components/ui/Icons";
 
 const Translator: React.FC = () => {
   const [query, setQuery] = useState('');
