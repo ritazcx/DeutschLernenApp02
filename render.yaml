@@ -1,0 +1,31 @@
+# Render service configuration for deploying frontend and backend separately.
+# Review and replace placeholders before use (especially secret references and URLs).
+
+services:
+  - type: web_service
+    name: deutschflow-server
+    env: node
+    branch: deploy/render-separate
+    plan: starter
+    buildCommand: npm install --prefix server && npm run build --prefix server
+    startCommand: node server/dist/index.js
+    healthCheckPath: /health
+    envVars:
+      - key: DEEPSEEK_API_KEY
+        from: secret
+      - key: FRONTEND_URL
+        value: "https://<your-frontend-url>"
+    # Optional: configure a disk for SQLite persistence (replace with actual disk config in Render UI)
+    disk:
+      name: server-data
+      size_gb: 1
+      mount_path: server/data
+
+  - type: static_site
+    name: deutschflow-frontend
+    branch: deploy/render-separate
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_DICTIONARY_API_BASE
+        value: "https://<your-server-url>"
