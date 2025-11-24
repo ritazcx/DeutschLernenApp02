@@ -1,10 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { AppView, DictionaryEntry } from './types';
-import WordCard from './components/WordCard';
-import ChatTutor from './components/ChatTutor';
-import Translator from './components/Translator';
-import { IconBook, IconMessage, IconPen, IconMenu, IconHome, IconSearch, IconRefresh } from './components/Icons';
-import { fetchWordOfTheDay, searchDictionaryWord } from './services/geminiService';
+import React, { useState, useEffect } from "react";
+import { AppView, DictionaryEntry } from "@/types";
+import WordCard from "@/components/dictionary/WordCard";
+import ChatTutor from "@/components/chat/ChatTutor";
+import Translator from "@/components/writing/Translator";
+import {
+  IconBook,
+  IconMessage,
+  IconPen,
+  IconMenu,
+  IconHome,
+  IconSearch,
+  IconRefresh,
+} from "@/components/ui/Icons";
+import { fetchWordOfTheDay, searchDictionaryWord } from '@/services/apiAdapter';
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.HOME);
@@ -23,6 +31,9 @@ const App: React.FC = () => {
       const levels = ['A1', 'A2', 'B1'];
       const level = levels[Math.floor(Math.random() * levels.length)];
       const data = await fetchWordOfTheDay(level);
+      // debug: log raw WOD result to help diagnose missing fields
+      // eslint-disable-next-line no-console
+      console.debug('[App] fetchWordOfTheDay result:', data);
       setWodData(data);
       // Only set displayed word if we aren't looking at a search result, or if it's first load
       if (!wordData || wordData === wodData) {
@@ -38,6 +49,32 @@ const App: React.FC = () => {
   useEffect(() => {
     loadWordOfDay();
   }, []);
+
+  // Listen for deepseek background updates (fast-fallback will dispatch these)
+  useEffect(() => {
+    const onWod = (e: any) => {
+      const { data } = e.detail || {};
+      if (data) {
+        setWodData(data);
+        // If not currently searching, update displayed word
+        if (!searchQuery) setWordData(data);
+      }
+    };
+
+    const onSearch = (e: any) => {
+      const { term, data } = e.detail || {};
+      if (data && term === searchQuery) {
+        setWordData(data);
+      }
+    };
+
+    window.addEventListener('deepseek:wod:update', onWod as EventListener);
+    window.addEventListener('deepseek:search:update', onSearch as EventListener);
+    return () => {
+      window.removeEventListener('deepseek:wod:update', onWod as EventListener);
+      window.removeEventListener('deepseek:search:update', onSearch as EventListener);
+    };
+  }, [searchQuery]);
 
   // Handle Dictionary Search
   const handleSearch = async (e?: React.FormEvent) => {
