@@ -2,6 +2,8 @@ import * as deepseek from './deepseekService';
 import * as gemini from '../legacy/geminiService';
 import * as mockDictionary from './dictionaryService';
 
+const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
+
 // Simple in-memory caches
 const wordOfDayCache: Map<string, { value: any; expires: number }> = new Map();
 const searchCache: Map<string, { value: any; expires: number }> = new Map();
@@ -76,6 +78,20 @@ export async function searchDictionaryWord(term: string) {
   const cached = getCache(searchCache, cacheKey);
   if (cached) return cached;
 
+  // Try the server cache first (if configured or same-origin)
+  try {
+    const base = SERVER_API_BASE || '';
+    const resp = await fetch(`${base}/api/dictionary/${encodeURIComponent(term)}`);
+    if (resp.ok) {
+      const json = await resp.json();
+      setCache(searchCache, cacheKey, json, 1000 * 60 * 60);
+      return json;
+    }
+    // if 404 or not found, continue to LLM lookup below
+  } catch (e) {
+    // network error or server not available — fall back to LLM path
+  }
+
   // Start the real provider call
   const deepseekPromise = (async () => {
     if (PREFERRED_PROVIDER === 'gemini' && gemini.searchDictionaryWord) {
@@ -105,6 +121,19 @@ export async function searchDictionaryWord(term: string) {
   deepseekPromise.then((real) => {
     try {
       setCache(searchCache, cacheKey, real, 1000 * 60 * 5);
+      // Persist the fresh entry to the server so next time it's local
+      (async () => {
+        try {
+          const base = SERVER_API_BASE || '';
+          await fetch(`${base}/api/dictionary`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(real),
+          });
+        } catch (e) {
+          // ignore server persist errors
+        }
+      })();
       window?.dispatchEvent(new CustomEvent('deepseek:search:update', { detail: { term, data: real } }));
     } catch (e) {}
   }).catch(() => {});
