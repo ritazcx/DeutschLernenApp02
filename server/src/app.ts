@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dictionaryRouter from './routes/dictionary';
+import proxyRouter from './routes/proxy';
 
 export function createApp() {
   const app = express();
@@ -20,6 +21,7 @@ export function createApp() {
   app.use(express.json({ limit: '64kb' }));
 
   app.use(dictionaryRouter);
+  app.use(proxyRouter);
 
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

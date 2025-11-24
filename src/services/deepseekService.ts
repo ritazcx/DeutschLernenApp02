@@ -1,35 +1,26 @@
 import { DictionaryEntry, ChatMessage } from '@/types';
 
-const DEEPSEEK_API_KEY = import.meta.env.VITE_DEEPSEEK_API_KEY;
-const DEEPSEEK_BASE_URL = "https://api.deepseek.com/chat/completions";
+// Use the server-side proxy for all DeepSeek calls from the browser.
+// Configure `VITE_DICTIONARY_API_BASE` in the frontend deploy to point to the server.
+const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
 
 // --- Chat ---
 export async function generateFromDeepSeek(messages: ChatMessage[]) {
-  const res = await fetch(DEEPSEEK_BASE_URL, {
-    method: "POST",
-    headers: {
-      "Authorization": `Bearer ${DEEPSEEK_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      model: "deepseek-chat",
-      messages,
-      temperature: 0.7,
-      stream: false,
-    }),
+  // Proxy the request to the server so the API key is never exposed to the browser.
+  const base = SERVER_API_BASE || '';
+  const res = await fetch(`${base}/api/proxy/chat`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ messages }),
   });
 
   if (!res.ok) {
     const err = await res.text();
-    throw new Error(`DeepSeek API error: ${res.status} ${err}`);
+    throw new Error(`DeepSeek proxy error: ${res.status} ${err}`);
   }
 
   const data = await res.json();
-  // defensive access
-  if (!data || !data.choices || !data.choices[0] || !data.choices[0].message) {
-    throw new Error('Unexpected DeepSeek response shape');
-  }
-  return data.choices[0].message.content;
+  return data?.content ?? data?.result ?? JSON.stringify(data);
 }
 
 // --- Word of the Day ---
