@@ -3,6 +3,7 @@ import { AppView, DictionaryEntry } from "@/types";
 import WordCard from "@/components/dictionary/WordCard";
 import ChatTutor from "@/components/chat/ChatTutor";
 import Translator from "@/components/writing/Translator";
+import ArticleAnalyzer from "@/components/grammar/ArticleAnalyzer";
 import {
   IconBook,
   IconMessage,
@@ -165,6 +166,23 @@ const App: React.FC = () => {
                       </p>
                     </div>
                   </button>
+
+                  {/* Card 4: Grammar Analyzer */}
+                  <button 
+                    onClick={() => setView(AppView.GRAMMAR)}
+                    className="group relative bg-white p-8 rounded-3xl shadow-sm border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-left overflow-hidden"
+                  >
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-bl-full -mr-10 -mt-10 transition-transform group-hover:scale-110"></div>
+                    <div className="relative z-10">
+                      <div className="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6 group-hover:rotate-3 transition-transform">
+                        <span className="text-2xl">📝</span>
+                      </div>
+                      <h3 className="text-2xl font-bold text-slate-800 mb-2">Grammar</h3>
+                      <p className="text-slate-500 leading-relaxed">
+                        Analyze articles sentence by sentence (B2 Level).
+                      </p>
+                    </div>
+                  </button>
                 </div>
              </div>
           </div>
@@ -232,6 +250,8 @@ const App: React.FC = () => {
              <Translator />
           </div>
         );
+      case AppView.GRAMMAR:
+        return <ArticleAnalyzer />;
     }
   };
 
@@ -285,6 +305,12 @@ const App: React.FC = () => {
             icon={<IconPen />} 
             label="Writing" 
           />
+          <NavItem 
+            active={view === AppView.GRAMMAR} 
+            onClick={() => setView(AppView.GRAMMAR)} 
+            icon={<span className="text-xl">📝</span>} 
+            label="Grammar" 
+          />
         </nav>
       </div>
 
@@ -307,6 +333,7 @@ const App: React.FC = () => {
             <NavItem active={view === AppView.DICTIONARY} onClick={() => setView(AppView.DICTIONARY)} icon={<IconBook />} label="Dictionary" />
             <NavItem active={view === AppView.CHAT} onClick={() => setView(AppView.CHAT)} icon={<IconMessage />} label="Live Chat" />
             <NavItem active={view === AppView.WRITING} onClick={() => setView(AppView.WRITING)} icon={<IconPen />} label="Writing" />
+            <NavItem active={view === AppView.GRAMMAR} onClick={() => setView(AppView.GRAMMAR)} icon={<span className="text-xl">📝</span>} label="Grammar" />
           </nav>
         </div>
       )}

@@ -26,4 +26,5 @@ export enum AppView {
   DICTIONARY,
   CHAT,
   WRITING,
+  GRAMMAR,
 }
