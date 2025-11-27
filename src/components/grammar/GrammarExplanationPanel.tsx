@@ -14,29 +14,17 @@ const typeLabels: Record<GrammarPoint['type'], { label: string; icon: string }> 
 };
 
 const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sentence }) => {
+  if (!sentence || !sentence.grammarPoints) {
+    return <div className="p-4 text-slate-500">No grammar analysis available</div>;
+  }
+
   return (
     <div className="max-h-[70vh] overflow-y-auto space-y-6">
-      {/* Sentence */}
+      {/* Translation */}
       <div>
-        <h3 className="text-sm font-semibold text-slate-700 mb-2">Sentence:</h3>
-        <p className="text-base text-slate-900 italic border-l-4 border-slate-300 pl-3">
-          {sentence.sentence}
-        </p>
-      </div>
-
-      {/* Structure */}
-      <div>
-        <h3 className="text-sm font-semibold text-slate-700 mb-2">Structure:</h3>
-        <p className="text-sm text-slate-600 bg-slate-50 p-3 rounded-lg font-mono">
-          {sentence.structure}
-        </p>
-      </div>
-
-      {/* Overall Explanation */}
-      <div>
-        <h3 className="text-sm font-semibold text-slate-700 mb-2">Explanation:</h3>
-        <p className="text-sm text-slate-700 leading-relaxed">
-          {sentence.explanation}
+        <h3 className="text-sm font-semibold text-slate-700 mb-2">Translation:</h3>
+        <p className="text-base text-slate-900 italic border-l-4 border-blue-300 pl-3">
+          {sentence.translation || 'No translation available'}
         </p>
       </div>
 
@@ -44,29 +32,32 @@ const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sente
       <div>
         <h3 className="text-sm font-semibold text-slate-700 mb-3">Grammar Points:</h3>
         <div className="space-y-3">
-          {sentence.grammarPoints.map((point, index) => (
-            <div
-              key={index}
-              className="p-3 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
-            >
-              <div className="flex items-start gap-2 mb-1">
-                <span className="text-lg">{typeLabels[point.type].icon}</span>
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
-                      {typeLabels[point.type].label}
-                    </span>
-                    <span className="text-sm font-semibold text-slate-900">
-                      "{point.text}"
-                    </span>
+          {sentence.grammarPoints.map((point, index) => {
+            const typeInfo = typeLabels[point.type as GrammarPoint['type']] || { label: point.type, icon: '⚪' };
+            return (
+              <div
+                key={index}
+                className="p-3 border border-slate-200 rounded-lg hover:border-slate-300 transition-colors"
+              >
+                <div className="flex items-start gap-2 mb-1">
+                  <span className="text-lg">{typeInfo.icon}</span>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                        {typeInfo.label}
+                      </span>
+                      <span className="text-sm font-semibold text-slate-900">
+                        "{point.text}"
+                      </span>
+                    </div>
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {point.explanation}
+                    </p>
                   </div>
-                  <p className="text-sm text-slate-600 leading-relaxed">
-                    {point.explanation}
-                  </p>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

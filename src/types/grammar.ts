@@ -7,9 +7,8 @@ export interface GrammarPoint {
 
 export interface SentenceAnalysis {
   sentence: string;
+  translation: string;
   grammarPoints: GrammarPoint[];
-  structure: string;
-  explanation: string;
 }
 
 export interface ArticleAnalysis {
