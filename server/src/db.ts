@@ -215,8 +215,8 @@ export function findVocabularyInList(words: string[], levels?: string[]) {
 
 export function upsertVocabulary(entry: any) {
   const stmt = db.prepare(`
-    INSERT INTO vocabulary (word, level, pos, article, plural, conjugation_present, conjugation_past, conjugation_perfect, meaning_en, meaning_de, meaning_zh, example_de, example_en, example_sentences, created_at)
-    VALUES (@word, @level, @pos, @article, @plural, @conjugation_present, @conjugation_past, @conjugation_perfect, @meaning_en, @meaning_de, @meaning_zh, @example_de, @example_en, @example_sentences, @created_at)
+    INSERT INTO vocabulary (word, level, pos, article, plural, conjugation_present, conjugation_past, conjugation_perfect, meaning_en, meaning_de, example_de, example_en, created_at)
+    VALUES (@word, @level, @pos, @article, @plural, @conjugation_present, @conjugation_past, @conjugation_perfect, @meaning_en, @meaning_de, @example_de, @example_en, @created_at)
     ON CONFLICT(word) DO UPDATE SET
       level=excluded.level,
       pos=excluded.pos,
@@ -227,23 +227,27 @@ export function upsertVocabulary(entry: any) {
       conjugation_perfect=excluded.conjugation_perfect,
       meaning_en=excluded.meaning_en,
       meaning_de=excluded.meaning_de,
-      meaning_zh=excluded.meaning_zh,
       example_de=excluded.example_de,
       example_en=excluded.example_en,
-      example_sentences=excluded.example_sentences,
       created_at=excluded.created_at
   `);
   
-  // Convert arrays to JSON strings
+  // Prepare data with only columns that exist
   const data = {
-    ...entry,
-    conjugation_present: entry.conjugations?.present,
-    conjugation_past: entry.conjugations?.past,
-    conjugation_perfect: entry.conjugations?.perfect,
-    example_sentences: entry.example_sentences ? JSON.stringify(entry.example_sentences) : null,
+    word: entry.word,
+    level: entry.level || 'B1',
+    pos: entry.pos || null,
+    article: entry.article || null,
+    plural: entry.plural || null,
+    conjugation_present: entry.conjugations?.present || entry.conjugation_present || null,
+    conjugation_past: entry.conjugations?.past || entry.conjugation_past || null,
+    conjugation_perfect: entry.conjugations?.perfect || entry.conjugation_perfect || null,
+    meaning_en: entry.meaning_en || '',
+    meaning_de: entry.meaning_de || '',
+    example_de: entry.example_de || '',
+    example_en: entry.example_en || '',
     created_at: Date.now(),
   };
-  delete data.conjugations;
   
   return stmt.run(data);
 }

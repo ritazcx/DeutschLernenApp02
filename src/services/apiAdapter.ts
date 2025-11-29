@@ -78,67 +78,21 @@ export async function searchDictionaryWord(term: string) {
   const cached = getCache(searchCache, cacheKey);
   if (cached) return cached;
 
-  // Try the server cache first (if configured or same-origin)
   try {
     const base = SERVER_API_BASE || '';
     const resp = await fetch(`${base}/api/dictionary/${encodeURIComponent(term)}`);
-    if (resp.ok) {
-      const json = await resp.json();
-      setCache(searchCache, cacheKey, json, 1000 * 60 * 60);
-      return json;
+    
+    if (!resp.ok) {
+      throw new Error(`Server error: ${resp.status}`);
     }
-    // if 404 or not found, continue to LLM lookup below
-  } catch (e) {
-    // network error or server not available — fall back to LLM path
+    
+    const json = await resp.json();
+    setCache(searchCache, cacheKey, json, 1000 * 60 * 60); // Cache for 1 hour
+    return json;
+  } catch (error: any) {
+    console.error(`Failed to search dictionary for "${term}":`, error);
+    throw error;
   }
-
-  // Start the real provider call
-  const deepseekPromise = (async () => {
-    if (PREFERRED_PROVIDER === 'gemini' && gemini.searchDictionaryWord) {
-      try { return await gemini.searchDictionaryWord(term); } catch { /* fallback */ }
-    }
-    return await deepseek.searchDictionaryWord(term);
-  })();
-
-  // Fast fallback: if real provider takes longer than 800ms, return mock quickly and then update UI later.
-  const timeoutMs = 800;
-  const timeoutPromise = new Promise((resolve) => setTimeout(async () => {
-    const mock = await mockDictionary.searchDictionaryWord(term);
-    resolve({ from: 'mock', value: mock });
-  }, timeoutMs));
-
-  const winner = await Promise.race([
-    deepseekPromise.then((v) => ({ from: 'deepseek', value: v })),
-    timeoutPromise,
-  ] as any);
-
-  if ((winner as any).from === 'deepseek') {
-    setCache(searchCache, cacheKey, (winner as any).value, 1000 * 60 * 5);
-    return (winner as any).value;
-  }
-
-  const quick = (winner as any).value;
-  deepseekPromise.then((real) => {
-    try {
-      setCache(searchCache, cacheKey, real, 1000 * 60 * 5);
-      // Persist the fresh entry to the server so next time it's local
-      (async () => {
-        try {
-          const base = SERVER_API_BASE || '';
-          await fetch(`${base}/api/dictionary`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(real),
-          });
-        } catch (e) {
-          // ignore server persist errors
-        }
-      })();
-      window?.dispatchEvent(new CustomEvent('deepseek:search:update', { detail: { term, data: real } }));
-    } catch (e) {}
-  }).catch(() => {});
-
-  return quick;
 }
 
 export async function translateOrExplain(query: string) {

@@ -5,6 +5,16 @@ interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
 }
 
+// CEFR level color mapping for vocabulary
+const vocabLevelColors: Record<string, string> = {
+  'A1': 'decoration-red-500',
+  'A2': 'decoration-orange-500',
+  'B1': 'decoration-green-500',
+  'B2': 'decoration-blue-500',
+  'C1': 'decoration-purple-500',
+  'C2': 'decoration-pink-500',
+};
+
 const colorMap: Record<GrammarPoint['type'], string> = {
   // Legacy types
   verb: 'bg-blue-200 hover:bg-blue-300',
@@ -175,11 +185,14 @@ function renderTextWithVocabulary(
       );
     }
     
+    // Determine decoration color based on vocabulary level
+    const decorationColor = vocabLevelColors[vocab.level] || 'decoration-gray-500';
+    
     // Vocabulary word with underline
     parts.push(
       <span
         key={`vocab-${idx}`}
-        className="underline decoration-dashed decoration-2 decoration-green-500"
+        className={`underline decoration-dashed decoration-2 ${decorationColor}`}
       >
         {text.substring(relativeStart, relativeEnd)}
       </span>

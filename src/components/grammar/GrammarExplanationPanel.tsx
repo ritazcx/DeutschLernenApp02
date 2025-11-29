@@ -5,6 +5,16 @@ interface GrammarExplanationPanelProps {
   sentence: SentenceAnalysis;
 }
 
+// CEFR level color mapping for vocabulary display
+const vocabLevelColors: Record<string, string> = {
+  'A1': 'text-red-600',
+  'A2': 'text-orange-600',
+  'B1': 'text-green-600',
+  'B2': 'text-blue-600',
+  'C1': 'text-purple-600',
+  'C2': 'text-pink-600',
+};
+
 const typeLabels: Record<GrammarPoint['type'], { label: string; color: string }> = {
   // Legacy types
   verb: { label: 'Verb', color: 'bg-blue-200' },
@@ -86,7 +96,9 @@ const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sente
                     {vocab.article && <span className="text-slate-500 mr-1">{vocab.article}</span>}
                     {vocab.word}
                   </span>
-                  <span className="text-xs text-green-600">{vocab.level}</span>
+                  <span className={`text-xs font-semibold ${vocabLevelColors[vocab.level] || 'text-gray-600'}`}>
+                    {vocab.level}
+                  </span>
                 </div>
                 {vocab.meaning_en && (
                   <p className="text-xs text-slate-600 mt-1">{vocab.meaning_en}</p>

@@ -64,7 +64,14 @@ const WordCard: React.FC<WordCardProps> = ({ data, loading, onRefresh, isWordOfD
         )}
 
         {/* 1. German Word + Pronunciation Icon */}
-        <div className="flex items-center justify-center gap-4 mb-2">
+        <div className="flex items-end justify-center gap-4 mb-2">
+          {/* Level Badge */}
+          {data.difficulty && (
+            <span className="text-sm font-semibold text-slate-500 flex-shrink-0 pb-1">
+              {data.difficulty}
+            </span>
+          )}
+          
           <h2 className="text-4xl md:text-5xl font-bold text-slate-900 tracking-tight text-center">
             <span className="text-german-red text-2xl md:text-3xl align-top mr-2 font-normal opacity-90 italic font-serif">{data.gender}</span>
             {data.word}
@@ -94,17 +101,39 @@ const WordCard: React.FC<WordCardProps> = ({ data, loading, onRefresh, isWordOfD
         </div>
 
         {/* 3. Examples Section */}
-        <div className="bg-slate-50 rounded-2xl p-6 mb-8 border border-slate-100 relative group">
-           <div className="absolute top-0 left-6 -mt-3 px-2 bg-slate-50 text-xs font-bold text-slate-400 uppercase tracking-widest">
-             Example
-           </div>
-           <p className="text-lg text-slate-800 font-medium leading-relaxed mb-2">
-             "{data.exampleSentenceGerman}"
-           </p>
-           <p className="text-slate-500">
-             {data.exampleSentenceEnglish}
-           </p>
-        </div>
+        {(data.exampleSentenceGerman || data.exampleSentenceEnglish) && (
+          <div className="mb-8">
+            <h3 className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-4">
+              {data.exampleSentenceGerman?.includes('|') ? 'Examples' : 'Example'}
+            </h3>
+            <div className="space-y-4">
+              {(() => {
+                const germanExamples = data.exampleSentenceGerman?.split('|').map(s => s.trim()) || [''];
+                const englishExamples = data.exampleSentenceEnglish?.split('|').map(s => s.trim()) || [''];
+                const maxLength = Math.max(germanExamples.length, englishExamples.length);
+                
+                return Array.from({ length: maxLength }).map((_, idx) => (
+                  <div key={idx} className="flex gap-3">
+                    <span className="text-slate-300 font-serif text-2xl leading-none flex-shrink-0">❝</span>
+                    <div className="flex-1 pt-1">
+                      {germanExamples[idx] && (
+                        <p className="text-base text-slate-700 leading-relaxed mb-1.5">
+                          {germanExamples[idx]}
+                        </p>
+                      )}
+                      {englishExamples[idx] && (
+                        <p className="text-sm text-slate-500 leading-relaxed italic">
+                          {englishExamples[idx]}
+                        </p>
+                      )}
+                    </div>
+                    <span className="text-slate-300 font-serif text-2xl leading-none flex-shrink-0 self-end pb-1">❞</span>
+                  </div>
+                ));
+              })()}
+            </div>
+          </div>
+        )}
 
         {/* 4. Picture */}
         {data.imageUrl ? (

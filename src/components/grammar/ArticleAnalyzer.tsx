@@ -25,10 +25,10 @@ const ArticleAnalyzer: React.FC = () => {
     return saved ? JSON.parse(saved) : ALL_GRAMMAR_TYPES;
   });
 
-  // Vocabulary annotation state - load from localStorage or default to B1 only
+  // Vocabulary annotation state - load from localStorage or default to B1 and B2
   const [selectedVocabularyLevels, setSelectedVocabularyLevels] = useState<string[]>(() => {
     const saved = localStorage.getItem('vocabulary_levels');
-    return saved ? JSON.parse(saved) : ['B1'];
+    return saved ? JSON.parse(saved) : ['B1', 'B2'];
   });
 
   // Persist filter changes to localStorage
