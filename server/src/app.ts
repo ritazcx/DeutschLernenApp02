@@ -3,6 +3,7 @@ import cors from 'cors';
 import dictionaryRouter from './routes/dictionary';
 import proxyRouter from './routes/proxy';
 import grammarRouter from './routes/grammar';
+import analysisRouter from './routes/analysis';
 
 export function createApp() {
   const app = express();
@@ -24,6 +25,7 @@ export function createApp() {
   app.use(dictionaryRouter);
   app.use(proxyRouter);
   app.use(grammarRouter);
+  app.use(analysisRouter);
 
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

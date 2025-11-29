@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SentenceAnalysis, GrammarPoint } from '../../types/grammar';
 import { analyzeArticle } from '../../services/grammarService';
+import { saveAnalysis } from '../../services/analysisService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 
@@ -10,6 +11,9 @@ const ArticleAnalyzer: React.FC = () => {
   const [selectedSentence, setSelectedSentence] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [savedId, setSavedId] = useState<string | null>(null);
+  const [isSaved, setIsSaved] = useState(false);
 
   const handleAnalyze = async () => {
     if (!inputText.trim()) return;
@@ -18,6 +22,8 @@ const ArticleAnalyzer: React.FC = () => {
     setError(null);
     setSentences([]);
     setSelectedSentence(null);
+    setSavedId(null);
+    setIsSaved(false);
 
     try {
       const result = await analyzeArticle(inputText);
@@ -44,6 +50,8 @@ const ArticleAnalyzer: React.FC = () => {
     setSentences([]);
     setSelectedSentence(null);
     setError(null);
+    setSavedId(null);
+    setIsSaved(false);
   };
 
   return (
@@ -94,12 +102,57 @@ const ArticleAnalyzer: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-bold text-slate-900">Article</h2>
-                <button
-                  onClick={handleClear}
-                  className="text-sm px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
-                >
-                  New Article
-                </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={handleClear}
+                        className="text-sm px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors"
+                      >
+                        New Article
+                      </button>
+                      <button
+                        onClick={async () => {
+                          if (saving) return;
+                          setSaving(true);
+                          setSavedId(null);
+                          try {
+                            const payload = {
+                              // id will be generated server-side if absent
+                              title: inputText.trim().slice(0, 80) || `Analysis ${new Date().toISOString()}`,
+                              text: inputText,
+                              word_count: inputText.split(/\s+/).filter(Boolean).length,
+                              sentences: sentences.map(s => ({
+                                sentence: s.sentence,
+                                translation: s.translation,
+                                grammarPoints: (s.grammarPoints || []).map((p: any) => ({
+                                  type: p.type,
+                                  text: p.text,
+                                  explanation: p.explanation,
+                                  position: p.position,
+                                }))
+                              })),
+                            };
+
+                            const res = await saveAnalysis(payload);
+                            setSavedId(res.id || null);
+                            setIsSaved(true);
+                          } catch (err) {
+                            // eslint-disable-next-line no-console
+                            console.error('Save failed', err);
+                            alert('Save failed');
+                          } finally {
+                            setSaving(false);
+                          }
+                        }}
+                        disabled={saving || isSaved}
+                        className={`text-sm px-4 py-2 rounded-lg transition-colors ${
+                          isSaved 
+                            ? 'bg-gray-400 text-white cursor-not-allowed' 
+                            : 'bg-emerald-600 text-white hover:bg-emerald-500'
+                        } disabled:opacity-60`}
+                      >
+                        {saving ? 'Saving…' : 'Save Analysis'}
+                      </button>
+                    </div>
               </div>
               <div className="space-y-4 max-h-[70vh] overflow-y-auto">
                 {sentences.map((sentence, index) => (
@@ -143,6 +196,9 @@ const ArticleAnalyzer: React.FC = () => {
                   </span>
                 </div>
               </div>
+              {isSaved && (
+                <div className="mt-3 text-sm text-emerald-700 font-medium">✓ This article analysis is saved successfully!</div>
+              )}
             </div>
 
             {/* Right Panel: Grammar Explanation */}
