@@ -126,7 +126,7 @@ const ArticleAnalyzer: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 p-4 md:p-8">
+    <div className="bg-slate-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-slate-900 mb-2">

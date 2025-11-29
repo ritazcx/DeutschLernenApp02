@@ -30,13 +30,13 @@ const GrammarFilterPanel: React.FC<GrammarFilterPanelProps> = ({
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm p-6 h-fit sticky top-4">
+    <div className="bg-white rounded-xl shadow-sm p-6 h-fit sticky top-4 max-h-[calc(100vh-2rem)]">
       <h3 className="text-lg font-bold text-slate-900 mb-4">Grammar Filters</h3>
       <p className="text-sm text-slate-600 mb-4">
         Select which grammar points to highlight
       </p>
 
-      <div className="space-y-6 max-h-[calc(100vh-12rem)] overflow-y-auto pr-2">
+      <div className="space-y-6 max-h-[calc(100vh-14rem)] overflow-y-auto pr-2">
         {GRAMMAR_CATEGORIES.map((category) => {
           const fullySelected = isLevelFullySelected(category.level);
           const partiallySelected = isLevelPartiallySelected(category.level);
