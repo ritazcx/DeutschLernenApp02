@@ -270,32 +270,6 @@ const ArticleAnalyzer: React.FC = () => {
                 ))}
               </div>
 
-              {/* Legend */}
-              <div className="mt-6 pt-4 border-t border-slate-200">
-                <h3 className="text-sm font-semibold text-slate-700 mb-2">Legend:</h3>
-                <div className="flex flex-wrap gap-3 text-xs">
-                  <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 bg-blue-200 rounded"></span>
-                    Verb
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 bg-green-200 rounded"></span>
-                    Case
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 bg-purple-200 rounded"></span>
-                    Clause
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 bg-orange-200 rounded"></span>
-                    Conjunction
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <span className="w-3 h-3 bg-pink-200 rounded"></span>
-                    Special
-                  </span>
-                </div>
-              </div>
               {showSuccessMessage && (
                 <div className="mt-3 text-sm text-emerald-700 font-medium">✓ This article analysis is saved successfully!</div>
               )}

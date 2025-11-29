@@ -1,56 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { SentenceAnalysis, GrammarPoint, VocabularyPoint } from '../../types/grammar';
 
 interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
 }
-
-interface VocabularyTooltipProps {
-  vocab: VocabularyPoint;
-  position: { x: number; y: number };
-}
-
-const VocabularyTooltip: React.FC<VocabularyTooltipProps> = ({ vocab, position }) => (
-  <div
-    className="fixed z-50 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg pointer-events-none max-w-sm"
-    style={{
-      left: `${position.x}px`,
-      top: `${position.y}px`,
-      transform: 'translate(-50%, -100%)',
-      marginTop: '-8px'
-    }}
-  >
-    <div className="flex items-baseline gap-2 mb-1">
-      <span className="font-semibold text-base">
-        {vocab.article && <span className="text-slate-400 mr-1">{vocab.article}</span>}
-        {vocab.word}
-      </span>
-      <span className="text-xs text-green-400">{vocab.level} {vocab.pos}</span>
-    </div>
-    
-    {vocab.plural && (
-      <div className="text-slate-400 text-xs mb-1">Plural: {vocab.plural}</div>
-    )}
-    
-    {vocab.conjugations && (
-      <div className="text-slate-400 text-xs mb-1">
-        {vocab.conjugations.present && <div>Present: {vocab.conjugations.present}</div>}
-        {vocab.conjugations.past && <div>Past: {vocab.conjugations.past}</div>}
-        {vocab.conjugations.perfect && <div>Perfect: {vocab.conjugations.perfect}</div>}
-      </div>
-    )}
-    
-    {vocab.meaning_en && (
-      <div className="text-slate-300 mb-1">{vocab.meaning_en}</div>
-    )}
-    
-    {vocab.example_sentences && vocab.example_sentences.length > 0 && (
-      <div className="text-slate-400 text-xs italic border-t border-slate-700 pt-1 mt-1">
-        "{vocab.example_sentences[0]}"
-      </div>
-    )}
-  </div>
-);
 
 const colorMap: Record<GrammarPoint['type'], string> = {
   // Legacy types
@@ -71,7 +24,6 @@ const colorMap: Record<GrammarPoint['type'], string> = {
 };
 
 const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) => {
-  const [hoveredVocab, setHoveredVocab] = useState<{ vocab: VocabularyPoint; position: { x: number; y: number } } | null>(null);
 
   // Build highlighted spans from grammar points
   const points = [...sentence.grammarPoints].sort((a, b) => a.position.start - b.position.start);
@@ -161,7 +113,7 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) =
     // Add text before this region (checking for vocabulary)
     if (start > lastIndex) {
       const textBefore = sentence.sentence.substring(lastIndex, start);
-      const beforeParts = renderTextWithVocabulary(textBefore, lastIndex, vocabPoints, setHoveredVocab);
+      const beforeParts = renderTextWithVocabulary(textBefore, lastIndex, vocabPoints);
       parts.push(...beforeParts.map((p, i) => React.cloneElement(p, { key: `before-${idx}-${i}` })));
     }
 
@@ -172,23 +124,9 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) =
     parts.push(
       <span
         key={`point-${idx}`}
-        className={`${colorMap[type as GrammarPoint['type']] || colorMap.special} px-1 rounded cursor-help transition-colors relative group ${vocabHere ? 'border-b-2 border-green-600' : ''}`}
-        title={explanation}
-        onMouseEnter={(e) => {
-          if (vocabHere) {
-            const rect = e.currentTarget.getBoundingClientRect();
-            setHoveredVocab({
-              vocab: vocabHere,
-              position: { x: rect.left + rect.width / 2, y: rect.top }
-            });
-          }
-        }}
-        onMouseLeave={() => setHoveredVocab(null)}
+        className={`${colorMap[type as GrammarPoint['type']] || colorMap.special} px-1 rounded transition-colors ${vocabHere ? 'underline decoration-dashed decoration-2 decoration-green-500' : ''}`}
       >
         {highlighted}
-        <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-slate-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
-          {explanation}
-        </span>
       </span>
     );
 
@@ -198,14 +136,13 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) =
   // Add remaining text (checking for vocabulary)
   if (lastIndex < sentence.sentence.length) {
     const textAfter = sentence.sentence.substring(lastIndex);
-    const afterParts = renderTextWithVocabulary(textAfter, lastIndex, vocabPoints, setHoveredVocab);
+    const afterParts = renderTextWithVocabulary(textAfter, lastIndex, vocabPoints);
     parts.push(...afterParts.map((p, i) => React.cloneElement(p, { key: `after-${i}` })));
   }
 
   return (
     <div className="text-base leading-relaxed relative">
       {parts}
-      {hoveredVocab && <VocabularyTooltip vocab={hoveredVocab.vocab} position={hoveredVocab.position} />}
     </div>
   );
 };
@@ -214,8 +151,7 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) =
 function renderTextWithVocabulary(
   text: string,
   baseOffset: number,
-  vocabPoints: VocabularyPoint[],
-  setHoveredVocab: (value: any) => void
+  vocabPoints: VocabularyPoint[]
 ): React.ReactElement[] {
   const parts: React.ReactElement[] = [];
   
@@ -243,15 +179,7 @@ function renderTextWithVocabulary(
     parts.push(
       <span
         key={`vocab-${idx}`}
-        className="underline decoration-2 decoration-green-500 cursor-help hover:bg-green-50 px-0.5 rounded transition-colors"
-        onMouseEnter={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect();
-          setHoveredVocab({
-            vocab,
-            position: { x: rect.left + rect.width / 2, y: rect.top }
-          });
-        }}
-        onMouseLeave={() => setHoveredVocab(null)}
+        className="underline decoration-dashed decoration-2 decoration-green-500"
       >
         {text.substring(relativeStart, relativeEnd)}
       </span>
