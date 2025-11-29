@@ -6,11 +6,21 @@ interface GrammarExplanationPanelProps {
 }
 
 const typeLabels: Record<GrammarPoint['type'], { label: string; icon: string }> = {
+  // Legacy types
   verb: { label: 'Verb', icon: '🔵' },
   case: { label: 'Case', icon: '🟢' },
   clause: { label: 'Clause', icon: '🟣' },
   conjunction: { label: 'Conjunction', icon: '🟠' },
-  special: { label: 'Special', icon: '🔴' },
+  special: { label: 'Special', icon: '🩷' },
+  // New B2/C1 types - matched to HighlightedSentence colors
+  collocation: { label: 'Collocation', icon: '🟡' },
+  special_construction: { label: 'Special Construction', icon: '🔵' },
+  subjunctive: { label: 'Subjunctive', icon: '🌹' },
+  modal: { label: 'Modal Verb', icon: '🔷' },
+  functional_verb: { label: 'Functional Verb', icon: '💚' },
+  advanced_conjunction: { label: 'Advanced Conjunction', icon: '💜' },
+  nominalization: { label: 'Nominalization', icon: '💎' },
+  passive: { label: 'Passive Voice', icon: '🟢' },
 };
 
 const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sentence }) => {
