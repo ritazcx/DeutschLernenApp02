@@ -1,0 +1,4598 @@
+[
+  {
+    "word": "Bäcker",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Apfel",
+    "article": "der",
+    "plural": "¨-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Film",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Ball",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kind",
+    "article": "das",
+    "plural": "-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Land",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Adresse",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Foto",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Internet",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "anmelden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "solche",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "wenn",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Abgabe",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ablenken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abschätzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "analysieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "angeboren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anspannen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "aufschieben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausdrücken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausgehen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "auslösen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausschütten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "austauschen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Beeinträchtigung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "begeistert",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Begeisterung",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Beitrag",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "beiseiteschieben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "betreffen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Bremse",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Burn-out",
+    "article": "der",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "einen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "chronisch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Detail",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Dissertation",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ehrgeizig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "sich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einschätzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Ekel",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Emotion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "empfinden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Entwicklungsland",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "erlernen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Euphorie",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Faktor",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "filtern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "gemein",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Geräusch",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gesichtsausdruck",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gestik",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Handlung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Herausforderung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "herausziehen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Hormon",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "individuell",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "irrational",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "isolieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "komplex",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Konzentration",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Körperhaltung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "kritisieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "lähmen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Leid",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "leiden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Mimik",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "minderwertig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "minimieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "motivieren",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "nachweisen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Nervensystem",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Niederlage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "optimistisch",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Panik",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Phobie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "primär",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Produktion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Promotion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Psyche",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Reiz",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Sauerstoff",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Säugling",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "schädigen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Scham",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Schock",
+    "article": "der",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "schockiert",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Schwäche",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "schwitzen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Seele",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "seelisch",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "sekundär",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Selbsthilfegruppe",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Sicht",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Strategie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "stressig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Studie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Substanz",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "taub",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Traurigkeit",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Überforderung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "überrascht",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Verhaltensmuster",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "vorliegen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "wahrnehmen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Wertgegenstand",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Wirkstoff",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "zählen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Zufriedenheit",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Zuneigung",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Ablauf",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "analog",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Anonymität",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "antizipieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "auffordern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "aufgeschlossen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "aufklären",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "beschleunigen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "bewusst",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "offene",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Denkanstoß",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "nachzudenken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ehemalig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "endlos",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ertragen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erträglich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Fakt",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "fixieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Flüchtling",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "gelangen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "grob",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "grundsätzlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "halten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Hörspiel",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Identifikation",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "inakzeptabel",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Individuum",
+    "article": "das",
+    "plural": "Individuen",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "insbesondere",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "irreparabel",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "zurückkommen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "kommunizieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Konfrontation",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "einem",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Konvention",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kulturkreis",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Lüge",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "lügen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Missverständnis",
+    "article": "das",
+    "plural": "-se",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "hoffentlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "nachvollziehen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "wichtignehmen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "plaudern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Podcast",
+    "article": "der",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "jederzeit",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Quelle",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "reflektieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Rückmeldung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Schlüsselwort",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "sich schnäuzen",
+    "pos": "expression",
+    "level": "B2"
+  },
+  {
+    "word": "seriös",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Status",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Synonym",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Tabu",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "tabu",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anderen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "denn",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "n behalten",
+    "pos": "expression",
+    "level": "B2"
+  },
+  {
+    "word": "Übermittlung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "unbeschreiblich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "unvergesslich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "vereinfachen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Verlegenheit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "versorgen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vollständig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "vorhersehbar",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "vornehm",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Vorwissen",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Wandel",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "wesentlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Zeitalter",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "zeitaufwendig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "zwinkern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abschneiden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Algorithmus",
+    "article": "der",
+    "plural": "Viele",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Allergie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "weder",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Angriff",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "anklicken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anonym",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Aufbau",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "altmodisches",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausgiebig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "bedienen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "befestigen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "belasten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "berechtigt",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Browser",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Cyberangriff",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "dauerhaft",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "drahtlos",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Einschränkung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "einstecken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "entsprechende",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ermöglichen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erpressen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "fähig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "fallen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "flächendeckend",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "freischalten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "gängig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "gestatten",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Gut",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Hacker",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "gibt",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Infrastruktur",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "einer",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erkannte",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "intim",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Investition",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "klagen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Kontext",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "lahmlegen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "leichtgläubig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "liken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Maßnahme",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Messengerdienst",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "mittels",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Modus",
+    "article": "der",
+    "plural": "Modi",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "nachhaltig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "online",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Niveau",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "schnell",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "dass",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "personalisierte",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Posting",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ratsam",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Ressource",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Selfie",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "simpel",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Skandal",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "skandalös",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "sperren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Standpunkt",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "steuern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Suchmaschine",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "teilen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "thematisch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Trojaner",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "unerlässlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Unternehmen",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "unterschätzen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "vermögen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verschaffen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verschleißen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Volumen",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "weitreichend",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "wirksam",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "zudem",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "zusammenhängen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abschweifen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abwenden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "alarmieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "allmählich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anregen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anreichern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Anstieg",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Antrieb",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Artensterben",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Atmosphäre",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "aufgreifen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "äußern",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Ausstoß",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "bestäuben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "genauer",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "bewundern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "dezimieren",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "dramatisch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Dürre",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "eindämmen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "eingehen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "oder",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Einschlag",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "rier",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einseitig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Einwegverpackung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "empfindlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erzeugen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Exemplar",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "fernbleiben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Flut",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "freisetzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Gestein",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gewächshaus",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "gierig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Gleichgewicht",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Impuls",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Industrialisierung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Klimawandel",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kohlendioxid",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Komfort",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "kommen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "kompensieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "konservativ",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Kunststoff",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "lauten",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Lebensraum",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Luxus",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Menschheit",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Missstand",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Nutzpflanze",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "wichtige",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Ökosystem",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Ozean",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Pestizid",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Planet",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Plantage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Prognose",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Qual",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "qualvoll",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Rind",
+    "article": "das",
+    "plural": "-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "samt",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "schädlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "schmelzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "stillen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Strahlung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Szenario",
+    "article": "das",
+    "plural": "Szenarien",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "treiben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Treibhauseffekt",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "nicht",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Überschwemmung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "umdenken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "umstritten",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "umweltschädlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "ungehindert",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vergleichsweise",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verpflichten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verringern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "hatten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vorschreiben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Weideland",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "zeugen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ableiten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Anhängerschaft",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Armut",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Ästhetik",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ausgebucht",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "aussortieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "bedenken",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "bedenkenlos",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "befragen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "beifügen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Beilage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "bemessen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Container",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "einfrieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Eintopf",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Einzelhandel",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Empörung",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "enormem",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "entgegenbringen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "entgegenwirken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "entsorgen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "eröffnen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Erzeuger",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "eventuell",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Gegensatz",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "verlorengehen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Handelskette",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "inspirieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Konzept",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Leber",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "maßlos",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "reif",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "renommiert",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verarbeitet",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "sicherlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "tätig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Überangebot",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "viel",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "umsetzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ihre",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verderben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verfeinern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vergeuden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Verpackung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "schlecht",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verwerten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vorhanden",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Wurzel",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "zubereiten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abgrenzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "miteinander",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anlehnen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anordnen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Anwesenheit",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "eine",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Arbeitskraft",
+    "article": "die",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Attraktivität",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "auflösen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vielen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Aufstieg",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ausführlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "aushandeln",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausschreiben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Auszeit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Automatisierung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "anderem",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Autonomie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Begriff",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "bereisen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Bereitschaft",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "unter",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "berufstätig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Berufswahl",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "wählen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Bestandteil",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "bezeichnen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Branche",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Bürokratie",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Danksagung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "bald",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "darlegen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "dynamischen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einreden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einvernehmlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Elternzeit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "entgegenfiebern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "gesunden",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "ergiebig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "über",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ewig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Fachkräftemangel",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Fließband",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Fokus",
+    "article": "der",
+    "plural": "-se",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "verstehen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Fortschritt",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Frust",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "frustriert",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Führungskraft",
+    "article": "die",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Funktion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "gesellig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "gestalten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Gliederung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "heftig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "herrschen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Hierarchie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Homeoffice",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kleinigkeit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "komprimieren",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "konkurrieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Konsequenz",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "erzielten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "durch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Krankenstand",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Krankmeldung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "anderes",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Leistungsdruck",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "lustlos",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "die soziale",
+    "pos": "expression",
+    "level": "B2"
+  },
+  {
+    "word": "mitleidig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Nachhaltigkeit",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "nachweislich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Nebeneffekt",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Phänomen",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Produktivität",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Psychologie",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "denken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "qualifizieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "realisieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "regulär",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Ruhezeit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "sesshaft",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Sprichwort",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "stabil",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Stärkung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "starr",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Start-up",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "streben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "strikt",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "thematisieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "unterfordern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Unternehmenskultur",
+    "article": "die",
+    "plural": "Zur",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "verbalisieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verbittern",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "verdeutlichen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vereinbaren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verlegen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "liche",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vermehrt",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Vertrauen",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "verweigern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vorbeugen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Weiterentwicklung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "wettbewerbsfähig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Workaholic",
+    "article": "der",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "auf eine",
+    "pos": "expression",
+    "level": "B2"
+  },
+  {
+    "word": "zufolge",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "konnten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Zusatz",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "abgeschlagen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ablösen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "schicht",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Absatz",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "abschaffen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "auch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abschwächen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abwägen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abweichen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Ackerbau",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Anbau",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "anbauen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ansteigen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Antike",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ausbeuten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausgebeutet",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Ausbeutung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "aufnehmen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausliefern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "äußerst",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Banknote",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "bedrohen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "berechnen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "betreiben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Betrieb",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "konnte",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "bezweifeln",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "bürokratisch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "daheim",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "definitiv",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Dienstleistung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Digitalisierung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "einarbeiten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einheimisch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Einschnitt",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Element",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Emission",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "entrichten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erheben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erheblich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Erhebung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "erhöhen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Erhöhung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ermitteln",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Erwerb",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "erwerbstätig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Erzeugnis",
+    "article": "das",
+    "plural": "-se",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "explodieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Export",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "exportieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Fachwort",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Festanstellung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Fiktion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Filiale",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Finanzamt",
+    "article": "das",
+    "plural": "¨-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Formalität",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gastronomie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Geldverkehr",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gewässer",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gewerkschaft",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "global",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "greifbar",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Großkonzern",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "innen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Grundlage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Grundrecht",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Grundstück",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "in der",
+    "pos": "expression",
+    "level": "B2"
+  },
+  {
+    "word": "Handwerk",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Hürde",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "importieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Industriestaat",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "integrieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "investieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Jahrhundert",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Jahrtausend",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Know-how",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kolonialisierung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "kommunistisch",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "mark",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Konzern",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "selbstständiger",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Kooperation",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kreislauf",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Lehrling",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Lohn",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "loslegen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "luxuriös",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "deutlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Marketing",
+    "article": "das",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Marktführer",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "massenhaft",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Massenprodukt",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "kaufen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Mehrwertsteuer",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Mindestlohn",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "missbrauchen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Mittelfeld",
+    "article": "das",
+    "plural": "-er",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "modernisieren",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "verschiedenen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "meinem",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Neuerung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "etwas",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Obergrenze",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "offenbaren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Phase",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "populär",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Potenzial",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Produktionsstätte",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Produzent",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Profit",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ihrer",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "folgen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "rechnerisch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Regelung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Rohstoff",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Schaden",
+    "article": "der",
+    "plural": "¨-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "positiv",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "senken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Sozialwohnung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Standort",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "steigern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Stellenabbau",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "keine",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Stil",
+    "article": "die",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Subvention",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Summe",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Tauschhandel",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Teilzeit",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Territorium",
+    "article": "das",
+    "plural": "Ein",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "überwiegen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Umsatzsteuer",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "umstellen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ungeheuer",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "unumgänglich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "unverzichtbar",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "verarbeiten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Verflechtung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "vernetzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Versäumnis",
+    "article": "das",
+    "plural": "-se",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "verteuern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Vielfalt",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "vorangegangen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Vorgang",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "vorzeitlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Warenstrom",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Welthandel",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "allen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Weltwirtschaft",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Werbestrategie",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Wettbewerb",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "willig",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "wirtschaftlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Zahlungsmittel",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Zahlungsverkehr",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "zulässig n unzulässig",
+    "pos": "expression",
+    "level": "B2"
+  },
+  {
+    "word": "Zusammenbruch",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "emotionalen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "zusammenrücken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Zuzug",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Alarm",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Analyse",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "ausgewogen",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "ausstatten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Bakterium",
+    "article": "das",
+    "plural": "Bakterien",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "befürworten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "beherrschen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "seinen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "frische",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Design",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "durchführen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einbauen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "eindringen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Eindringling",
+    "article": "der",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "einsparen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "mehr",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einspeisen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erfassen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erobern",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erwerben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "wissen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Fett",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gewerbe",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "handlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "heilen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "heimisch",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Implantat",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "implantieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Inbetriebnahme",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Injektion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Innovation",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kohlehydrat",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "konkret",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Lücke",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "maßgeblich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "n im",
+    "pos": "expression",
+    "level": "B2"
+  },
+  {
+    "word": "individuellen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Prothese",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Revolution",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "revolutionär",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "riskieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Roboter",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Router",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Schnittstelle",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Sensation",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "solide",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Stoffwechsel",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "tödlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Touchscreen",
+    "article": "der",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Update",
+    "article": "das",
+    "plural": "-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Verdauung",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Verfahren",
+    "article": "das",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Verringerung",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Vitamin",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Waffe",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "darüber",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "abschrecken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Akkumulator",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "akzeptabel",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anknüpfen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "wieder",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anlegen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anpassen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anschaffen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "anstecken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "antreiben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "aufbewahren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "aufheizen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "heizen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "aufwenden",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "ausgleichen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "begrenzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "benennen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Demontage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Distanz",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "durchbrechen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "durchsetzen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "nachhaltigen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "amehesten",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "einschränken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Elektromobilität",
+    "article": "die",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "entweichen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Entwurf",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "müssen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "entziehen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erforderlich",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "erschaffen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erscheinen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "erschweren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Fächer",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Fassade",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Flüssigkeit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gefährt",
+    "article": "das",
+    "plural": "-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Gel",
+    "article": "das",
+    "plural": "-e/-s",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "halbieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Klimaanlage",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Kompetenz",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "lenken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Manipulation",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "mühsam",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Neuheit",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "nonstop",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "nummerieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "prognostizieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Prototyp",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "regulieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Reichweite",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Schlagzeile",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "schwanken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Schweiß",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "angewiesen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "sprudeln",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Stimmung",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "wurde",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Stromstoß",
+    "article": "der",
+    "plural": "¨-e",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "überprüfte",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Transplantation",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "entnommen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "überlebenswichtig",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "übersichtlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Umgang",
+    "article": "der",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "umgangssprachlich",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "unterirdisch",
+    "pos": "adjective",
+    "level": "B2"
+  },
+  {
+    "word": "Urform",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Ventilator",
+    "article": "der",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "verbergen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verdrängen",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "vergraben",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "verstärken",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Vorläufer",
+    "article": "der",
+    "plural": "-",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "wird",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Vorversion",
+    "article": "die",
+    "plural": "-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "Werkstatt",
+    "article": "die",
+    "plural": "¨-en",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "komplizierter",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "Zelle",
+    "article": "die",
+    "plural": "-n",
+    "pos": "noun",
+    "level": "B2"
+  },
+  {
+    "word": "zufrieren",
+    "pos": "verb",
+    "level": "B2"
+  },
+  {
+    "word": "zurücklegen",
+    "pos": "verb",
+    "level": "B2"
+  }
+]

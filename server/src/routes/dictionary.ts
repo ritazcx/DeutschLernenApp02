@@ -1,5 +1,5 @@
 import express from 'express';
-import { findWord, upsertWord, findVocabulary } from '../db';
+import { findVocabulary } from '../db';
 import { DictionaryEntry } from '../types';
 
 const router = express.Router();
@@ -9,10 +9,6 @@ router.get('/api/dictionary/:word', async (req, res) => {
   if (!raw) return res.status(400).json({ error: 'missing word' });
 
   try {
-    // First check the old dictionary table (for backward compatibility)
-    const cached = findWord(raw);
-    if (cached) return res.json(cached);
-
     // Check the vocabulary database
     const vocabEntry = findVocabulary(raw);
     if (vocabEntry) {
@@ -50,18 +46,7 @@ router.get('/api/dictionary/:word', async (req, res) => {
   }
 });
 
-router.post('/api/dictionary', (req, res) => {
-  const body: DictionaryEntry = req.body;
-  if (!body || !body.word) return res.status(400).json({ error: 'missing word field' });
-
-  try {
-    upsertWord(body as any);
-    return res.status(201).json({ ok: true, word: body.word });
-  } catch (err: any) {
-    console.error('dictionary POST error', err?.message || err);
-    return res.status(500).json({ error: 'insert_failed' });
-  }
-});
+// Legacy POST endpoint removed - vocabulary is now read-only from database
 
 // Search vocabulary with filters
 router.get('/api/vocabulary/search', (req, res) => {
@@ -93,10 +78,9 @@ router.get('/api/vocabulary/search', (req, res) => {
     const db = require('../db').default;
     const results = db.prepare(query).all(...params);
     
-    // Parse example_sentences JSON
+    // Add conjugations if available
     const parsed = results.map((row: any) => ({
       ...row,
-      example_sentences: row.example_sentences ? JSON.parse(row.example_sentences) : [],
       conjugations: row.conjugation_present ? {
         present: row.conjugation_present,
         past: row.conjugation_past,
@@ -120,7 +104,7 @@ router.get('/api/vocabulary/stats', (req, res) => {
     const byLevel = db.prepare('SELECT level, COUNT(*) as count FROM vocabulary GROUP BY level').all();
     const byPos = db.prepare('SELECT pos, COUNT(*) as count FROM vocabulary WHERE pos IS NOT NULL GROUP BY pos').all();
     const withMeanings = db.prepare('SELECT COUNT(*) as count FROM vocabulary WHERE meaning_en IS NOT NULL').get().count;
-    const withExamples = db.prepare('SELECT COUNT(*) as count FROM vocabulary WHERE example_sentences IS NOT NULL').get().count;
+    const withExamples = db.prepare('SELECT COUNT(*) as count FROM vocabulary WHERE example_de IS NOT NULL OR example_en IS NOT NULL').get().count;
     
     res.json({
       total,
