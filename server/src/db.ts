@@ -67,8 +67,14 @@ db.prepare(`
     word TEXT NOT NULL UNIQUE,
     level TEXT NOT NULL,
     pos TEXT,
+    article TEXT,
+    plural TEXT,
+    conjugation_present TEXT,
+    conjugation_past TEXT,
+    conjugation_perfect TEXT,
     meaning_en TEXT,
     meaning_zh TEXT,
+    example_sentences TEXT,
     created_at INTEGER
   )
 `).run();
@@ -249,30 +255,64 @@ export function findVocabularyInList(words: string[], levels?: string[]) {
 
 export function upsertVocabulary(entry: any) {
   const stmt = db.prepare(`
-    INSERT INTO vocabulary (word, level, pos, meaning_en, meaning_zh, example_sentence, created_at)
-    VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @example_sentence, @created_at)
+    INSERT INTO vocabulary (word, level, pos, article, plural, conjugation_present, conjugation_past, conjugation_perfect, meaning_en, meaning_de, meaning_zh, example_de, example_en, example_sentences, created_at)
+    VALUES (@word, @level, @pos, @article, @plural, @conjugation_present, @conjugation_past, @conjugation_perfect, @meaning_en, @meaning_de, @meaning_zh, @example_de, @example_en, @example_sentences, @created_at)
     ON CONFLICT(word) DO UPDATE SET
       level=excluded.level,
       pos=excluded.pos,
+      article=excluded.article,
+      plural=excluded.plural,
+      conjugation_present=excluded.conjugation_present,
+      conjugation_past=excluded.conjugation_past,
+      conjugation_perfect=excluded.conjugation_perfect,
       meaning_en=excluded.meaning_en,
+      meaning_de=excluded.meaning_de,
       meaning_zh=excluded.meaning_zh,
-      example_sentence=excluded.example_sentence,
+      example_de=excluded.example_de,
+      example_en=excluded.example_en,
+      example_sentences=excluded.example_sentences,
       created_at=excluded.created_at
   `);
-  return stmt.run({
+  
+  // Convert arrays to JSON strings
+  const data = {
     ...entry,
+    conjugation_present: entry.conjugations?.present,
+    conjugation_past: entry.conjugations?.past,
+    conjugation_perfect: entry.conjugations?.perfect,
+    example_sentences: entry.example_sentences ? JSON.stringify(entry.example_sentences) : null,
     created_at: Date.now(),
-  });
+  };
+  delete data.conjugations;
+  
+  return stmt.run(data);
 }
 
 export function importVocabularyBatch(entries: any[]) {
   const tx = db.transaction((items: any[]) => {
     const stmt = db.prepare(`
-      INSERT OR IGNORE INTO vocabulary (word, level, pos, meaning_en, meaning_zh, example_sentence, created_at)
-      VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @example_sentence, @created_at)
+      INSERT OR IGNORE INTO vocabulary (word, level, pos, article, plural, conjugation_present, conjugation_past, conjugation_perfect, meaning_en, meaning_de, meaning_zh, example_de, example_en, example_sentences, created_at)
+      VALUES (@word, @level, @pos, @article, @plural, @conjugation_present, @conjugation_past, @conjugation_perfect, @meaning_en, @meaning_de, @meaning_zh, @example_de, @example_en, @example_sentences, @created_at)
     `);
     for (const entry of items) {
-      stmt.run({ ...entry, created_at: Date.now() });
+      const data = {
+        word: entry.word,
+        level: entry.level || 'B1',
+        pos: entry.pos || null,
+        article: entry.article || null,
+        plural: entry.plural || null,
+        conjugation_present: entry.conjugations?.present || null,
+        conjugation_past: entry.conjugations?.past || null,
+        conjugation_perfect: entry.conjugations?.perfect || null,
+        meaning_en: entry.meaning_en || null,
+        meaning_de: entry.meaning_de || null,
+        meaning_zh: entry.meaning_zh || null,
+        example_de: entry.example_de || null,
+        example_en: entry.example_en || null,
+        example_sentences: entry.example_sentences ? JSON.stringify(entry.example_sentences) : null,
+        created_at: Date.now(),
+      };
+      stmt.run(data);
     }
   });
   tx(entries);
