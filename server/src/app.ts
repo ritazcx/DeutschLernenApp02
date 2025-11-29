@@ -4,6 +4,7 @@ import dictionaryRouter from './routes/dictionary';
 import proxyRouter from './routes/proxy';
 import grammarRouter from './routes/grammar';
 import analysisRouter from './routes/analysis';
+import vocabularyRouter from './routes/vocabulary';
 
 export function createApp() {
   const app = express();
@@ -26,6 +27,7 @@ export function createApp() {
   app.use(proxyRouter);
   app.use(grammarRouter);
   app.use(analysisRouter);
+  app.use('/api/vocabulary', vocabularyRouter);
 
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

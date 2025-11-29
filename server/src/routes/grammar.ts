@@ -1,5 +1,6 @@
 import express from 'express';
 import axios from 'axios';
+import { findVocabularyInSentence } from '../services/vocabularyService';
 
 const router = express.Router();
 
@@ -332,7 +333,21 @@ Analyze ALL sentences. Return ONLY valid JSON.`;
       };
     });
 
-    return res.json({ sentences: validatedSentences });
+    // Add vocabulary annotation (B1 level for MVP)
+    const vocabularyLevels = req.body.vocabularyLevels || [];
+    const sentencesWithVocabulary = validatedSentences.map(sentence => {
+      if (vocabularyLevels.length === 0) {
+        return sentence;
+      }
+      
+      const vocabularyPoints = findVocabularyInSentence(sentence.sentence, vocabularyLevels);
+      return {
+        ...sentence,
+        vocabularyPoints
+      };
+    });
+
+    return res.json({ sentences: sentencesWithVocabulary });
   } catch (err: any) {
     console.error('grammar analysis error:', err?.response?.data || err?.message || err);
     const detail = err?.code === 'ECONNABORTED' ? 'timeout' : String(err?.message || err);

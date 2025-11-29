@@ -60,6 +60,36 @@ db.prepare(`
   )
 `).run();
 
+// Create vocabulary table for CEFR-graded words
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS vocabulary (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    word TEXT NOT NULL UNIQUE,
+    level TEXT NOT NULL,
+    pos TEXT,
+    meaning_en TEXT,
+    meaning_zh TEXT,
+    created_at INTEGER
+  )
+`).run();
+
+db.prepare(`CREATE INDEX IF NOT EXISTS idx_vocabulary_word ON vocabulary(word)`).run();
+db.prepare(`CREATE INDEX IF NOT EXISTS idx_vocabulary_level ON vocabulary(level)`).run();
+
+// Create phrases table for common expressions
+db.prepare(`
+  CREATE TABLE IF NOT EXISTS phrases (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    phrase TEXT NOT NULL UNIQUE,
+    level TEXT NOT NULL,
+    meaning_en TEXT,
+    meaning_zh TEXT,
+    created_at INTEGER
+  )
+`).run();
+
+db.prepare(`CREATE INDEX IF NOT EXISTS idx_phrases_phrase ON phrases(phrase)`).run();
+
 export function findWord(word: string) {
   const row = db.prepare('SELECT * FROM dictionary WHERE lower(word)=lower(?)').get(word);
   return row || null;
@@ -156,7 +186,7 @@ export function listAnalyses(limit = 20, offset = 0) {
 }
 
 export function getAnalysisById(id: string) {
-  const a = db.prepare('SELECT * FROM analyses WHERE id = ?').get(id);
+  const a: any = db.prepare('SELECT * FROM analyses WHERE id = ?').get(id);
   if (!a) return null;
   const sentences = db.prepare('SELECT idx, sentence_text, translation FROM sentences WHERE analysis_id = ? ORDER BY idx ASC').all(id);
   const points = db.prepare('SELECT sentence_idx, type, text, explanation, pos_start, pos_end FROM grammar_points WHERE analysis_id = ? ORDER BY id ASC').all(id);
@@ -188,6 +218,63 @@ export function deleteAnalysis(id: string) {
   const info = db.prepare('DELETE FROM analyses WHERE id = ?').run(id);
   // cascade should remove sentences and points; return changes
   return info.changes > 0;
+}
+
+// ----- Vocabulary functions -----
+export function findVocabulary(word: string) {
+  const row = db.prepare('SELECT * FROM vocabulary WHERE LOWER(word) = LOWER(?)').get(word);
+  return row || null;
+}
+
+export function findVocabularyByLevel(level: string) {
+  const rows = db.prepare('SELECT * FROM vocabulary WHERE level = ?').all(level);
+  return rows;
+}
+
+export function findVocabularyInList(words: string[], levels?: string[]) {
+  if (words.length === 0) return [];
+  
+  const placeholders = words.map(() => '?').join(',');
+  let query = `SELECT * FROM vocabulary WHERE LOWER(word) IN (${placeholders})`;
+  let params: any[] = words.map(w => w.toLowerCase());
+  
+  if (levels && levels.length > 0) {
+    const levelPlaceholders = levels.map(() => '?').join(',');
+    query += ` AND level IN (${levelPlaceholders})`;
+    params = [...params, ...levels];
+  }
+  
+  return db.prepare(query).all(...params);
+}
+
+export function upsertVocabulary(entry: any) {
+  const stmt = db.prepare(`
+    INSERT INTO vocabulary (word, level, pos, meaning_en, meaning_zh, created_at)
+    VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @created_at)
+    ON CONFLICT(word) DO UPDATE SET
+      level=excluded.level,
+      pos=excluded.pos,
+      meaning_en=excluded.meaning_en,
+      meaning_zh=excluded.meaning_zh,
+      created_at=excluded.created_at
+  `);
+  return stmt.run({
+    ...entry,
+    created_at: Date.now(),
+  });
+}
+
+export function importVocabularyBatch(entries: any[]) {
+  const tx = db.transaction((items: any[]) => {
+    const stmt = db.prepare(`
+      INSERT OR IGNORE INTO vocabulary (word, level, pos, meaning_en, meaning_zh, created_at)
+      VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @created_at)
+    `);
+    for (const entry of items) {
+      stmt.run({ ...entry, created_at: Date.now() });
+    }
+  });
+  tx(entries);
 }
 
 export default db;

@@ -12,10 +12,21 @@ export interface GrammarPoint {
   position: { start: number; end: number };
 }
 
+export interface VocabularyPoint {
+  word: string;
+  level: string;
+  pos?: string;
+  meaning_en?: string;
+  meaning_zh?: string;
+  startIndex: number;
+  endIndex: number;
+}
+
 export interface SentenceAnalysis {
   sentence: string;
   translation: string;
   grammarPoints: GrammarPoint[];
+  vocabularyPoints?: VocabularyPoint[];
 }
 
 export interface ArticleAnalysis {
