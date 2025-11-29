@@ -5,12 +5,16 @@ interface GrammarFilterPanelProps {
   selectedTypes: GrammarType[];
   onTypeToggle: (type: GrammarType) => void;
   onLevelToggle: (level: CEFRLevel, selectAll: boolean) => void;
+  selectedVocabularyLevels: string[];
+  onVocabularyLevelToggle: (level: string) => void;
 }
 
 const GrammarFilterPanel: React.FC<GrammarFilterPanelProps> = ({
   selectedTypes,
   onTypeToggle,
-  onLevelToggle
+  onLevelToggle,
+  selectedVocabularyLevels,
+  onVocabularyLevelToggle
 }) => {
   const isLevelFullySelected = (level: CEFRLevel): boolean => {
     const category = GRAMMAR_CATEGORIES.find(cat => cat.level === level);
@@ -78,6 +82,29 @@ const GrammarFilterPanel: React.FC<GrammarFilterPanelProps> = ({
             </div>
           );
         })}
+
+        {/* Vocabulary Annotation Section */}
+        <div className="border-t border-slate-300 pt-4 mt-6">
+          <h4 className="text-sm font-semibold text-slate-900 mb-3">Vocabulary Annotation</h4>
+          <p className="text-xs text-slate-600 mb-3">
+            Underline words by CEFR level
+          </p>
+          <div className="space-y-2">
+            {['B1', 'B2', 'C1'].map((level) => (
+              <label key={level} className="flex items-center cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={selectedVocabularyLevels.includes(level)}
+                  onChange={() => onVocabularyLevelToggle(level)}
+                  className="w-3.5 h-3.5 text-green-600 border-slate-300 rounded focus:ring-2 focus:ring-green-500"
+                />
+                <span className="ml-2 text-sm text-slate-700 group-hover:text-green-600">
+                  {level} Vocabulary
+                </span>
+              </label>
+            ))}
+          </div>
+        </div>
       </div>
     </div>
   );

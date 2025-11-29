@@ -25,10 +25,20 @@ const ArticleAnalyzer: React.FC = () => {
     return saved ? JSON.parse(saved) : ALL_GRAMMAR_TYPES;
   });
 
+  // Vocabulary annotation state - load from localStorage or default to B1 only
+  const [selectedVocabularyLevels, setSelectedVocabularyLevels] = useState<string[]>(() => {
+    const saved = localStorage.getItem('vocabulary_levels');
+    return saved ? JSON.parse(saved) : ['B1'];
+  });
+
   // Persist filter changes to localStorage
   useEffect(() => {
     localStorage.setItem('grammar_filters', JSON.stringify(selectedGrammarTypes));
   }, [selectedGrammarTypes]);
+
+  useEffect(() => {
+    localStorage.setItem('vocabulary_levels', JSON.stringify(selectedVocabularyLevels));
+  }, [selectedVocabularyLevels]);
 
   const handleTypeToggle = (type: GrammarType) => {
     setSelectedGrammarTypes(prev => 
@@ -54,6 +64,14 @@ const ArticleAnalyzer: React.FC = () => {
     }
   };
 
+  const handleVocabularyLevelToggle = (level: string) => {
+    setSelectedVocabularyLevels(prev =>
+      prev.includes(level)
+        ? prev.filter(l => l !== level)
+        : [...prev, level]
+    );
+  };
+
   const handleAnalyze = async () => {
     if (!inputText.trim()) return;
 
@@ -66,7 +84,7 @@ const ArticleAnalyzer: React.FC = () => {
     setShowSuccessMessage(false);
 
     try {
-      const result = await analyzeArticle(inputText, selectedGrammarTypes);
+      const result = await analyzeArticle(inputText, selectedGrammarTypes, selectedVocabularyLevels);
       setSentences(result.sentences);
       
       // Save to localStorage
@@ -172,6 +190,8 @@ const ArticleAnalyzer: React.FC = () => {
                 selectedTypes={selectedGrammarTypes}
                 onTypeToggle={handleTypeToggle}
                 onLevelToggle={handleLevelToggle}
+                selectedVocabularyLevels={selectedVocabularyLevels}
+                onVocabularyLevelToggle={handleVocabularyLevelToggle}
               />
             </div>
           </div>

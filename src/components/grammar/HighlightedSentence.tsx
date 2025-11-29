@@ -1,9 +1,31 @@
-import React from 'react';
-import { SentenceAnalysis, GrammarPoint } from '../../types/grammar';
+import React, { useState } from 'react';
+import { SentenceAnalysis, GrammarPoint, VocabularyPoint } from '../../types/grammar';
 
 interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
 }
+
+interface VocabularyTooltipProps {
+  vocab: VocabularyPoint;
+  position: { x: number; y: number };
+}
+
+const VocabularyTooltip: React.FC<VocabularyTooltipProps> = ({ vocab, position }) => (
+  <div
+    className="fixed z-50 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg pointer-events-none"
+    style={{
+      left: `${position.x}px`,
+      top: `${position.y}px`,
+      transform: 'translate(-50%, -100%)',
+      marginTop: '-8px'
+    }}
+  >
+    <div className="font-semibold mb-1">{vocab.word}</div>
+    <div className="text-slate-300">{vocab.meaning_en}</div>
+    <div className="text-slate-400 text-xs">{vocab.meaning_zh}</div>
+    <div className="text-xs text-green-400 mt-1">{vocab.level} {vocab.pos}</div>
+  </div>
+);
 
 const colorMap: Record<GrammarPoint['type'], string> = {
   // Legacy types
@@ -24,8 +46,13 @@ const colorMap: Record<GrammarPoint['type'], string> = {
 };
 
 const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) => {
+  const [hoveredVocab, setHoveredVocab] = useState<{ vocab: VocabularyPoint; position: { x: number; y: number } } | null>(null);
+
   // Build highlighted spans from grammar points
   const points = [...sentence.grammarPoints].sort((a, b) => a.position.start - b.position.start);
+  
+  // Get vocabulary points (if any)
+  const vocabPoints = sentence.vocabularyPoints || [];
   
   // Filter out overlapping points - keep only the first one
   const filteredPoints: typeof points = [];
@@ -91,28 +118,47 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) =
   // Sort regions by start position
   highlightRegions.sort((a, b) => a.start - b.start);
   
+  // Helper function to check if a position overlaps with vocabulary
+  const getVocabAtPosition = (start: number, end: number): VocabularyPoint | null => {
+    return vocabPoints.find(v => 
+      (start >= v.startIndex && start < v.endIndex) ||
+      (end > v.startIndex && end <= v.endIndex) ||
+      (start <= v.startIndex && end >= v.endIndex)
+    ) || null;
+  };
+  
   const parts: React.ReactElement[] = [];
   let lastIndex = 0;
 
   highlightRegions.forEach((region, idx) => {
     const { start, end, type, explanation } = region;
     
-    // Add text before this region
+    // Add text before this region (checking for vocabulary)
     if (start > lastIndex) {
-      parts.push(
-        <span key={`text-${idx}`}>
-          {sentence.sentence.substring(lastIndex, start)}
-        </span>
-      );
+      const textBefore = sentence.sentence.substring(lastIndex, start);
+      const beforeParts = renderTextWithVocabulary(textBefore, lastIndex, vocabPoints, setHoveredVocab);
+      parts.push(...beforeParts.map((p, i) => React.cloneElement(p, { key: `before-${idx}-${i}` })));
     }
 
-    // Add highlighted region
+    // Add highlighted region (grammar point)
     const highlighted = sentence.sentence.substring(start, end);
+    const vocabHere = getVocabAtPosition(start, end);
+    
     parts.push(
       <span
         key={`point-${idx}`}
-        className={`${colorMap[type as GrammarPoint['type']] || colorMap.special} px-1 rounded cursor-help transition-colors relative group`}
+        className={`${colorMap[type as GrammarPoint['type']] || colorMap.special} px-1 rounded cursor-help transition-colors relative group ${vocabHere ? 'border-b-2 border-green-600' : ''}`}
         title={explanation}
+        onMouseEnter={(e) => {
+          if (vocabHere) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            setHoveredVocab({
+              vocab: vocabHere,
+              position: { x: rect.left + rect.width / 2, y: rect.top }
+            });
+          }
+        }}
+        onMouseLeave={() => setHoveredVocab(null)}
       >
         {highlighted}
         <span className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block bg-slate-900 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 pointer-events-none">
@@ -124,16 +170,81 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) =
     lastIndex = end;
   });
 
-  // Add remaining text
+  // Add remaining text (checking for vocabulary)
   if (lastIndex < sentence.sentence.length) {
+    const textAfter = sentence.sentence.substring(lastIndex);
+    const afterParts = renderTextWithVocabulary(textAfter, lastIndex, vocabPoints, setHoveredVocab);
+    parts.push(...afterParts.map((p, i) => React.cloneElement(p, { key: `after-${i}` })));
+  }
+
+  return (
+    <div className="text-base leading-relaxed relative">
+      {parts}
+      {hoveredVocab && <VocabularyTooltip vocab={hoveredVocab.vocab} position={hoveredVocab.position} />}
+    </div>
+  );
+};
+
+// Helper function to render text with vocabulary underlines
+function renderTextWithVocabulary(
+  text: string,
+  baseOffset: number,
+  vocabPoints: VocabularyPoint[],
+  setHoveredVocab: (value: any) => void
+): React.ReactElement[] {
+  const parts: React.ReactElement[] = [];
+  
+  // Find vocabulary points that overlap with this text segment
+  const relevantVocab = vocabPoints.filter(v => 
+    v.startIndex >= baseOffset && v.endIndex <= baseOffset + text.length
+  ).sort((a, b) => a.startIndex - b.startIndex);
+  
+  let lastIdx = 0;
+  
+  relevantVocab.forEach((vocab, idx) => {
+    const relativeStart = vocab.startIndex - baseOffset;
+    const relativeEnd = vocab.endIndex - baseOffset;
+    
+    // Text before vocabulary
+    if (relativeStart > lastIdx) {
+      parts.push(
+        <span key={`text-${idx}`}>
+          {text.substring(lastIdx, relativeStart)}
+        </span>
+      );
+    }
+    
+    // Vocabulary word with underline
+    parts.push(
+      <span
+        key={`vocab-${idx}`}
+        className="underline decoration-2 decoration-green-500 cursor-help hover:bg-green-50 px-0.5 rounded transition-colors"
+        onMouseEnter={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect();
+          setHoveredVocab({
+            vocab,
+            position: { x: rect.left + rect.width / 2, y: rect.top }
+          });
+        }}
+        onMouseLeave={() => setHoveredVocab(null)}
+      >
+        {text.substring(relativeStart, relativeEnd)}
+      </span>
+    );
+    
+    lastIdx = relativeEnd;
+  });
+  
+  // Remaining text
+  if (lastIdx < text.length) {
     parts.push(
       <span key="text-end">
-        {sentence.sentence.substring(lastIndex)}
+        {text.substring(lastIdx)}
       </span>
     );
   }
-
-  return <div className="text-base leading-relaxed">{parts}</div>;
-};
+  
+  return parts;
+}
 
 export default HighlightedSentence;
