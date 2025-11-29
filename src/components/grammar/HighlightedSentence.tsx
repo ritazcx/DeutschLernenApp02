@@ -12,7 +12,7 @@ interface VocabularyTooltipProps {
 
 const VocabularyTooltip: React.FC<VocabularyTooltipProps> = ({ vocab, position }) => (
   <div
-    className="fixed z-50 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg pointer-events-none"
+    className="fixed z-50 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg pointer-events-none max-w-xs"
     style={{
       left: `${position.x}px`,
       top: `${position.y}px`,
@@ -21,8 +21,12 @@ const VocabularyTooltip: React.FC<VocabularyTooltipProps> = ({ vocab, position }
     }}
   >
     <div className="font-semibold mb-1">{vocab.word}</div>
-    <div className="text-slate-300">{vocab.meaning_en}</div>
-    <div className="text-slate-400 text-xs">{vocab.meaning_zh}</div>
+    <div className="text-slate-300 mb-1">{vocab.meaning_en}</div>
+    {vocab.example_sentence && (
+      <div className="text-slate-400 text-xs italic border-t border-slate-700 pt-1 mt-1">
+        "{vocab.example_sentence}"
+      </div>
+    )}
     <div className="text-xs text-green-400 mt-1">{vocab.level} {vocab.pos}</div>
   </div>
 );

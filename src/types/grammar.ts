@@ -18,6 +18,7 @@ export interface VocabularyPoint {
   pos?: string;
   meaning_en?: string;
   meaning_zh?: string;
+  example_sentence?: string;
   startIndex: number;
   endIndex: number;
 }

@@ -249,13 +249,14 @@ export function findVocabularyInList(words: string[], levels?: string[]) {
 
 export function upsertVocabulary(entry: any) {
   const stmt = db.prepare(`
-    INSERT INTO vocabulary (word, level, pos, meaning_en, meaning_zh, created_at)
-    VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @created_at)
+    INSERT INTO vocabulary (word, level, pos, meaning_en, meaning_zh, example_sentence, created_at)
+    VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @example_sentence, @created_at)
     ON CONFLICT(word) DO UPDATE SET
       level=excluded.level,
       pos=excluded.pos,
       meaning_en=excluded.meaning_en,
       meaning_zh=excluded.meaning_zh,
+      example_sentence=excluded.example_sentence,
       created_at=excluded.created_at
   `);
   return stmt.run({
@@ -267,8 +268,8 @@ export function upsertVocabulary(entry: any) {
 export function importVocabularyBatch(entries: any[]) {
   const tx = db.transaction((items: any[]) => {
     const stmt = db.prepare(`
-      INSERT OR IGNORE INTO vocabulary (word, level, pos, meaning_en, meaning_zh, created_at)
-      VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @created_at)
+      INSERT OR IGNORE INTO vocabulary (word, level, pos, meaning_en, meaning_zh, example_sentence, created_at)
+      VALUES (@word, @level, @pos, @meaning_en, @meaning_zh, @example_sentence, @created_at)
     `);
     for (const entry of items) {
       stmt.run({ ...entry, created_at: Date.now() });
