@@ -6,11 +6,21 @@ interface HighlightedSentenceProps {
 }
 
 const colorMap: Record<GrammarPoint['type'], string> = {
+  // Legacy types
   verb: 'bg-blue-200 hover:bg-blue-300',
   case: 'bg-green-200 hover:bg-green-300',
   clause: 'bg-purple-200 hover:bg-purple-300',
   conjunction: 'bg-orange-200 hover:bg-orange-300',
   special: 'bg-pink-200 hover:bg-pink-300',
+  // New B2/C1 types
+  collocation: 'bg-amber-200 hover:bg-amber-300',
+  special_construction: 'bg-indigo-200 hover:bg-indigo-300',
+  subjunctive: 'bg-rose-200 hover:bg-rose-300',
+  modal: 'bg-cyan-200 hover:bg-cyan-300',
+  functional_verb: 'bg-lime-200 hover:bg-lime-300',
+  advanced_conjunction: 'bg-fuchsia-200 hover:bg-fuchsia-300',
+  nominalization: 'bg-teal-200 hover:bg-teal-300',
+  passive: 'bg-emerald-200 hover:bg-emerald-300',
 };
 
 const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) => {

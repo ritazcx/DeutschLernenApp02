@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { SentenceAnalysis, GrammarPoint } from '../../types/grammar';
+import React, { useState, useEffect } from 'react';
+import { SentenceAnalysis, GrammarPoint, GrammarType, CEFRLevel, ALL_GRAMMAR_TYPES, GRAMMAR_CATEGORIES } from '../../types/grammar';
 import { analyzeArticle } from '../../services/grammarService';
 import { saveAnalysis } from '../../services/analysisService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 import SavedAnalyses from '../analysis/SavedAnalyses';
+import GrammarFilterPanel from './GrammarFilterPanel';
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -17,6 +18,41 @@ const ArticleAnalyzer: React.FC = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showSavedModal, setShowSavedModal] = useState(false);
+  
+  // Grammar filter state - load from localStorage or default to all selected
+  const [selectedGrammarTypes, setSelectedGrammarTypes] = useState<GrammarType[]>(() => {
+    const saved = localStorage.getItem('grammar_filters');
+    return saved ? JSON.parse(saved) : ALL_GRAMMAR_TYPES;
+  });
+
+  // Persist filter changes to localStorage
+  useEffect(() => {
+    localStorage.setItem('grammar_filters', JSON.stringify(selectedGrammarTypes));
+  }, [selectedGrammarTypes]);
+
+  const handleTypeToggle = (type: GrammarType) => {
+    setSelectedGrammarTypes(prev => 
+      prev.includes(type) 
+        ? prev.filter(t => t !== type)
+        : [...prev, type]
+    );
+  };
+
+  const handleLevelToggle = (level: CEFRLevel, selectAll: boolean) => {
+    const category = GRAMMAR_CATEGORIES.find(cat => cat.level === level);
+    if (!category) return;
+
+    if (selectAll) {
+      setSelectedGrammarTypes(prev => {
+        const without = prev.filter(t => !category.types.includes(t));
+        return [...without, ...category.types];
+      });
+    } else {
+      setSelectedGrammarTypes(prev => 
+        prev.filter(t => !category.types.includes(t))
+      );
+    }
+  };
 
   const handleAnalyze = async () => {
     if (!inputText.trim()) return;
@@ -30,7 +66,7 @@ const ArticleAnalyzer: React.FC = () => {
     setShowSuccessMessage(false);
 
     try {
-      const result = await analyzeArticle(inputText);
+      const result = await analyzeArticle(inputText, selectedGrammarTypes);
       setSentences(result.sentences);
       
       // Save to localStorage
@@ -84,40 +120,59 @@ const ArticleAnalyzer: React.FC = () => {
         </div>
 
         {sentences.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <textarea
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Paste your German article here..."
-              className="w-full h-64 p-4 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent resize-none"
-            />
-            {error && (
-              <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
-                {error}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Left column: Text input */}
+            <div className="lg:col-span-2">
+              <div className="bg-white rounded-xl shadow-sm p-6">
+                <textarea
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  placeholder="Paste your German article here..."
+                  className="w-full h-64 p-4 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent resize-none"
+                />
+                {error && (
+                  <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+                    {error}
+                  </div>
+                )}
+                <div className="mt-4 flex flex-wrap gap-3">
+                  <button
+                    onClick={handleAnalyze}
+                    disabled={loading || !inputText.trim() || selectedGrammarTypes.length === 0}
+                    className="px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+                  >
+                    {loading ? 'Analyzing...' : 'Analyze Grammar'}
+                  </button>
+                  <button
+                    onClick={handleClear}
+                    disabled={loading}
+                    className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 disabled:opacity-50 transition-colors font-medium"
+                  >
+                    Clear
+                  </button>
+                  <button
+                    onClick={() => setShowSavedModal(true)}
+                    disabled={loading}
+                    className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors font-medium"
+                  >
+                    Choose an analyzed article
+                  </button>
+                </div>
+                {selectedGrammarTypes.length === 0 && (
+                  <div className="mt-3 text-sm text-amber-600">
+                    ⚠️ Please select at least one grammar type to analyze
+                  </div>
+                )}
               </div>
-            )}
-            <div className="mt-4 flex gap-3">
-              <button
-                onClick={handleAnalyze}
-                disabled={loading || !inputText.trim()}
-                className="px-6 py-3 bg-slate-900 text-white rounded-lg hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
-              >
-                {loading ? 'Analyzing...' : 'Analyze Grammar'}
-              </button>
-              <button
-                onClick={handleClear}
-                disabled={loading}
-                className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 disabled:opacity-50 transition-colors font-medium"
-              >
-                Clear
-              </button>
-              <button
-                onClick={() => setShowSavedModal(true)}
-                disabled={loading}
-                className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors font-medium"
-              >
-                Choose an analyzed article
-              </button>
+            </div>
+
+            {/* Right column: Grammar filters */}
+            <div className="lg:col-span-1">
+              <GrammarFilterPanel
+                selectedTypes={selectedGrammarTypes}
+                onTypeToggle={handleTypeToggle}
+                onLevelToggle={handleLevelToggle}
+              />
             </div>
           </div>
         ) : (

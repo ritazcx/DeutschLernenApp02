@@ -23,47 +23,177 @@ router.post('/api/grammar/analyze', async (req, res) => {
     return res.status(500).json({ error: 'server_missing_api_key' });
   }
 
-  const { text } = req.body || {};
+  const { text, grammarTypes } = req.body || {};
   if (!text) return res.status(400).json({ error: 'missing_text' });
 
   console.log('Starting grammar analysis, text length:', text.length);
+  console.log('Requested grammar types:', grammarTypes || 'all');
   
-  // Split text into sentences: by line breaks or sentence-ending punctuation
-  let sentenceList: string[] = [];
-  
-  // First split by line breaks
-  const lines = text.split(/\n|\r\n/).filter((line: string) => line.trim().length > 0);
-  
-  // Then split each line by sentence-ending punctuation
-  lines.forEach((line: string) => {
-    const sentencesByPunctuation = line.match(/[^.!?]+[.!?]+|[^.!?]+$/g) || [line];
-    sentencesByPunctuation.forEach((sentence: string) => {
-      const trimmed = sentence.trim();
-      if (trimmed.length > 0) {
-        sentenceList.push(trimmed);
-      }
+  // Helper function to split text into sentences with German-aware logic
+  const splitIntoSentences = (text: string): string[] => {
+    // Common German abbreviations that shouldn't trigger sentence breaks
+    const abbreviations = [
+      'z.B.', 'z. B.', 'd.h.', 'd. h.', 'usw.', 'bzw.', 'etc.', 'evtl.', 'ggf.', 'inkl.', 'ca.',
+      'Dr.', 'Prof.', 'Hr.', 'Fr.', 'Str.', 'Nr.', 'Bd.', 'vgl.', 'S.', 'Tel.', 'Fax'
+    ];
+    
+    // Month names in German for date detection
+    const months = [
+      'Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
+      'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'
+    ];
+    
+    let processedText = text;
+    const protectedPatterns: { placeholder: string; original: string }[] = [];
+    let placeholderIndex = 0;
+    
+    // Protect abbreviations
+    abbreviations.forEach(abbr => {
+      const regex = new RegExp(abbr.replace(/\./g, '\\.'), 'g');
+      processedText = processedText.replace(regex, (match) => {
+        const placeholder = `__ABBR_${placeholderIndex}__`;
+        protectedPatterns.push({ placeholder, original: match });
+        placeholderIndex++;
+        return placeholder;
+      });
     });
-  });
+    
+    // Protect date patterns like "13. September 2007" or "5. und 21. August 2016"
+    months.forEach(month => {
+      // Pattern: digit(s) + period + space + month
+      const datePattern = new RegExp(`(\\d+)\\. (${month})`, 'g');
+      processedText = processedText.replace(datePattern, (match) => {
+        const placeholder = `__DATE_${placeholderIndex}__`;
+        protectedPatterns.push({ placeholder, original: match });
+        placeholderIndex++;
+        return placeholder;
+      });
+      
+      // Pattern: "5. und 21. August" - two dates with "und"
+      const doubleDatePattern = new RegExp(`(\\d+)\\. und (\\d+)\\. (${month})`, 'g');
+      processedText = processedText.replace(doubleDatePattern, (match) => {
+        const placeholder = `__DDATE_${placeholderIndex}__`;
+        protectedPatterns.push({ placeholder, original: match });
+        placeholderIndex++;
+        return placeholder;
+      });
+    });
+    
+    // Protect ordinal numbers at start of sentences (e.g., "1. Das ist...", "2. Man muss...")
+    processedText = processedText.replace(/(\n|^)(\d+)\. /g, (match, linebreak, num) => {
+      const placeholder = `${linebreak}__ORD_${placeholderIndex}__ `;
+      protectedPatterns.push({ placeholder: `__ORD_${placeholderIndex}__`, original: `${num}.` });
+      placeholderIndex++;
+      return placeholder;
+    });
+    
+    // Protect Roman numerals followed by period (e.g., "XXXI.", "IV.", "XII.")
+    processedText = processedText.replace(/\b([IVXLCDM]+)\./g, (match, roman) => {
+      const placeholder = `__ROMAN_${placeholderIndex}__`;
+      protectedPatterns.push({ placeholder, original: match });
+      placeholderIndex++;
+      return placeholder;
+    });
+    
+    // Split by line breaks first
+    const lines = processedText.split(/\n|\r\n/).filter((line: string) => line.trim().length > 0);
+    const sentences: string[] = [];
+    
+    lines.forEach((line: string) => {
+      // Split on sentence-ending punctuation followed by space and capital letter
+      // Use lookahead to keep the punctuation with the sentence
+      const parts = line.split(/(?<=[.!?])\s+(?=[A-ZÄÖÜ])/);
+      
+      parts.forEach(part => {
+        const trimmed = part.trim();
+        if (trimmed.length > 0) {
+          sentences.push(trimmed);
+        }
+      });
+    });
+    
+    // Restore protected patterns
+    return sentences.map(sentence => {
+      let restored = sentence;
+      protectedPatterns.forEach(({ placeholder, original }) => {
+        restored = restored.replace(placeholder, original);
+      });
+      return restored;
+    });
+  };
   
-  const sentences = sentenceList;
+  const sentences = splitIntoSentences(text);
   
   try {
-    const prompt = `You are a German grammar expert for B2 level learners. Analyze each German sentence and identify the MOST IMPORTANT grammar points that B2 learners need to understand.
+    // Build grammar focus based on requested types
+    const typeMapping: Record<string, string> = {
+      'collocation': 'Important word collocations and fixed phrases (Wortverbindungen/Kollokationen)',
+      'special_construction': 'Special verb constructions (zu + infinitive, lassen + infinitive, sein/haben + zu + infinitive, scheinen/pflegen + zu)',
+      'subjunctive': 'Subjunctive mood (Konjunktiv I for indirect speech, Konjunktiv II for hypothetical/polite)',
+      'modal': 'Modal verbs in complex usage (subjunctive, perfect tense, passive-like constructions)',
+      'functional_verb': 'Functional verbs (Funktionsverben: zur Verfügung stellen, in Betracht ziehen, etc.)',
+      'advanced_conjunction': 'Advanced conjunctions (indem, sodass, je...desto, etc.)',
+      'nominalization': 'Nominalization and extended adjective phrases',
+      'passive': 'Passive voice (especially state passive with sein)',
+      // Legacy types
+      'conjunction': 'Basic conjunctions (weil, dass, wenn)',
+      'clause': 'Subordinate clauses',
+      'verb': 'Verb position and conjugation',
+      'case': 'Case usage (Nominativ, Akkusativ, Dativ, Genitiv)',
+      'special': 'Special grammatical constructions'
+    };
+
+    const requestedTypes = grammarTypes && grammarTypes.length > 0 ? grammarTypes : Object.keys(typeMapping);
+    const focusItems = requestedTypes
+      .filter((t: string) => typeMapping[t])
+      .map((t: string, i: number) => `${i + 1}. ${typeMapping[t]}`)
+      .join('\n');
+
+    const allowedTypes = requestedTypes.join('|');
+
+    // Determine CEFR level based on requested grammar types
+    const b1Types = ['conjunction', 'clause', 'passive', 'verb'];
+    const b2Types = ['subjunctive', 'functional_verb', 'special_construction', 'collocation', 'advanced_conjunction', 'modal'];
+    const c1Types = ['nominalization', 'case', 'special'];
+    
+    const hasB1 = requestedTypes.some((t: string) => b1Types.includes(t));
+    const hasB2 = requestedTypes.some((t: string) => b2Types.includes(t));
+    const hasC1 = requestedTypes.some((t: string) => c1Types.includes(t));
+    
+    let levelDescription = 'B1-C1';
+    if (hasC1 && !hasB2 && !hasB1) {
+      levelDescription = 'C1 (advanced)';
+    } else if (hasB2 && !hasC1 && !hasB1) {
+      levelDescription = 'B2 (upper intermediate)';
+    } else if (hasB1 && !hasB2 && !hasC1) {
+      levelDescription = 'B1 (intermediate)';
+    } else if (hasB2 && hasC1) {
+      levelDescription = 'B2-C1 (upper intermediate to advanced)';
+    } else if (hasB1 && hasB2) {
+      levelDescription = 'B1-B2 (intermediate to upper intermediate)';
+    }
+
+    const prompt = `You are a German grammar expert analyzing text for ${levelDescription} level learners. Analyze each German sentence and identify the MOST IMPORTANT grammar points from the requested categories.
 
 Sentences to analyze:
 ${sentences.map((s: string, i: number) => `${i + 1}. ${s.trim()}`).join('\n')}
 
-For each sentence, provide:
-1. English translation
-2. 3-5 key grammar points focusing on:
-   - Verb position and conjugation (especially V2, verb-final in subordinate clauses, separable verbs)
-   - Case usage (Nominativ, Akkusativ, Dativ, Genitiv) with the specific noun phrases
-   - Subordinate clauses and conjunctions (weil, dass, wenn, etc.)
-   - Special constructions (Konjunktiv, Passiv, reflexive verbs, comparative/superlative)
-   - Important prepositions and their cases
+FOCUS ONLY ON these grammar elements:
+${focusItems}
 
-IMPORTANT: For separable verbs and non-contiguous grammar points, use "..." to indicate the gap.
-For example: "macht...eine Pause" or "an...vorbei".
+SKIP basic grammar that learners at this level should already know:
+- Simple verb positions (V2, verb-final) unless specifically requested or particularly complex
+- Basic case marking unless part of a fixed phrase, idiom, or specifically requested
+- Common prepositions (an, in, mit, etc.) unless in special constructions or specifically requested
+- Simple tenses and basic conjugations unless specifically requested
+- Basic subordinating conjunctions (weil, dass, wenn, ob) unless specifically requested
+
+For each sentence:
+1. Provide English translation
+2. Identify 1-3 important grammar points ONLY from the requested types (or 0 if sentence is too simple)
+3. Be selective - only mark elements that are relevant for the target level and requested categories
+
+IMPORTANT: For separable verbs and non-contiguous elements, use "..." (e.g., "stellt...zur Verfügung").
 
 Return JSON array:
 [{
@@ -71,9 +201,9 @@ Return JSON array:
   "translation": "English translation",
   "grammarPoints": [
     {
-      "type": "verb|case|clause|conjunction|special",
-      "text": "the exact word or phrase from the sentence (use ... for separable verbs)",
-      "explanation": "clear B2-level explanation in English"
+      "type": "${allowedTypes}",
+      "text": "exact word/phrase from sentence (use ... for gaps)",
+      "explanation": "concise B2-level explanation"
     }
   ]
 }]

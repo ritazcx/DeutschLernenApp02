@@ -1,13 +1,13 @@
-import { ArticleAnalysis } from '../types/grammar';
+import { ArticleAnalysis, GrammarType } from '../types/grammar';
 
 const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
 
-export async function analyzeArticle(text: string): Promise<ArticleAnalysis> {
+export async function analyzeArticle(text: string, grammarTypes?: GrammarType[]): Promise<ArticleAnalysis> {
   const base = SERVER_API_BASE || '';
   const res = await fetch(`${base}/api/grammar/analyze`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
+    body: JSON.stringify({ text, grammarTypes }),
   });
 
   if (!res.ok) {
