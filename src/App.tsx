@@ -339,7 +339,7 @@ const App: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 h-full overflow-hidden pt-16 md:pt-0 relative">
+      <main className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 relative">
         {/* Background decoration for home */}
         {view === AppView.HOME && (
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 opacity-50">
