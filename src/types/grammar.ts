@@ -16,9 +16,16 @@ export interface VocabularyPoint {
   word: string;
   level: string;
   pos?: string;
+  article?: string;
+  plural?: string;
+  conjugations?: {
+    present?: string;
+    past?: string;
+    perfect?: string;
+  };
   meaning_en?: string;
   meaning_zh?: string;
-  example_sentence?: string;
+  example_sentences?: string[];
   startIndex: number;
   endIndex: number;
 }

@@ -12,7 +12,7 @@ interface VocabularyTooltipProps {
 
 const VocabularyTooltip: React.FC<VocabularyTooltipProps> = ({ vocab, position }) => (
   <div
-    className="fixed z-50 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg pointer-events-none max-w-xs"
+    className="fixed z-50 bg-slate-900 text-white text-xs rounded-lg px-3 py-2 shadow-lg pointer-events-none max-w-sm"
     style={{
       left: `${position.x}px`,
       top: `${position.y}px`,
@@ -20,14 +20,35 @@ const VocabularyTooltip: React.FC<VocabularyTooltipProps> = ({ vocab, position }
       marginTop: '-8px'
     }}
   >
-    <div className="font-semibold mb-1">{vocab.word}</div>
-    <div className="text-slate-300 mb-1">{vocab.meaning_en}</div>
-    {vocab.example_sentence && (
-      <div className="text-slate-400 text-xs italic border-t border-slate-700 pt-1 mt-1">
-        "{vocab.example_sentence}"
+    <div className="flex items-baseline gap-2 mb-1">
+      <span className="font-semibold text-base">
+        {vocab.article && <span className="text-slate-400 mr-1">{vocab.article}</span>}
+        {vocab.word}
+      </span>
+      <span className="text-xs text-green-400">{vocab.level} {vocab.pos}</span>
+    </div>
+    
+    {vocab.plural && (
+      <div className="text-slate-400 text-xs mb-1">Plural: {vocab.plural}</div>
+    )}
+    
+    {vocab.conjugations && (
+      <div className="text-slate-400 text-xs mb-1">
+        {vocab.conjugations.present && <div>Present: {vocab.conjugations.present}</div>}
+        {vocab.conjugations.past && <div>Past: {vocab.conjugations.past}</div>}
+        {vocab.conjugations.perfect && <div>Perfect: {vocab.conjugations.perfect}</div>}
       </div>
     )}
-    <div className="text-xs text-green-400 mt-1">{vocab.level} {vocab.pos}</div>
+    
+    {vocab.meaning_en && (
+      <div className="text-slate-300 mb-1">{vocab.meaning_en}</div>
+    )}
+    
+    {vocab.example_sentences && vocab.example_sentences.length > 0 && (
+      <div className="text-slate-400 text-xs italic border-t border-slate-700 pt-1 mt-1">
+        "{vocab.example_sentences[0]}"
+      </div>
+    )}
   </div>
 );
 
