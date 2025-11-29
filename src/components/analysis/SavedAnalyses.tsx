@@ -1,92 +1,181 @@
 import React, { useEffect, useState } from 'react';
 import { listAnalyses, getAnalysis, deleteAnalysis } from '../../services/analysisService';
 
-const SavedAnalyses: React.FC = () => {
+interface SavedAnalysesProps {
+  onSelectAnalysis?: (analysis: any) => void;
+}
+
+const SavedAnalyses: React.FC<SavedAnalysesProps> = ({ onSelectAnalysis }) => {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [detail, setDetail] = useState<any | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    setLoading(true);
-    listAnalyses().then((data: any) => {
-      setItems(data.items || []);
-    }).catch(console.error).finally(() => setLoading(false));
+    fetchAnalyses();
   }, []);
 
-  const open = async (id: string) => {
-    setSelectedId(id);
-    setDetail(null);
+  const fetchAnalyses = async () => {
+    setLoading(true);
+    setError(null);
     try {
-      const d = await getAnalysis(id);
-      setDetail(d);
+      const data = await listAnalyses();
+      setItems(data.items || []);
     } catch (err) {
       console.error(err);
+      setError('Failed to load saved analyses');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const remove = async (id: string) => {
-    if (!confirm('Delete this saved analysis?')) return;
+  const handleOpen = async (id: string) => {
+    try {
+      const analysis = await getAnalysis(id);
+      if (onSelectAnalysis) {
+        onSelectAnalysis(analysis);
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Failed to load analysis');
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Delete this saved analysis? This action cannot be undone.')) return;
     try {
       await deleteAnalysis(id);
       setItems(items.filter(i => i.id !== id));
-      if (selectedId === id) {
-        setSelectedId(null);
-        setDetail(null);
-      }
     } catch (err) {
       console.error(err);
       alert('Delete failed');
     }
   };
 
+  const formatDate = (timestamp: number) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      year: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true
+    });
+  };
+
+  const getPreview = (text: string) => {
+    if (!text) return '';
+    return text.length > 150 ? text.slice(0, 150) + '...' : text;
+  };
+
+  // Filter items based on search query
+  const filteredItems = items.filter(item => {
+    if (!searchQuery.trim()) return true;
+    const query = searchQuery.toLowerCase();
+    return (
+      (item.title && item.title.toLowerCase().includes(query)) ||
+      (item.text && item.text.toLowerCase().includes(query))
+    );
+  });
+
   return (
-    <div className="flex gap-4">
-      <div className="w-1/3">
-        <h2 className="text-lg font-semibold mb-2">Saved Analyses</h2>
-        {loading && <div>Loading…</div>}
-        <ul className="space-y-2">
-          {items.map(item => (
-            <li key={item.id} className="p-2 border rounded hover:bg-slate-50">
-              <div className="flex justify-between items-center">
-                <div>
-                  <div className="font-medium">{item.title || item.id}</div>
-                  <div className="text-sm text-slate-500">{item.word_count} words · {new Date(item.created_at).toLocaleString()}</div>
-                </div>
-                <div className="flex gap-2">
-                  <button onClick={() => open(item.id)} className="text-sm text-blue-600">Open</button>
-                  <button onClick={() => remove(item.id)} className="text-sm text-red-600">Delete</button>
-                </div>
-              </div>
-            </li>
-          ))}
-        </ul>
+    <div className="w-full">
+      {/* Header with Search */}
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">
+          View and manage your saved article analyses
+        </h2>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by title or text..."
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-slate-900 focus:border-transparent"
+        />
       </div>
 
-      <div className="flex-1">
-        {selectedId ? (
-          detail ? (
-            <div>
-              <h3 className="text-xl font-semibold mb-2">{detail.title || detail.id}</h3>
-              <div className="prose">
-                <pre className="whitespace-pre-wrap">{detail.text}</pre>
-              </div>
-              <div className="mt-4">
-                {detail.sentences?.map((s: any, idx: number) => (
-                  <div key={idx} className="mb-3">
-                    <div className="font-medium">{s.sentence}</div>
-                    <div className="text-sm text-slate-600">{s.translation}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div>Loading detail…</div>
-          )
-        ) : (
-          <div className="text-slate-500">Select an analysis to view details</div>
-        )}
-      </div>
+      {/* Loading State */}
+      {loading && (
+        <div className="text-center py-12">
+          <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-slate-900 border-r-transparent"></div>
+          <p className="mt-2 text-slate-600">Loading saved analyses...</p>
+        </div>
+      )}
+
+      {/* Error State */}
+      {error && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+          {error}
+        </div>
+      )}
+
+      {/* Empty State */}
+      {!loading && !error && filteredItems.length === 0 && (
+        <div className="text-center py-12 bg-slate-50 rounded-lg">
+          <div className="text-6xl mb-4">📝</div>
+          <p className="text-lg font-medium text-slate-700">
+            {searchQuery ? 'No matching analyses found' : 'No saved analyses yet'}
+          </p>
+          <p className="text-slate-500 mt-2">
+            {searchQuery ? 'Try a different search term' : 'Start by analyzing an article!'}
+          </p>
+        </div>
+      )}
+
+      {/* Table View */}
+      {!loading && !error && filteredItems.length > 0 && (
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <table className="min-w-full divide-y divide-slate-200">
+            <thead className="bg-slate-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Title & Preview
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Words
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">
+                  Actions
+                </th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-slate-200">
+              {filteredItems.map((item) => (
+                <tr key={item.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="px-6 py-4">
+                    <div className="font-medium text-slate-900">{item.title || item.id}</div>
+                    <div className="text-sm text-slate-500 mt-1">{getPreview(item.text)}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">
+                    {item.word_count || 0}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-700">
+                    {formatDate(item.created_at)}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button
+                      onClick={() => handleOpen(item.id)}
+                      className="text-blue-600 hover:text-blue-900 mr-4"
+                    >
+                      Open
+                    </button>
+                    <button
+                      onClick={() => handleDelete(item.id)}
+                      className="text-red-600 hover:text-red-900"
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

@@ -4,6 +4,7 @@ import { analyzeArticle } from '../../services/grammarService';
 import { saveAnalysis } from '../../services/analysisService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
+import SavedAnalyses from '../analysis/SavedAnalyses';
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -14,6 +15,8 @@ const ArticleAnalyzer: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [showSavedModal, setShowSavedModal] = useState(false);
 
   const handleAnalyze = async () => {
     if (!inputText.trim()) return;
@@ -24,6 +27,7 @@ const ArticleAnalyzer: React.FC = () => {
     setSelectedSentence(null);
     setSavedId(null);
     setIsSaved(false);
+    setShowSuccessMessage(false);
 
     try {
       const result = await analyzeArticle(inputText);
@@ -52,6 +56,19 @@ const ArticleAnalyzer: React.FC = () => {
     setError(null);
     setSavedId(null);
     setIsSaved(false);
+    setShowSuccessMessage(false);
+  };
+
+  const loadSavedAnalysis = (analysis: any) => {
+    // Load saved analysis without calling API
+    setInputText(analysis.text || '');
+    setSentences(analysis.sentences || []);
+    setSelectedSentence(null);
+    setError(null);
+    setSavedId(analysis.id);
+    setIsSaved(true);
+    setShowSuccessMessage(false);
+    setShowSavedModal(false);
   };
 
   return (
@@ -94,6 +111,13 @@ const ArticleAnalyzer: React.FC = () => {
               >
                 Clear
               </button>
+              <button
+                onClick={() => setShowSavedModal(true)}
+                disabled={loading}
+                className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors font-medium"
+              >
+                Choose an analyzed article
+              </button>
             </div>
           </div>
         ) : (
@@ -135,6 +159,7 @@ const ArticleAnalyzer: React.FC = () => {
                             const res = await saveAnalysis(payload);
                             setSavedId(res.id || null);
                             setIsSaved(true);
+                            setShowSuccessMessage(true);
                           } catch (err) {
                             // eslint-disable-next-line no-console
                             console.error('Save failed', err);
@@ -196,7 +221,7 @@ const ArticleAnalyzer: React.FC = () => {
                   </span>
                 </div>
               </div>
-              {isSaved && (
+              {showSuccessMessage && (
                 <div className="mt-3 text-sm text-emerald-700 font-medium">✓ This article analysis is saved successfully!</div>
               )}
             </div>
@@ -211,6 +236,27 @@ const ArticleAnalyzer: React.FC = () => {
                   <p className="text-lg">Click on a sentence to see its grammar analysis</p>
                 </div>
               )}
+            </div>
+          </div>
+        )}
+
+        {/* Saved Analyses Modal */}
+        {showSavedModal && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+              <div className="flex justify-end items-center p-4 border-b border-slate-200">
+                <button
+                  onClick={() => setShowSavedModal(false)}
+                  className="text-slate-400 hover:text-slate-600 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-6">
+                <SavedAnalyses onSelectAnalysis={loadSavedAnalysis} />
+              </div>
             </div>
           </div>
         )}
