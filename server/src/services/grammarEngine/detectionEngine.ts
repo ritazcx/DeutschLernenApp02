@@ -8,6 +8,12 @@ import { CaseDetector } from './detectors/caseDetector';
 import { PassiveVoiceDetector } from './detectors/passiveVoiceDetector';
 import { SubordinateClauseDetector } from './detectors/subordinateClauseDetector';
 import { SubjunctiveDetector } from './detectors/subjunctiveDetector';
+import { SeparableVerbDetector } from './detectors/separableVerbDetector';
+import { ModalVerbDetector } from './detectors/modalVerbDetector';
+import { AgreementDetector } from './detectors/agreementDetector';
+import { WordOrderDetector } from './detectors/wordOrderDetector';
+import { CollocationDetector } from './detectors/collocationDetector';
+import { MorphologicalDetector } from './detectors/morphologicalDetector';
 import { BaseGrammarDetector, DetectionResult, SentenceData } from './detectors/baseDetector';
 import { GrammarCategory, CEFRLevel } from './cefr-taxonomy';
 
@@ -30,6 +36,12 @@ export class GrammarDetectionEngine {
     new PassiveVoiceDetector(),
     new SubordinateClauseDetector(),
     new SubjunctiveDetector(),
+    new SeparableVerbDetector(),
+    new ModalVerbDetector(),
+    new AgreementDetector(),
+    new WordOrderDetector(),
+    new CollocationDetector(),
+    new MorphologicalDetector(),
   ];
 
   /**

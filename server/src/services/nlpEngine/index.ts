@@ -86,7 +86,8 @@ export class NLPEngine {
       hasPassive,
       hasSubjunctive,
       hasSubordinateClause,
-      estimatedLevel
+      estimatedLevel,
+      usedSpaCy: true
     };
   }
 
@@ -96,6 +97,32 @@ export class NLPEngine {
   async analyzeGrammar(text: string): Promise<GrammarAnalysisResult> {
     // First, parse the sentence to get tokens
     const parsed = await this.parseSentence(text);
+    
+    // Enforce spaCy-only analysis: skip detection if fallback was used
+    if (!parsed.usedSpaCy) {
+      console.warn('SpaCy analysis failed, skipping grammar detection to prevent fallback token contamination');
+      return {
+        sentence: text,
+        grammarPoints: [],
+        byLevel: { A1: [], A2: [], B1: [], B2: [], C1: [], C2: [] },
+        byCategory: {
+          tense: [], case: [], voice: [], mood: [], agreement: [], article: [],
+          adjective: [], pronoun: [], preposition: [], conjunction: [], 'verb-form': [],
+          'word-order': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
+          passive: []
+        },
+        summary: {
+          totalPoints: 0,
+          levels: { A1: 0, A2: 0, B1: 0, B2: 0, C1: 0, C2: 0 },
+          categories: {
+            tense: 0, case: 0, voice: 0, mood: 0, agreement: 0, article: 0,
+            adjective: 0, pronoun: 0, preposition: 0, conjunction: 0, 'verb-form': 0,
+            'word-order': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
+            passive: 0
+          }
+        }
+      };
+    }
     
     // Convert ParsedSentence tokens to SentenceData tokens for grammar engine
     // Filter out "n/a" values from morph object
@@ -149,6 +176,7 @@ export class NLPEngine {
         present: 'Pres',
         past: 'Past',
         future: 'Fut',
+        perfect: 'Perf',
       },
       mood: {
         indicative: 'Ind',
@@ -176,6 +204,11 @@ export class NLPEngine {
       voice: {
         active: 'Act',
         passive: 'Pass',
+      },
+      verbForm: {
+        finite: 'Fin',
+        infinitive: 'Inf',
+        participle: 'Part',
       },
     };
     const table = abbreviations[key];
@@ -249,7 +282,8 @@ export class NLPEngine {
       hasPassive,
       hasSubjunctive,
       hasSubordinateClause,
-      estimatedLevel
+      estimatedLevel,
+      usedSpaCy: false
     };
   }
 

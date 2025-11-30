@@ -28,6 +28,7 @@ export interface ParsedSentence {
   hasSubjunctive: boolean;
   hasSubordinateClause: boolean;
   estimatedLevel: 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
+  usedSpaCy: boolean; // true if spaCy analysis succeeded, false if fallback was used
 }
 
 export interface ExtractedVocabulary {
