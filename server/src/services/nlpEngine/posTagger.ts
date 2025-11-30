@@ -25,6 +25,11 @@ export class POSTagger {
     'eln': 'VERB',    // sammeln, ändern
     'ern': 'VERB',    // wandern, ändern
     
+    // 过去分词特征 - CRITICAL ADD
+    // Pattern: ge...t (regular past participle: ge-root-t)
+    // Pattern: ge...en (irregular past participle: ge-root-en)
+    // These need high priority because they often match noun endings too
+    
     // 名词特征
     'ung': 'NOUN',    // Lösung, Prüfung
     'heit': 'NOUN',   // Krankheit, Freiheit
@@ -32,7 +37,6 @@ export class POSTagger {
     'nis': 'NOUN',    // Kenntnis, Ergebnis
     'ism': 'NOUN',    // Realismus
     'ismus': 'NOUN',  // Kapitalismus
-    'ist': 'NOUN',    // Linguist
     'ium': 'NOUN',    // Museum
     'tion': 'NOUN',   // (Latin loans)
     'sion': 'NOUN',   // (Latin loans)
@@ -214,6 +218,204 @@ export class POSTagger {
     'bauen': 'VERB',
     'zeichnen': 'VERB',
     'malen': 'VERB',
+    'einladen': 'VERB',
+    'einzureichen': 'VERB',
+    'stattfinden': 'VERB',
+    'reichen': 'VERB',
+
+    // 现在时共轭 - CRITICAL FIX
+    // sein 共轭
+    'bin': 'VERB',
+    'bist': 'VERB',
+    'ist': 'VERB',
+    'sind': 'VERB',
+    'seid': 'VERB',
+    // haben 共轭
+    'habe': 'VERB',
+    'hast': 'VERB',
+    'hat': 'VERB',
+    'habt': 'VERB',
+    // werden 共轭
+    'werde': 'VERB',
+    'wirst': 'VERB',
+    'wird': 'VERB',
+    'werdet': 'VERB',
+
+    // 过去时共轭 - CRITICAL FIX
+    // sein 过去时
+    'war': 'VERB',
+    'warst': 'VERB',
+    'waren': 'VERB',
+    'wart': 'VERB',
+    // haben 过去时
+    'hatte': 'VERB',
+    'hattest': 'VERB',
+    'hattet': 'VERB',
+    // werden 过去时
+    'wurde': 'VERB',
+    'würde': 'VERB',
+    'wurdest': 'VERB',
+    'würdest': 'VERB',
+    'wurdet': 'VERB',
+
+    // 常见动词过去时 - CRITICAL FIX
+    'ging': 'VERB',
+    'gingst': 'VERB',
+    'gingen': 'VERB',
+    'gingt': 'VERB',
+    'kam': 'VERB',
+    'kamst': 'VERB',
+    'kamen': 'VERB',
+    'kamt': 'VERB',
+    'gab': 'VERB',
+    'gabst': 'VERB',
+    'gaben': 'VERB',
+    'gabt': 'VERB',
+    'sah': 'VERB',
+    'sahst': 'VERB',
+    'sahen': 'VERB',
+    'saht': 'VERB',
+    'naham': 'VERB',
+    'nahm': 'VERB',
+    'nahmst': 'VERB',
+    'nahmen': 'VERB',
+    'nahmt': 'VERB',
+    'machte': 'VERB',
+    'machtest': 'VERB',
+    'machten': 'VERB',
+    'machtet': 'VERB',
+    'sagte': 'VERB',
+    'sagtest': 'VERB',
+    'sagten': 'VERB',
+    'sagtet': 'VERB',
+    'stand': 'VERB',
+    'standst': 'VERB',
+    'standen': 'VERB',
+    'standet': 'VERB',
+    'aß': 'VERB',
+    'aßt': 'VERB',
+    'aßen': 'VERB',
+    'trank': 'VERB',
+    'trankst': 'VERB',
+    'tranken': 'VERB',
+    'trankt': 'VERB',
+    'fuhr': 'VERB',
+    'fuhrst': 'VERB',
+    'fuhren': 'VERB',
+    'fuhrt': 'VERB',
+    'lief': 'VERB',
+    'liefst': 'VERB',
+    'liefen': 'VERB',
+    'lieft': 'VERB',
+    'schrieb': 'VERB',
+    'schriebst': 'VERB',
+    'schrieben': 'VERB',
+    'schriebt': 'VERB',
+    'las': 'VERB',
+    'last': 'VERB',
+    'lasen': 'VERB',
+    'hielt': 'VERB',
+    'hieltest': 'VERB',
+    'hielten': 'VERB',
+    'hieltet': 'VERB',
+    'reichte': 'VERB',
+    'reichtest': 'VERB',
+    'reichten': 'VERB',
+    'reichtet': 'VERB',
+
+    // 过去分词 - CRITICAL FIX for passive voice
+    'gewesen': 'VERB',
+    'gehabt': 'VERB',
+    'geworden': 'VERB',
+    'gegangen': 'VERB',
+    'gekommen': 'VERB',
+    'gegeben': 'VERB',
+    'genommen': 'VERB',
+    'gemacht': 'VERB',
+    'gesehen': 'VERB',
+    'gesprochen': 'VERB',
+    'geschrieben': 'VERB',
+    'gelesen': 'VERB',
+    'gehört': 'VERB',
+    'gedacht': 'VERB',
+    'gewusst': 'VERB',
+    'geglaubt': 'VERB',
+    'gezeigt': 'VERB',
+    'gefragt': 'VERB',
+    'geantwortet': 'VERB',
+    'gesagt': 'VERB',
+    'gefunden': 'VERB',
+    'gestanden': 'VERB',
+    'gesessen': 'VERB',
+    'gefallen': 'VERB',
+    'getragen': 'VERB',
+    'gehalten': 'VERB',
+    'gefahren': 'VERB',
+    'geflogen': 'VERB',
+    'gerannt': 'VERB',
+    'gelaufen': 'VERB',
+    'geblieben': 'VERB',
+    'erschienen': 'VERB',
+    'verstanden': 'VERB',
+    'begonnen': 'VERB',
+    'angefangen': 'VERB',
+    'beendet': 'VERB',
+    'geschlossen': 'VERB',
+    'geöffnet': 'VERB',
+    'gebracht': 'VERB',
+    'gesetzt': 'VERB',
+    'gelegt': 'VERB',
+    'gestellt': 'VERB',
+    'gehängt': 'VERB',
+    'gekocht': 'VERB',
+    'gegessen': 'VERB',
+    'getrunken': 'VERB',
+    'gekauft': 'VERB',
+    'verkauft': 'VERB',
+    'gearbeitet': 'VERB',
+    'gespielt': 'VERB',
+    'getanzt': 'VERB',
+    'gesungen': 'VERB',
+    'gelacht': 'VERB',
+    'geweint': 'VERB',
+    'geliebt': 'VERB',
+    'gehasst': 'VERB',
+    'gebraucht': 'VERB',
+    'erinnert': 'VERB',
+    'gefreut': 'VERB',
+    'gefürchtet': 'VERB',
+    'gehofft': 'VERB',
+    'gewünscht': 'VERB',
+    'gerufen': 'VERB',
+    'angerufen': 'VERB',
+    'aufgewacht': 'VERB',
+    'geschlafen': 'VERB',
+    'erwacht': 'VERB',
+    'gewachsen': 'VERB',
+    'gestorben': 'VERB',
+    'geboren': 'VERB',
+    'bewegt': 'VERB',
+    'geändert': 'VERB',
+    'verbessert': 'VERB',
+    'zerstört': 'VERB',
+    'gebaut': 'VERB',
+    'gezeichnet': 'VERB',
+    'gemalt': 'VERB',
+    'eingeladen': 'VERB',
+    'genannt': 'VERB',
+
+    // German contractions (Kontraktionen) - NEW
+    'zum': 'PREP',      // zu + dem
+    'zur': 'PREP',      // zu + der
+    'am': 'PREP',       // an + dem
+    'im': 'PREP',       // in + dem
+    'beim': 'PREP',     // bei + dem
+    'vom': 'PREP',      // von + dem
+    'ans': 'PREP',      // an + das
+    'ins': 'PREP',      // in + das
+    'aufs': 'PREP',     // auf + das
+    'ums': 'PREP',      // um + das
+    'übers': 'PREP',    // über + das
   };
 
   constructor(dbPath?: string) {
@@ -282,7 +484,18 @@ export class POSTagger {
       };
     }
 
-    // 方法5: 检查是否是已知动词变位
+    // 方法5: 检查是否是过去分词
+    const isPastParticiple = this.checkPastParticiple(lowerWord, context);
+    if (isPastParticiple) {
+      return {
+        word,
+        pos: 'VERB',
+        confidence: 0.85,
+        method: 'rule'
+      };
+    }
+
+    // 方法6: 检查是否是已知动词变位
     const verbForm = this.checkVerbForm(lowerWord);
     if (verbForm) {
       return {
@@ -293,7 +506,7 @@ export class POSTagger {
       };
     }
 
-    // 方法6: 大写启发式（德语名词大写）
+    // 方法7: 大写启发式（德语名词大写）
     if (word[0] === word[0].toUpperCase() && word[0] !== word[0].toLowerCase()) {
       return {
         word,
@@ -310,6 +523,78 @@ export class POSTagger {
       confidence: 0.3,
       method: 'heuristic'
     };
+  }
+
+  /**
+   * 检查是否是过去分词 - CRITICAL for passive voice detection
+   * Past participles can have patterns:
+   * - ge-prefix: genannt, gegangen, gemacht, eingeladen
+   * - no prefix for separable verbs: stattgefunden
+   * - -t ending: gebracht, gemacht, gefragt
+   * - -en ending: gegeben, geworben, geschrieben, gesprochen
+   * - -en from strong verbs: aufgestanden, verbunden
+   */
+  private checkPastParticiple(word: string, context?: {previous?: string, next?: string}): boolean {
+    // Context clue: after "werden" (passive) or "sein" (perfect tense)
+    if (context?.previous === 'worden' || context?.previous === 'sein' || 
+        context?.previous === 'ist' || context?.previous === 'war' ||
+        context?.previous === 'wurde' || context?.previous === 'würde') {
+      // Check for typical past participle endings
+      if (word.endsWith('t') || word.endsWith('en') || word.endsWith('et')) {
+        return true;
+      }
+    }
+    
+    // Pattern 1: ge...t (common regular past participles: gemacht, gefragt, gehabt, gesagt)
+    if (word.startsWith('ge') && word.endsWith('t') && word.length > 5) {
+      return true;
+    }
+    
+    // Pattern 2: ge...en (common irregular past participles: gegeben, geworben, geschrieben, gesprochen, gesehen)
+    if (word.startsWith('ge') && word.endsWith('en') && word.length > 5) {
+      return true;
+    }
+    
+    // Pattern 3: ge...et (past participles with -et: geregnet, geöffnet)
+    if (word.startsWith('ge') && word.endsWith('et') && word.length > 5) {
+      return true;
+    }
+    
+    // Pattern 4: Common participles without ge- prefix (separable verbs, prefixed verbs)
+    // Examples: eingeladen, angerufen, aufgestanden, verbunden, zerstört, verkauft
+    const commonPrefixedParticiples = [
+      'eingeladen', 'einzureichen', 'angerufen', 'aufgestanden', 'aufgewacht',
+      'verbunden', 'verbessert', 'verkauft', 'verbesser', 'verstanden',
+      'zerstört', 'zurückgegeben', 'übergeben', 'überzeugt',
+      'beendet', 'bedacht', 'betrauert', 'besprochen', 'besucht', 'betrogen',
+      'entladen', 'entflohen', 'entgangen', 'entlassen', 'entstand'
+    ];
+    if (commonPrefixedParticiples.includes(word)) {
+      return true;
+    }
+    
+    // Pattern 5: Ending in -t or -en after removing common prefixes (entging, erfand, etc.)
+    const pastParticipleEndingPatterns = ['t', 'en', 'et', 'te'];
+    for (const prefix of ['be', 'ent', 'er', 'über', 'um', 'unter', 'ver', 'zer', 'zu']) {
+      if (word.startsWith(prefix) && word.length > prefix.length + 3) {
+        const suffix = word.substring(prefix.length);
+        if (pastParticipleEndingPatterns.some(p => suffix.endsWith(p))) {
+          // Weak heuristic - check if root is known verb
+          try {
+            const root = word.substring(prefix.length);
+            const stmt = this.db.prepare('SELECT pos FROM vocabulary WHERE LOWER(word) LIKE ? AND pos = "VERB"');
+            const result = stmt.get(`%${root.substring(0, root.length - 3)}%`) as {pos: string} | undefined;
+            if (result) {
+              return true;
+            }
+          } catch (error) {
+            // Ignore database errors
+          }
+        }
+      }
+    }
+    
+    return false;
   }
 
   /**
