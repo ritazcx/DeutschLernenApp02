@@ -9,8 +9,10 @@ import path from 'path';
 export interface SpacyLemmatizerResult {
   word: string;
   lemma: string;
-  pos?: string;
-  tag?: string;
+  pos?: string;          // Universal POS (NOUN, VERB, ADJ, ADP, etc.)
+  tag?: string;          // Language-specific tag (NN, VV, ADJ, etc.)
+  dep?: string;          // Dependency relation
+  morph?: Record<string, string>;  // Morphological features
   confidence: number;
   method: string;
   error?: string;

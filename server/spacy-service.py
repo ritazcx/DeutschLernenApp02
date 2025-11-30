@@ -24,17 +24,29 @@ except OSError:
 
 def lemmatize_word(word: str) -> dict:
     """
-    Lemmatize a single word using spaCy
+    Lemmatize and tag a single word using spaCy
+    Returns: lemma, POS tag, dependency tag, and detailed morphology
     """
     try:
         doc = nlp(word)
         if len(doc) > 0:
             token = doc[0]
+            
+            # Convert morphological features to dictionary
+            morph_dict = {}
+            if token.morph:
+                for feature in str(token.morph).split('|'):
+                    if '=' in feature:
+                        key, val = feature.split('=', 1)
+                        morph_dict[key] = val
+            
             return {
                 "word": word,
                 "lemma": token.lemma_,
-                "pos": token.pos_,
-                "tag": token.tag_,
+                "pos": token.pos_,          # Universal POS (NOUN, VERB, ADJ, etc.)
+                "tag": token.tag_,          # Language-specific tag (NN, VV, ADJ, etc.)
+                "dep": token.dep_,          # Dependency relation
+                "morph": morph_dict,  # Morphological features (case, tense, etc.)
                 "confidence": 0.95,
                 "method": "spacy"
             }
@@ -65,6 +77,9 @@ def analyze_sentence(text: str) -> dict:
         tokens = []
         
         for token in doc:
+            # Convert vector_norm to float to avoid JSON serialization issues
+            vector_norm = float(token.vector_norm) if token.has_vector else None
+            
             tokens.append({
                 "text": token.text,
                 "lemma": token.lemma_,
@@ -73,7 +88,7 @@ def analyze_sentence(text: str) -> dict:
                 "dep": token.dep_,
                 "head": token.head.text,
                 "has_vector": token.has_vector,
-                "vector_norm": token.vector_norm if token.has_vector else None
+                "vector_norm": vector_norm
             })
         
         # Extract named entities

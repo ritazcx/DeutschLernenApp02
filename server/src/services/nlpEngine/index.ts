@@ -29,6 +29,69 @@ export class NLPEngine {
    * 解析单个句子
    */
   async parseSentence(text: string): Promise<ParsedSentence> {
+    // Use spaCy's sentence-level analysis for better context-aware lemmatization
+    const spacyResult = await this.lemmatizer['spacyService'].analyzeSentence(text);
+    
+    if (!spacyResult.success || !spacyResult.tokens) {
+      // Fallback to word-by-word analysis if sentence analysis fails
+      return this.parseSentenceFallback(text);
+    }
+
+    const tokens: Token[] = [];
+    let charPosition = 0;
+
+    // Process each token from spaCy's sentence analysis
+    for (let i = 0; i < spacyResult.tokens.length; i++) {
+      const spacyToken = spacyResult.tokens[i];
+      const word = spacyToken.text;
+      
+      // Clean up word (remove punctuation)
+      const cleanWord = word.replace(/[.,!?;:—\-()""「」]/g, '');
+      if (!cleanWord) continue;  // Skip pure punctuation
+
+      // Use spaCy's lemma directly (from sentence context)
+      const lemma = spacyToken.lemma;
+      
+      // Map spaCy's POS to our format
+      const normalizedPOS = this.normalizeSpacyPOS(spacyToken.pos);
+      
+      // 形态学分析
+      let morph = this.analyzeMorphology(cleanWord, lemma, normalizedPOS);
+
+      tokens.push({
+        id: tokens.length,
+        word: cleanWord,
+        lemma: lemma,
+        pos: normalizedPOS,
+        morph,
+        position: {start: charPosition, end: charPosition + cleanWord.length}
+      });
+
+      charPosition += cleanWord.length + 1;  // +1 for space
+    }
+
+    // 步骤3: 检查句子特征
+    const hasPassive = this.checkPassive(tokens);
+    const hasSubjunctive = this.checkSubjunctive(tokens);
+    const hasSubordinateClause = this.checkSubordinateClause(tokens);
+
+    // 步骤4: 估计难度级别
+    const estimatedLevel = this.estimateLevel(tokens, hasPassive, hasSubjunctive, hasSubordinateClause);
+
+    return {
+      text,
+      tokens,
+      hasPassive,
+      hasSubjunctive,
+      hasSubordinateClause,
+      estimatedLevel
+    };
+  }
+
+  /**
+   * Fallback word-by-word parsing if sentence analysis fails
+   */
+  private async parseSentenceFallback(text: string): Promise<ParsedSentence> {
     // 步骤1: 分词（简单空格分割，之后可以改进）
     const words = text.trim().split(/\s+/);
     const tokens: Token[] = [];
@@ -50,9 +113,9 @@ export class NLPEngine {
         next: i < words.length - 1 ? words[i + 1].toLowerCase() : undefined
       };
       // 尝试用词根标注，如果词根与原词不同
-      let posResult = this.posTagger.tag(cleanWord, context);
+      let posResult = await this.posTagger.tag(cleanWord, context);
       if (lemmaResult.lemma !== cleanWord.toLowerCase()) {
-        const lemmaPos = this.posTagger.tag(lemmaResult.lemma, context);
+        const lemmaPos = await this.posTagger.tag(lemmaResult.lemma, context);
         // 如果词根有更高的置信度，使用词根的POS
         if (lemmaPos.confidence > posResult.confidence) {
           posResult = lemmaPos;
@@ -90,6 +153,30 @@ export class NLPEngine {
       hasSubordinateClause,
       estimatedLevel
     };
+  }
+
+  /**
+   * Normalize spaCy's universal POS tags to our format
+   */
+  private normalizeSpacyPOS(spacyPOS: string): string {
+    const mapping: Record<string, string> = {
+      'NOUN': 'NOUN',
+      'VERB': 'VERB',
+      'ADJ': 'ADJ',
+      'ADP': 'PREP',
+      'ADV': 'ADV',
+      'DET': 'ART',
+      'PRON': 'PRON',
+      'CCONJ': 'CONJ',
+      'SCONJ': 'CONJ',
+      'PROPN': 'NOUN',
+      'NUM': 'NUM',
+      'INTJ': 'INTJ',
+      'PUNCT': 'PUNCT',
+      'SYM': 'SYM',
+      'X': 'X'
+    };
+    return mapping[spacyPOS] || 'NOUN';
   }
 
   /**
