@@ -129,7 +129,7 @@ export class POSTagger {
   };
 
   constructor(dbPath?: string) {
-    const defaultPath = dbPath || path.resolve(__dirname, '../../data/dictionary.db');
+    const defaultPath = dbPath || path.resolve(__dirname, '../../../data/dictionary.db');
     this.db = new Database(defaultPath);
     this.lemmatizer = new GermanLemmatizer(defaultPath);
   }

@@ -17,7 +17,8 @@ export class NLPEngine {
   private morphAnalyzer: MorphAnalyzer;
 
   constructor(dbPath?: string) {
-    const defaultPath = dbPath || path.resolve(__dirname, '../../data/dictionary.db');
+    // Use provided path or compute from __dirname (which is dist/services/nlpEngine in production)
+    const defaultPath = dbPath || path.resolve(__dirname, '../../../data/dictionary.db');
     this.db = new Database(defaultPath);
     this.lemmatizer = new GermanLemmatizer(dbPath);
     this.posTagger = new POSTagger(dbPath);

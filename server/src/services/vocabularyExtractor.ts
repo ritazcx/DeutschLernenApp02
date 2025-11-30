@@ -12,7 +12,7 @@ export class VocabularyExtractor {
   private nlpEngine: NLPEngine;
 
   constructor(dbPath?: string) {
-    const defaultPath = dbPath || path.resolve(__dirname, '../data/dictionary.db');
+    const defaultPath = dbPath || path.resolve(__dirname, '../../data/dictionary.db');
     this.db = new Database(defaultPath);
     this.nlpEngine = new NLPEngine(defaultPath);
   }

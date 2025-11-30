@@ -24,7 +24,7 @@ export class MorphAnalyzer {
   private subjunctiveMarkers = ['ä', 'ö', 'ü'];
 
   constructor(dbPath?: string) {
-    const defaultPath = dbPath || path.resolve(__dirname, '../../data/dictionary.db');
+    const defaultPath = dbPath || path.resolve(__dirname, '../../../data/dictionary.db');
     this.db = new Database(defaultPath);
   }
 
