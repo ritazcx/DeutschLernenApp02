@@ -9,6 +9,8 @@ import { GermanLemmatizer } from './lemmatizer';
 import { POSTagger } from './posTagger';
 import { MorphAnalyzer } from './morphAnalyzer';
 import { Token, ParsedSentence, MorphFeature } from './types';
+import { grammarDetectionEngine, GrammarAnalysisResult } from '../grammarEngine/detectionEngine';
+import { SentenceData } from '../grammarEngine/detectors/baseDetector';
 
 export class NLPEngine {
   private db: Database.Database;
@@ -89,6 +91,102 @@ export class NLPEngine {
   }
 
   /**
+   * Analyze grammar points in a sentence using grammar detectors
+   */
+  async analyzeGrammar(text: string): Promise<GrammarAnalysisResult> {
+    // First, parse the sentence to get tokens
+    const parsed = await this.parseSentence(text);
+    
+    // Convert ParsedSentence tokens to SentenceData tokens for grammar engine
+    // Filter out "n/a" values from morph object
+    const cleanMorph = (morph: Record<string, any>): Record<string, string> => {
+      const cleaned: Record<string, string> = {};
+      for (const [key, value] of Object.entries(morph)) {
+        if (value && value !== 'n/a') {
+          // Convert key to spaCy format (e.g., case -> Case, person -> Person)
+          const spacyKey = key.charAt(0).toUpperCase() + key.slice(1);
+          // Convert value to spaCy abbreviations (e.g., nominative -> Nom)
+          const abbreviatedValue = this.abbreviateMorphValue(key, value as string);
+          if (abbreviatedValue) {
+            cleaned[spacyKey] = abbreviatedValue;
+          }
+        }
+      }
+      return cleaned;
+    };
+
+    const sentenceData: SentenceData = {
+      text,
+      tokens: parsed.tokens.map((token) => ({
+        text: token.word,
+        lemma: token.lemma,
+        pos: token.pos,
+        tag: token.pos, // Use POS as tag for now
+        dep: 'ROOT', // TODO: Add dependency parsing
+        morph: cleanMorph(token.morph),
+        index: token.id,
+        characterStart: token.position.start,
+        characterEnd: token.position.end,
+      })),
+    };
+
+    // Analyze grammar with detection engine
+    return grammarDetectionEngine.analyze(sentenceData);
+  }
+
+  /**
+   * Abbreviate morphological values to spaCy format
+   */
+  private abbreviateMorphValue(key: string, value: string): string | null {
+    const abbreviations: Record<string, Record<string, string>> = {
+      case: {
+        nominative: 'Nom',
+        accusative: 'Acc',
+        dative: 'Dat',
+        genitive: 'Gen',
+      },
+      tense: {
+        present: 'Pres',
+        past: 'Past',
+        future: 'Fut',
+      },
+      mood: {
+        indicative: 'Ind',
+        subjunctive: 'Subj',
+        conditional: 'Cond',
+        imperative: 'Imp',
+      },
+      gender: {
+        masculine: 'Masc',
+        feminine: 'Fem',
+        neuter: 'Neut',
+      },
+      number: {
+        singular: 'Sing',
+        plural: 'Plur',
+      },
+      person: {
+        '1sg': '1',
+        '2sg': '2',
+        '3sg': '3',
+        '1pl': '1',
+        '2pl': '2',
+        '3pl': '3',
+      },
+      voice: {
+        active: 'Act',
+        passive: 'Pass',
+      },
+    };
+    const table = abbreviations[key];
+    if (!table) return null;
+    const normalized = value.toLowerCase();
+    return table[normalized] || null;
+  };
+
+  
+
+  /**
    * Fallback word-by-word parsing if sentence analysis fails
    */
   private async parseSentenceFallback(text: string): Promise<ParsedSentence> {
@@ -162,6 +260,7 @@ export class NLPEngine {
     const mapping: Record<string, string> = {
       'NOUN': 'NOUN',
       'VERB': 'VERB',
+      'AUX': 'VERB',  // Auxiliary verbs (sein, haben, werden) -> VERB
       'ADJ': 'ADJ',
       'ADP': 'PREP',
       'ADV': 'ADV',
@@ -258,27 +357,54 @@ export class NLPEngine {
    * 检查是否是被动语态
    */
   private checkPassive(tokens: Token[]): boolean {
-    // 被动语态: 有 "werden/sein" + Partizip II
-    let hasWerden = tokens.some(t => ['werden', 'sein'].includes(t.lemma));
-    let hasParticiple = tokens.some(t => t.word.startsWith('ge') && t.word.endsWith('t'));
-    return hasWerden && hasParticiple;
+    // REPLACED: Using proper passive voice detection
+    // Passive voice: werden/sein (AUX) + past participle (VERB)
+    // Check morphology for VerbForm=Part (past participle)
+    for (let i = 0; i < tokens.length - 1; i++) {
+      const token = tokens[i];
+      const nextToken = tokens[i + 1];
+      
+      if ((token.lemma === 'werden' || token.lemma === 'sein') && 
+          nextToken.pos === 'VERB') {
+        // Check if next token looks like a past participle (usually starts with 'ge' in German)
+        if (nextToken.word.startsWith('ge') || nextToken.lemma.startsWith('ge')) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   /**
-   * 检查是否有虚拟语气
+   * Check if sentence contains subjunctive mood
    */
   private checkSubjunctive(tokens: Token[]): boolean {
-    // 虚拟语气通常有 ö, ü, ä 变音
-    return tokens.some(t => /[öüä]/.test(t.word));
+    // REPLACED: Using proper subjunctive detection via morphology
+    // Konjunktiv II verbs have Mood=subjunctive or specific umlaut forms
+    const umlautVerbs = ['würde', 'könnte', 'möchte', 'sollte', 'hätte', 'wäre', 'müsste', 'dürfte'];
+    
+    return tokens.some(t => {
+      // Check for explicit subjunctive mood marker
+      if (t.morph?.['mood'] === 'subjunctive') return true;
+      // Check for common umlaut forms
+      if (umlautVerbs.includes(t.lemma.toLowerCase())) return true;
+      return false;
+    });
   }
 
   /**
-   * 检查是否有从句
+   * Check if sentence contains subordinate clause
    */
   private checkSubordinateClause(tokens: Token[]): boolean {
-    // 从句标记: wenn, weil, dass, ob, etc.
-    const clauseMarkers = ['wenn', 'weil', 'dass', 'ob', 'während', 'bevor', 'nachdem', 'obwohl'];
-    return tokens.some(t => clauseMarkers.includes(t.lemma));
+    // REPLACED: Using proper subordinate clause detection
+    // Subordinate conjunctions trigger subordinate clauses
+    const subordinateConjunctions = new Set([
+      'dass', 'weil', 'wenn', 'obwohl', 'während', 'bis', 'nachdem', 'bevor',
+      'seit', 'sobald', 'sooft', 'sofern', 'indem', 'falls', 'insofern',
+      'darin', 'dazu', 'dessen', 'ob', 'damit'
+    ]);
+    
+    return tokens.some(t => subordinateConjunctions.has(t.lemma.toLowerCase()));
   }
 
   /**
