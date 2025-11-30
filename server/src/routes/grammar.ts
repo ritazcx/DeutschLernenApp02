@@ -1,11 +1,18 @@
 import express from 'express';
 import axios from 'axios';
 import { findVocabularyInSentence } from '../services/vocabularyService';
+import { NLPEngine } from '../services/nlpEngine';
+import { GrammarRulesEngine } from '../services/grammarEngine';
+import { CEFRLevel } from '../services/grammarEngine/types';
 
 const router = express.Router();
 
 const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
 const API_KEY = process.env.DEEPSEEK_API_KEY;
+
+// Initialize NLP and Grammar engines
+const nlpEngine = new NLPEngine();
+const grammarEngine = new GrammarRulesEngine();
 
 interface GrammarAnalysis {
   sentence: string;
@@ -353,6 +360,141 @@ Analyze ALL sentences. Return ONLY valid JSON.`;
     const detail = err?.code === 'ECONNABORTED' ? 'timeout' : String(err?.message || err);
     return res.status(500).json({ error: 'analysis_failed', detail });
   }
+});
+
+/**
+ * POST /api/grammar/analyze-nlp
+ * Analyze text for grammar patterns using rule-based NLP detection (new approach)
+ */
+router.post('/api/grammar/analyze-nlp', async (req, res) => {
+  try {
+    const { text, cefrLevel = 'B1' } = req.body;
+
+    if (!text || typeof text !== 'string') {
+      return res.status(400).json({ error: 'Text is required and must be a string' });
+    }
+
+    if (!['A1', 'A2', 'B1', 'B2', 'C1', 'C2'].includes(cefrLevel)) {
+      return res.status(400).json({ error: 'Invalid CEFR level' });
+    }
+
+    // Split into sentences
+    const sentences = text.split(/[.!?]+/).filter(s => s.trim());
+    const results = [];
+
+    for (const sentence of sentences) {
+      const trimmed = sentence.trim();
+      if (!trimmed) continue;
+
+      try {
+        // Parse with NLP engine
+        const parsed = await nlpEngine.parseSentence(trimmed);
+
+        // Analyze with grammar rules
+        const analysis = grammarEngine.analyze(parsed, cefrLevel as CEFRLevel);
+
+        results.push({
+          sentence: trimmed,
+          analysis,
+        });
+      } catch (error) {
+        console.error('Error parsing sentence:', trimmed, error);
+        results.push({
+          sentence: trimmed,
+          error: 'Failed to analyze sentence',
+        });
+      }
+    }
+
+    res.json({
+      success: true,
+      text,
+      cefrLevel,
+      sentences: results,
+      summary: {
+        totalSentences: results.length,
+        totalGrammarPoints: results.reduce((sum, r) => sum + (r.analysis?.grammarPoints?.length || 0), 0),
+        errorSentences: results.filter(r => r.error).length,
+      },
+    });
+  } catch (error) {
+    console.error('Grammar NLP analysis error:', error);
+    res.status(500).json({ error: 'Grammar analysis failed' });
+  }
+});
+
+/**
+ * POST /api/grammar/analyze-sentence-nlp
+ * Analyze a single sentence for grammar patterns using NLP
+ */
+router.post('/api/grammar/analyze-sentence-nlp', async (req, res) => {
+  try {
+    const { sentence, cefrLevel = 'B1' } = req.body;
+
+    if (!sentence || typeof sentence !== 'string') {
+      return res.status(400).json({ error: 'Sentence is required and must be a string' });
+    }
+
+    // Parse with NLP engine
+    const parsed = await nlpEngine.parseSentence(sentence);
+
+    // Analyze with grammar rules
+    const analysis = grammarEngine.analyze(parsed, cefrLevel as CEFRLevel);
+
+    res.json({
+      success: true,
+      sentence,
+      cefrLevel,
+      analysis,
+    });
+  } catch (error) {
+    console.error('Sentence NLP analysis error:', error);
+    res.status(500).json({ error: 'Sentence analysis failed' });
+  }
+});
+
+/**
+ * GET /api/grammar/categories
+ * Get available grammar categories
+ */
+router.get('/categories', (req, res) => {
+  const categories = [
+    'tense',
+    'case',
+    'mood',
+    'voice',
+    'verb_form',
+    'preposition',
+    'conjunction',
+    'agreement',
+    'word_order',
+    'article',
+    'pronoun',
+    'adjective',
+    'noun',
+    'separable_verb',
+    'modal_verb',
+    'collocation',
+    'special_construction',
+  ];
+
+  res.json({
+    categories,
+    count: categories.length,
+  });
+});
+
+/**
+ * GET /api/grammar/levels
+ * Get available CEFR levels
+ */
+router.get('/levels', (req, res) => {
+  const levels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+
+  res.json({
+    levels,
+    count: levels.length,
+  });
 });
 
 export default router;
