@@ -7,18 +7,21 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { GermanLemmatizer } from './lemmatizer';
 import { POSTagger } from './posTagger';
+import { MorphAnalyzer } from './morphAnalyzer';
 import { Token, ParsedSentence, MorphFeature } from './types';
 
 export class NLPEngine {
   private db: Database.Database;
   private lemmatizer: GermanLemmatizer;
   private posTagger: POSTagger;
+  private morphAnalyzer: MorphAnalyzer;
 
   constructor(dbPath?: string) {
     const defaultPath = dbPath || path.resolve(__dirname, '../../data/dictionary.db');
     this.db = new Database(defaultPath);
-    this.lemmatizer = new GermanLemmatizer(defaultPath);
-    this.posTagger = new POSTagger(defaultPath);
+    this.lemmatizer = new GermanLemmatizer(dbPath);
+    this.posTagger = new POSTagger(dbPath);
+    this.morphAnalyzer = new MorphAnalyzer(dbPath);
   }
 
   /**
@@ -40,11 +43,15 @@ export class NLPEngine {
       // 词形还原
       const lemmaResult = this.lemmatizer.lemmatize(cleanWord);
       
-      // 词性标注
-      const posResult = this.posTagger.tag(cleanWord);
+      // 词性标注（带上下文）
+      const context = {
+        previous: i > 0 ? words[i - 1].toLowerCase() : undefined,
+        next: i < words.length - 1 ? words[i + 1].toLowerCase() : undefined
+      };
+      const posResult = this.posTagger.tag(cleanWord, context);
       
-      // 形态学分析（这里简化了，完整版在morphAnalyzer中）
-      const morph = this.analyzeMorphology(cleanWord, lemmaResult.lemma, posResult.pos);
+      // 形态学分析
+      let morph = this.analyzeMorphology(cleanWord, lemmaResult.lemma, posResult.pos);
 
       tokens.push({
         id: i,
@@ -89,41 +96,41 @@ export class NLPEngine {
    * 形态学分析（简化版）
    */
   private analyzeMorphology(word: string, lemma: string, pos: string): MorphFeature {
-    const morph: MorphFeature = {
-      case: 'n/a',
-      number: 'n/a',
-      gender: 'n/a',
-      tense: 'n/a',
-      mood: 'n/a',
-      person: 'n/a',
-      voice: 'n/a'
-    };
+    const morph: MorphFeature = {};
 
-    // 如果是名词，从词汇库查询性别和词性
-    if (pos === 'NOUN') {
-      const nounData = this.getNounData(lemma);
-      if (nounData) {
-        morph.gender = nounData.gender as any;
+    try {
+      // 根据词性调用相应的分析方法
+      switch (pos) {
+        case 'NOUN':
+          const nounAnalysis = this.morphAnalyzer.analyzeNoun(word, lemma);
+          Object.assign(morph, nounAnalysis);
+          break;
+
+        case 'VERB':
+          const verbAnalysis = this.morphAnalyzer.analyzeVerb(word, lemma);
+          Object.assign(morph, verbAnalysis);
+          break;
+
+        case 'ADJ':
+        case 'ADJD':
+        case 'ADJA':
+          const adjAnalysis = this.morphAnalyzer.analyzeAdjective(word, lemma);
+          Object.assign(morph, adjAnalysis);
+          break;
+
+        case 'PRON':
+          const pronAnalysis = this.morphAnalyzer.analyzePronoun(word);
+          Object.assign(morph, pronAnalysis);
+          break;
+
+        // 其他词性可能没有复杂的形态特征
+        default:
+          // 不需要分析
+          break;
       }
-      morph.number = word.endsWith('e') || word.endsWith('er') ? 'plural' : 'singular';
-    }
-
-    // 如果是代词，尝试识别格和人称
-    if (pos === 'PRON') {
-      const personStr = this.detectPronounPerson(word);
-      const caseStr = this.detectCase(word, pos);
-      morph.person = (personStr as any);
-      morph.case = (caseStr as any);
-    }
-
-    // 如果是动词，识别时态和语态
-    if (pos === 'VERB') {
-      const tenseStr = this.detectTense(word, lemma);
-      const moodStr = this.detectMood(word);
-      morph.tense = (tenseStr as any);
-      morph.mood = (moodStr as any);
-      // 被动语态检查在句子级别
-      morph.voice = 'active';
+    } catch (error) {
+      // 如果分析失败，继续使用空的MorphFeature
+      console.warn(`Warning: Failed to analyze morphology for "${word}":`, error);
     }
 
     return morph;
@@ -306,4 +313,4 @@ export class NLPEngine {
 }
 
 // 导出供外部使用
-export { Token, ParsedSentence } from './types';
+export type { Token, ParsedSentence } from './types';
