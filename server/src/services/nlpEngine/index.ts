@@ -28,7 +28,7 @@ export class NLPEngine {
   /**
    * 解析单个句子
    */
-  parseSentence(text: string): ParsedSentence {
+  async parseSentence(text: string): Promise<ParsedSentence> {
     // 步骤1: 分词（简单空格分割，之后可以改进）
     const words = text.trim().split(/\s+/);
     const tokens: Token[] = [];
@@ -42,14 +42,22 @@ export class NLPEngine {
       const cleanWord = word.replace(/[.,!?;:—\-()""「」]/g, '');
       
       // 词形还原
-      const lemmaResult = this.lemmatizer.lemmatize(cleanWord);
+      const lemmaResult = await this.lemmatizer.lemmatize(cleanWord);
       
       // 词性标注（带上下文）
       const context = {
         previous: i > 0 ? words[i - 1].toLowerCase() : undefined,
         next: i < words.length - 1 ? words[i + 1].toLowerCase() : undefined
       };
-      const posResult = this.posTagger.tag(cleanWord, context);
+      // 尝试用词根标注，如果词根与原词不同
+      let posResult = this.posTagger.tag(cleanWord, context);
+      if (lemmaResult.lemma !== cleanWord.toLowerCase()) {
+        const lemmaPos = this.posTagger.tag(lemmaResult.lemma, context);
+        // 如果词根有更高的置信度，使用词根的POS
+        if (lemmaPos.confidence > posResult.confidence) {
+          posResult = lemmaPos;
+        }
+      }
       
       // 形态学分析
       let morph = this.analyzeMorphology(cleanWord, lemmaResult.lemma, posResult.pos);
@@ -87,10 +95,10 @@ export class NLPEngine {
   /**
    * 解析多个句子
    */
-  parseText(text: string): ParsedSentence[] {
+  async parseText(text: string): Promise<ParsedSentence[]> {
     // 简单的句子分割（可以改进）
     const sentences = text.split(/[.!?]+/).filter(s => s.trim());
-    return sentences.map(s => this.parseSentence(s.trim()));
+    return Promise.all(sentences.map(s => this.parseSentence(s.trim())));
   }
 
   /**

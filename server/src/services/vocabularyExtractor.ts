@@ -23,9 +23,9 @@ export class VocabularyExtractor {
    * @param excludeLevels 要排除的难度等级 (如: ['A1', 'A2'])
    * @returns 去重的生词本
    */
-  extract(text: string, excludeLevels: string[] = []): ExtractedVocabulary[] {
+  async extract(text: string, excludeLevels: string[] = []): Promise<ExtractedVocabulary[]> {
     // 解析文本
-    const parsedSentences = this.nlpEngine.parseText(text);
+    const parsedSentences = await this.nlpEngine.parseText(text);
 
     // 收集所有词汇
     const vocabularyMap = new Map<string, {
@@ -113,17 +113,17 @@ export class VocabularyExtractor {
   /**
    * 获取某个难度等级的生词本
    */
-  extractByLevel(text: string, level: string): ExtractedVocabulary[] {
-    const all = this.extract(text);
-    return all.filter(v => v.level === level);
+  async extractByLevel(text: string, level: string): Promise<ExtractedVocabulary[]> {
+    const all = await this.extract(text);
+    return all.filter((v: ExtractedVocabulary) => v.level === level);
   }
 
   /**
    * 获取某个词性的生词本
    */
-  extractByPOS(text: string, pos: string): ExtractedVocabulary[] {
-    const all = this.extract(text);
-    return all.filter(v => v.pos === pos);
+  async extractByPOS(text: string, pos: string): Promise<ExtractedVocabulary[]> {
+    const all = await this.extract(text);
+    return all.filter((v: ExtractedVocabulary) => v.pos === pos);
   }
 
   /**

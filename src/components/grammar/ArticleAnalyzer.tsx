@@ -1,11 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { SentenceAnalysis, GrammarPoint, GrammarType, CEFRLevel, ALL_GRAMMAR_TYPES, GRAMMAR_CATEGORIES } from '../../types/grammar';
-import { analyzeArticle } from '../../services/grammarService';
+import { analyzeArticle, analyzeArticleWithNLP } from '../../services/grammarService';
 import { saveAnalysis } from '../../services/analysisService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 import SavedAnalyses from '../analysis/SavedAnalyses';
 import GrammarFilterPanel from './GrammarFilterPanel';
+
+// Helper function to convert NLP response to SentenceAnalysis format
+function convertNLPResponseToSentenceAnalysis(nlpSentenceAnalysis: any): SentenceAnalysis {
+  const grammarPoints: GrammarPoint[] = (nlpSentenceAnalysis.grammarPoints || []).map((point: any) => ({
+    type: point.category as GrammarType,
+    text: point.text,
+    explanation: point.explanation,
+    position: { start: point.startPos, end: point.endPos },
+  }));
+
+  return {
+    sentence: nlpSentenceAnalysis.sentence?.text || '',
+    translation: '', // NLP doesn't provide translation
+    grammarPoints,
+    vocabularyPoints: [],
+  };
+}
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -18,6 +35,7 @@ const ArticleAnalyzer: React.FC = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showSavedModal, setShowSavedModal] = useState(false);
+  const [useNLPAnalyzer, setUseNLPAnalyzer] = useState(false);
   
   // Grammar filter state - load from localStorage or default to all selected
   const [selectedGrammarTypes, setSelectedGrammarTypes] = useState<GrammarType[]>(() => {
@@ -84,7 +102,20 @@ const ArticleAnalyzer: React.FC = () => {
     setShowSuccessMessage(false);
 
     try {
-      const result = await analyzeArticle(inputText, selectedGrammarTypes, selectedVocabularyLevels);
+      let result;
+      
+      if (useNLPAnalyzer) {
+        // Use NLP-based analysis
+        const nlpResult = await analyzeArticleWithNLP(inputText, 'B1');
+        // Convert NLP response to SentenceAnalysis format
+        result = {
+          sentences: nlpResult.sentences.map((s: any) => convertNLPResponseToSentenceAnalysis(s.analysis)),
+        };
+      } else {
+        // Use traditional DeepSeek analysis
+        result = await analyzeArticle(inputText, selectedGrammarTypes, selectedVocabularyLevels);
+      }
+
       setSentences(result.sentences);
       
       // Save to localStorage
@@ -129,12 +160,39 @@ const ArticleAnalyzer: React.FC = () => {
     <div className="bg-slate-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">
-            📝 Article Grammar Analyzer
-          </h1>
-          <p className="text-slate-600">
-            Paste a German article to analyze its grammar sentence by sentence (B2 Level)
-          </p>
+          <div className="flex items-center justify-between mb-4">
+            <div>
+              <h1 className="text-3xl font-bold text-slate-900 mb-2">
+                📝 Article Grammar Analyzer
+              </h1>
+              <p className="text-slate-600">
+                Paste a German article to analyze its grammar sentence by sentence (B2 Level)
+              </p>
+            </div>
+            {/* NLP vs DeepSeek Toggle */}
+            <div className="flex gap-2">
+              <button
+                onClick={() => setUseNLPAnalyzer(false)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  !useNLPAnalyzer
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                DeepSeek
+              </button>
+              <button
+                onClick={() => setUseNLPAnalyzer(true)}
+                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                  useNLPAnalyzer
+                    ? 'bg-slate-900 text-white'
+                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                }`}
+              >
+                NLP Engine
+              </button>
+            </div>
+          </div>
         </div>
 
         {sentences.length === 0 ? (

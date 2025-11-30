@@ -17,7 +17,7 @@ const vocabExtractor = new VocabularyExtractor();
  * POST /api/nlp/parse
  * 解析句子或文章
  */
-router.post('/parse', (req: Request, res: Response) => {
+router.post('/parse', async (req: Request, res: Response) => {
   try {
     const { text, mode = 'sentence' } = req.body;
 
@@ -26,8 +26,8 @@ router.post('/parse', (req: Request, res: Response) => {
     }
 
     const result = mode === 'text' 
-      ? nlpEngine.parseText(text)
-      : nlpEngine.parseSentence(text);
+      ? await nlpEngine.parseText(text)
+      : await nlpEngine.parseSentence(text);
 
     res.json({
       success: true,
@@ -43,7 +43,7 @@ router.post('/parse', (req: Request, res: Response) => {
  * POST /api/nlp/vocabulary
  * 提取生词本
  */
-router.post('/vocabulary', (req: Request, res: Response) => {
+router.post('/vocabulary', async (req: Request, res: Response) => {
   try {
     const { text, excludeLevels = [] } = req.body;
 
@@ -51,7 +51,7 @@ router.post('/vocabulary', (req: Request, res: Response) => {
       return res.status(400).json({error: 'Missing text parameter'});
     }
 
-    const vocabulary = vocabExtractor.extract(text, excludeLevels);
+    const vocabulary = await vocabExtractor.extract(text, excludeLevels);
 
     res.json({
       success: true,
@@ -68,7 +68,7 @@ router.post('/vocabulary', (req: Request, res: Response) => {
  * POST /api/nlp/vocabulary-by-level
  * 按难度等级提取生词本
  */
-router.post('/vocabulary-by-level', (req: Request, res: Response) => {
+router.post('/vocabulary-by-level', async (req: Request, res: Response) => {
   try {
     const { text, level } = req.body;
 
@@ -76,7 +76,7 @@ router.post('/vocabulary-by-level', (req: Request, res: Response) => {
       return res.status(400).json({error: 'Missing text or level parameter'});
     }
 
-    const vocabulary = vocabExtractor.extractByLevel(text, level);
+    const vocabulary = await vocabExtractor.extractByLevel(text, level);
 
     res.json({
       success: true,
@@ -94,7 +94,7 @@ router.post('/vocabulary-by-level', (req: Request, res: Response) => {
  * POST /api/nlp/vocabulary-csv
  * 导出生词本为CSV
  */
-router.post('/vocabulary-csv', (req: Request, res: Response) => {
+router.post('/vocabulary-csv', async (req: Request, res: Response) => {
   try {
     const { text, excludeLevels = [] } = req.body;
 
@@ -102,7 +102,7 @@ router.post('/vocabulary-csv', (req: Request, res: Response) => {
       return res.status(400).json({error: 'Missing text parameter'});
     }
 
-    const vocabulary = vocabExtractor.extract(text, excludeLevels);
+    const vocabulary = await vocabExtractor.extract(text, excludeLevels);
     const csv = vocabExtractor.exportToCSV(vocabulary);
 
     res.setHeader('Content-Type', 'text/csv');

@@ -4,7 +4,6 @@ import WordCard from "@/components/dictionary/WordCard";
 import ChatTutor from "@/components/chat/ChatTutor";
 import Translator from "@/components/writing/Translator";
 import ArticleAnalyzer from "@/components/grammar/ArticleAnalyzer";
-import NLPArticleAnalyzer from "@/components/grammar/NLPArticleAnalyzer";
 import {
   IconBook,
   IconMessage,
@@ -19,7 +18,6 @@ import { fetchWordOfTheDay, searchDictionaryWord } from '@/services/apiAdapter';
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.HOME);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [useNLPAnalyzer, setUseNLPAnalyzer] = useState(true); // Default to NLP analyzer
   
   // Dictionary State
   const [wordData, setWordData] = useState<DictionaryEntry | null>(null); // Displayed data
@@ -255,34 +253,7 @@ const App: React.FC = () => {
       case AppView.GRAMMAR:
         return (
           <div className="w-full h-full overflow-y-auto">
-            <div className="max-w-4xl mx-auto p-6">
-              <div className="flex items-center gap-4 mb-6">
-                <h1 className="text-3xl font-bold text-slate-900 flex-1">Grammar Analysis</h1>
-                <div className="flex gap-2 bg-gray-200 p-1 rounded-lg">
-                  <button
-                    onClick={() => setUseNLPAnalyzer(true)}
-                    className={`px-4 py-2 rounded font-medium transition-colors ${
-                      useNLPAnalyzer
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    NLP (New)
-                  </button>
-                  <button
-                    onClick={() => setUseNLPAnalyzer(false)}
-                    className={`px-4 py-2 rounded font-medium transition-colors ${
-                      !useNLPAnalyzer
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-700 hover:bg-gray-300'
-                    }`}
-                  >
-                    DeepSeek (Legacy)
-                  </button>
-                </div>
-              </div>
-            </div>
-            {useNLPAnalyzer ? <NLPArticleAnalyzer /> : <ArticleAnalyzer />}
+            <ArticleAnalyzer />
           </div>
         );
     }
