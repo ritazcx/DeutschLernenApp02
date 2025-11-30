@@ -115,6 +115,30 @@ router.post('/vocabulary-csv', async (req: Request, res: Response) => {
 });
 
 /**
+ * POST /api/nlp/analyze-grammar
+ * Analyze grammar points in a sentence
+ */
+router.post('/analyze-grammar', async (req: Request, res: Response) => {
+  try {
+    const { text } = req.body;
+
+    if (!text) {
+      return res.status(400).json({ error: 'Missing text parameter' });
+    }
+
+    const result = await nlpEngine.analyzeGrammar(text);
+
+    res.json({
+      success: true,
+      result,
+    });
+  } catch (error) {
+    console.error('Grammar analysis error:', error);
+    res.status(500).json({ error: 'Grammar analysis failed', details: String(error) });
+  }
+});
+
+/**
  * GET /api/nlp/health
  * 健康检查
  */
