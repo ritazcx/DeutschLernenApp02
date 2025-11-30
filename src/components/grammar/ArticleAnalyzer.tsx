@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { SentenceAnalysis, GrammarPoint, GrammarType, CEFRLevel, ALL_GRAMMAR_TYPES, GRAMMAR_CATEGORIES } from '../../types/grammar';
-import { analyzeArticle, analyzeArticleWithNLP } from '../../services/grammarService';
+import { analyzeArticle, analyzeTextWithDetection } from '../../services/grammarService';
 import { saveAnalysis } from '../../services/analysisService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
@@ -105,12 +105,8 @@ const ArticleAnalyzer: React.FC = () => {
       let result;
       
       if (useNLPAnalyzer) {
-        // Use NLP-based analysis
-        const nlpResult = await analyzeArticleWithNLP(inputText, 'B1');
-        // Convert NLP response to SentenceAnalysis format
-        result = {
-          sentences: nlpResult.sentences.map((s: any) => convertNLPResponseToSentenceAnalysis(s.analysis)),
-        };
+        // Use rule-based detection analysis
+        result = await analyzeTextWithDetection(inputText);
       } else {
         // Use traditional DeepSeek analysis
         result = await analyzeArticle(inputText, selectedGrammarTypes, selectedVocabularyLevels);

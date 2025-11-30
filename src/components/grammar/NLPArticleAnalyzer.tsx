@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { analyzeArticleWithNLP } from '../../services/grammarService';
+import { analyzeTextWithDetection } from '../../services/grammarService';
 import { GrammarPointDisplay } from './GrammarPointDisplay';
 
 interface NLPAnalysisResult {
@@ -64,8 +64,41 @@ export const NLPArticleAnalyzer: React.FC<NLPArticleAnalyzerProps> = ({
     setResults(null);
 
     try {
-      const data = await analyzeArticleWithNLP(inputText, cefrLevel);
-      setResults(data);
+      const data = await analyzeTextWithDetection(inputText);
+      // Convert to expected format
+      const convertedData = {
+        success: true,
+        text: inputText,
+        cefrLevel: 'All',
+        sentences: data.sentences.map((sentence: any, idx: number) => ({
+          sentence: sentence.sentence,
+          analysis: {
+            grammarPoints: sentence.grammarPoints.map((point: any, pointIdx: number) => ({
+              id: `point-${idx}-${pointIdx}`,
+              category: point.type,
+              level: 'Unknown', // Detection engine doesn't specify level per point
+              text: point.text,
+              startPos: point.position.start,
+              endPos: point.position.end,
+              explanation: point.explanation,
+              details: {},
+              tokenIndices: [],
+            })),
+            hasErrors: false,
+            summary: {
+              totalPoints: sentence.grammarPoints.length,
+              byLevel: {},
+              byCategory: {},
+            },
+          },
+        })),
+        summary: {
+          totalSentences: data.sentences.length,
+          totalGrammarPoints: data.sentences.reduce((sum: number, s: any) => sum + s.grammarPoints.length, 0),
+          errorSentences: 0,
+        },
+      };
+      setResults(convertedData);
       setSelectedSentenceIdx(0);
     } catch (err: any) {
       setError(err?.message || 'Analysis failed');
@@ -79,10 +112,10 @@ export const NLPArticleAnalyzer: React.FC<NLPArticleAnalyzerProps> = ({
   return (
     <div className="w-full max-w-4xl mx-auto p-6 bg-white rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold text-gray-800 mb-2">
-        Grammar Analysis (NLP-based)
+        Grammar Analysis (Rule-based Detection)
       </h1>
       <p className="text-gray-600 mb-6">
-        Analyze German text for grammar patterns using rule-based detection
+        Analyze German text for grammar patterns using comprehensive rule-based detection (A1-C2)
       </p>
 
       {/* Input Section */}

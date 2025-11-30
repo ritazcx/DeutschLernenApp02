@@ -488,6 +488,19 @@ export const B2_GRAMMAR: Record<string, GrammarPoint> = {
     ],
     explanation: 'Infinitive clauses with zu. Common with purpose (um...zu), alternatives (statt...zu).',
   },
+  'causative-construction': {
+    id: 'b2-causative-construction',
+    category: 'verb-form',
+    level: 'B2',
+    name: 'Causative Construction (Kausativkonstruktion)',
+    description: 'lassen + infinitive: Ich lasse das Auto reparieren',
+    examples: [
+      'Ich lasse das Auto reparieren',
+      'Sie lässt sich die Haare schneiden',
+      'Er ließ das Haus renovieren',
+    ],
+    explanation: 'Causative construction with lassen + infinitive. Subject causes someone else to perform the action.',
+  },
 };
 
 /**

@@ -14,6 +14,15 @@ import { AgreementDetector } from './detectors/agreementDetector';
 import { WordOrderDetector } from './detectors/wordOrderDetector';
 import { CollocationDetector } from './detectors/collocationDetector';
 import { MorphologicalDetector } from './detectors/morphologicalDetector';
+import { AdvancedPassiveDetector } from './detectors/advancedPassiveDetector';
+import { ConditionalDetector } from './detectors/conditionalDetector';
+import { InfinitiveClauseDetector } from './detectors/infinitiveClauseDetector';
+import { ExtendedAdjectiveDetector } from './detectors/extendedAdjectiveDetector';
+import { RelativeClauseDetector } from './detectors/relativeClauseDetector';
+import { ReflexiveVerbDetector } from './detectors/reflexiveVerbDetector';
+import { PrepositionDetector } from './detectors/prepositionDetector';
+import { CausativeDetector } from './detectors/causativeDetector';
+import { AIGrammarDetector } from './detectors/aiGrammarDetector';
 import { BaseGrammarDetector, DetectionResult, SentenceData } from './detectors/baseDetector';
 import { GrammarCategory, CEFRLevel } from './cefr-taxonomy';
 
@@ -42,7 +51,17 @@ export class GrammarDetectionEngine {
     new WordOrderDetector(),
     new CollocationDetector(),
     new MorphologicalDetector(),
+    new AdvancedPassiveDetector(),
+    new ConditionalDetector(),
+    new InfinitiveClauseDetector(),
+    new ExtendedAdjectiveDetector(),
+    new RelativeClauseDetector(),
+    new ReflexiveVerbDetector(),
+    new PrepositionDetector(),
+    new CausativeDetector(),
   ];
+
+  private aiDetector = new AIGrammarDetector();
 
   /**
    * Analyze a sentence for grammar points
@@ -75,6 +94,62 @@ export class GrammarDetectionEngine {
       byCategory,
       summary,
     };
+  }
+
+  /**
+   * Analyze a sentence for grammar points with minimal AI fallback
+   * AI only used when rule-based detection finds very few results
+   */
+  async analyzeWithMinimalAIFallback(sentenceData: SentenceData): Promise<GrammarAnalysisResult> {
+    // First run rule-based detectors
+    const ruleBasedResult = this.analyze(sentenceData);
+
+    // TEMPORARILY DISABLE AI FALLBACK - focus on rule-based detection only
+    // TODO: Re-enable AI fallback once API issues are resolved
+    console.log(`Rule-based detection completed: ${ruleBasedResult.summary.totalPoints} grammar points found`);
+    return ruleBasedResult;
+
+    // Only use AI fallback if we have very few grammar points (less than 2)
+    // This ensures AI is used sparingly and only for edge cases
+    if (ruleBasedResult.summary.totalPoints >= 2) {
+      return ruleBasedResult;
+    }
+
+    console.log(`Rule-based detection found only ${ruleBasedResult.summary.totalPoints} grammar points, attempting AI fallback...`);
+
+    // Run AI detector for additional insights only when rule-based is sparse
+    try {
+      const aiResults = await this.aiDetector.detectAsync(sentenceData);
+
+      if (aiResults.length > 0) {
+        // Combine rule-based and AI results
+        const combinedResults = [...ruleBasedResult.grammarPoints, ...aiResults];
+
+        // Deduplicate again
+        const deduplicated = this.deduplicateResults(combinedResults);
+
+        // Sort by position in text
+        deduplicated.sort((a, b) => a.position.start - b.position.start);
+
+        // Re-organize by level and category
+        const byLevel = this.organizeByLevel(deduplicated);
+        const byCategory = this.organizeByCategory(deduplicated);
+        const summary = this.createSummary(deduplicated, byLevel, byCategory);
+
+        console.log(`AI fallback added ${aiResults.length} additional grammar points`);
+        return {
+          sentence: sentenceData.text,
+          grammarPoints: deduplicated,
+          byLevel,
+          byCategory,
+          summary,
+        };
+      }
+    } catch (error) {
+      console.warn('AI fallback failed, using rule-based results only:', error);
+    }
+
+    return ruleBasedResult;
   }
 
   /**

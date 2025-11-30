@@ -31,64 +31,9 @@ export class NLPEngine {
    * 解析单个句子
    */
   async parseSentence(text: string): Promise<ParsedSentence> {
-    // Use spaCy's sentence-level analysis for better context-aware lemmatization
-    const spacyResult = await this.lemmatizer['spacyService'].analyzeSentence(text);
-    
-    if (!spacyResult.success || !spacyResult.tokens) {
-      // Fallback to word-by-word analysis if sentence analysis fails
-      return this.parseSentenceFallback(text);
-    }
-
-    const tokens: Token[] = [];
-    let charPosition = 0;
-
-    // Process each token from spaCy's sentence analysis
-    for (let i = 0; i < spacyResult.tokens.length; i++) {
-      const spacyToken = spacyResult.tokens[i];
-      const word = spacyToken.text;
-      
-      // Clean up word (remove punctuation)
-      const cleanWord = word.replace(/[.,!?;:—\-()""「」]/g, '');
-      if (!cleanWord) continue;  // Skip pure punctuation
-
-      // Use spaCy's lemma directly (from sentence context)
-      const lemma = spacyToken.lemma;
-      
-      // Map spaCy's POS to our format
-      const normalizedPOS = this.normalizeSpacyPOS(spacyToken.pos);
-      
-      // 形态学分析
-      let morph = this.analyzeMorphology(cleanWord, lemma, normalizedPOS);
-
-      tokens.push({
-        id: tokens.length,
-        word: cleanWord,
-        lemma: lemma,
-        pos: normalizedPOS,
-        morph,
-        position: {start: charPosition, end: charPosition + cleanWord.length}
-      });
-
-      charPosition += cleanWord.length + 1;  // +1 for space
-    }
-
-    // 步骤3: 检查句子特征
-    const hasPassive = this.checkPassive(tokens);
-    const hasSubjunctive = this.checkSubjunctive(tokens);
-    const hasSubordinateClause = this.checkSubordinateClause(tokens);
-
-    // 步骤4: 估计难度级别
-    const estimatedLevel = this.estimateLevel(tokens, hasPassive, hasSubjunctive, hasSubordinateClause);
-
-    return {
-      text,
-      tokens,
-      hasPassive,
-      hasSubjunctive,
-      hasSubordinateClause,
-      estimatedLevel,
-      usedSpaCy: true
-    };
+    // TEMPORARILY FORCE FALLBACK TO DEBUG
+    console.log('⚠️ Forcing fallback parsing for debugging');
+    return this.parseSentenceFallback(text);
   }
 
   /**
@@ -98,31 +43,31 @@ export class NLPEngine {
     // First, parse the sentence to get tokens
     const parsed = await this.parseSentence(text);
     
-    // Enforce spaCy-only analysis: skip detection if fallback was used
-    if (!parsed.usedSpaCy) {
-      console.warn('SpaCy analysis failed, skipping grammar detection to prevent fallback token contamination');
-      return {
-        sentence: text,
-        grammarPoints: [],
-        byLevel: { A1: [], A2: [], B1: [], B2: [], C1: [], C2: [] },
-        byCategory: {
-          tense: [], case: [], voice: [], mood: [], agreement: [], article: [],
-          adjective: [], pronoun: [], preposition: [], conjunction: [], 'verb-form': [],
-          'word-order': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
-          passive: []
-        },
-        summary: {
-          totalPoints: 0,
-          levels: { A1: 0, A2: 0, B1: 0, B2: 0, C1: 0, C2: 0 },
-          categories: {
-            tense: 0, case: 0, voice: 0, mood: 0, agreement: 0, article: 0,
-            adjective: 0, pronoun: 0, preposition: 0, conjunction: 0, 'verb-form': 0,
-            'word-order': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
-            passive: 0
-          }
-        }
-      };
-    }
+    // TEMPORARILY ALLOW FALLBACK FOR DEBUGGING
+    // if (!parsed.usedSpaCy) {
+    //   console.warn('SpaCy analysis failed, skipping grammar detection to prevent fallback token contamination');
+    //   return {
+    //     sentence: text,
+    //     grammarPoints: [],
+    //     byLevel: { A1: [], A2: [], B1: [], B2: [], C1: [], C2: [] },
+    //     byCategory: {
+    //       tense: [], case: [], voice: [], mood: [], agreement: [], article: [],
+    //       adjective: [], pronoun: [], preposition: [], conjunction: [], 'verb-form': [],
+    //       'word-order': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
+    //       passive: []
+    //     },
+    //     summary: {
+    //       totalPoints: 0,
+    //       levels: { A1: 0, A2: 0, B1: 0, B2: 0, C1: 0, C2: 0 },
+    //       categories: {
+    //         tense: 0, case: 0, voice: 0, mood: 0, agreement: 0, article: 0,
+    //         adjective: 0, pronoun: 0, preposition: 0, conjunction: 0, 'verb-form': 0,
+    //         'word-order': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
+    //         passive: 0
+    //       }
+    //     }
+    //   };
+    // }
     
     // Convert ParsedSentence tokens to SentenceData tokens for grammar engine
     // Filter out "n/a" values from morph object
@@ -157,8 +102,23 @@ export class NLPEngine {
       })),
     };
 
-    // Analyze grammar with detection engine
-    return grammarDetectionEngine.analyze(sentenceData);
+    // DEBUG: Write tokens to file
+    const fs = await import('fs');
+    const debugInfo = {
+      text: sentenceData.text,
+      tokens: sentenceData.tokens.map((token, i) => ({
+        index: i,
+        text: token.text,
+        pos: token.pos,
+        lemma: token.lemma,
+        morph: token.morph
+      }))
+    };
+    fs.writeFileSync('/tmp/debug-tokens.json', JSON.stringify(debugInfo, null, 2));
+    console.log('🔍 Debug tokens written to /tmp/debug-tokens.json');
+
+    // Analyze grammar with detection engine (minimal AI fallback for edge cases)
+    return grammarDetectionEngine.analyzeWithMinimalAIFallback(sentenceData);
   }
 
   /**
@@ -570,3 +530,4 @@ export class NLPEngine {
 
 // 导出供外部使用
 export type { Token, ParsedSentence } from './types';
+export type { GrammarAnalysisResult } from '../grammarEngine/detectionEngine';
