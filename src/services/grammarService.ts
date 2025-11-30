@@ -22,3 +22,50 @@ export async function analyzeArticle(
   const data = await res.json();
   return data as ArticleAnalysis;
 }
+
+/**
+ * Analyze article using NLP-based grammar rules (new approach)
+ * More accurate and faster than AI-based analysis
+ */
+export async function analyzeArticleWithNLP(
+  text: string,
+  cefrLevel: string = 'B1'
+): Promise<any> {
+  const base = SERVER_API_BASE || '';
+  const res = await fetch(`${base}/api/grammar/analyze-nlp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text, cefrLevel }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`NLP grammar analysis error: ${res.status} ${err}`);
+  }
+
+  const data = await res.json();
+  return data;
+}
+
+/**
+ * Analyze single sentence using NLP-based grammar rules
+ */
+export async function analyzeSentenceWithNLP(
+  sentence: string,
+  cefrLevel: string = 'B1'
+): Promise<any> {
+  const base = SERVER_API_BASE || '';
+  const res = await fetch(`${base}/api/grammar/analyze-sentence-nlp`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sentence, cefrLevel }),
+  });
+
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(`NLP sentence analysis error: ${res.status} ${err}`);
+  }
+
+  const data = await res.json();
+  return data;
+}

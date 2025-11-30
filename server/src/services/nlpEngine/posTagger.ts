@@ -126,6 +126,94 @@ export class POSTagger {
     'heute': 'ADV',
     'morgen': 'ADV',
     'gestern': 'ADV',
+
+    // 常见德语动词（无穷式形式）
+    'sein': 'VERB',
+    'haben': 'VERB',
+    'werden': 'VERB',
+    'können': 'VERB',
+    'müssen': 'VERB',
+    'wollen': 'VERB',
+    'sollen': 'VERB',
+    'dürfen': 'VERB',
+    'mögen': 'VERB',
+    'möchte': 'VERB',
+    'lassen': 'VERB',
+    'gehen': 'VERB',
+    'kommen': 'VERB',
+    'geben': 'VERB',
+    'nehmen': 'VERB',
+    'machen': 'VERB',
+    'sehen': 'VERB',
+    'sprechen': 'VERB',
+    'schreiben': 'VERB',
+    'lesen': 'VERB',
+    'hören': 'VERB',
+    'denken': 'VERB',
+    'wissen': 'VERB',
+    'glauben': 'VERB',
+    'zeigen': 'VERB',
+    'fragen': 'VERB',
+    'antworten': 'VERB',
+    'sagen': 'VERB',
+    'finden': 'VERB',
+    'stehen': 'VERB',
+    'sitzen': 'VERB',
+    'fallen': 'VERB',
+    'tragen': 'VERB',
+    'halten': 'VERB',
+    'fahren': 'VERB',
+    'fliegen': 'VERB',
+    'rennen': 'VERB',
+    'laufen': 'VERB',
+    'bleiben': 'VERB',
+    'erscheinen': 'VERB',
+    'verstehen': 'VERB',
+    'beginnen': 'VERB',
+    'anfangen': 'VERB',
+    'enden': 'VERB',
+    'schließen': 'VERB',
+    'öffnen': 'VERB',
+    'bringen': 'VERB',
+    'setzen': 'VERB',
+    'legen': 'VERB',
+    'stellen': 'VERB',
+    'hängen': 'VERB',
+    'kochen': 'VERB',
+    'essen': 'VERB',
+    'trinken': 'VERB',
+    'kaufen': 'VERB',
+    'verkaufen': 'VERB',
+    'arbeiten': 'VERB',
+    'spielen': 'VERB',
+    'tanzen': 'VERB',
+    'singen': 'VERB',
+    'lachen': 'VERB',
+    'weinen': 'VERB',
+    'lieben': 'VERB',
+    'hassen': 'VERB',
+    'brauchen': 'VERB',
+    'vergessen': 'VERB',
+    'erinnern': 'VERB',
+    'freuen': 'VERB',
+    'fürchten': 'VERB',
+    'hoffen': 'VERB',
+    'wünschen': 'VERB',
+    'rufen': 'VERB',
+    'anrufen': 'VERB',
+    'aufwachen': 'VERB',
+    'schlafen': 'VERB',
+    'erwachen': 'VERB',
+    'wachsen': 'VERB',
+    'sterben': 'VERB',
+    'gebären': 'VERB',
+    'bewegen': 'VERB',
+    'ändern': 'VERB',
+    'verbessern': 'VERB',
+    'zerstören': 'VERB',
+    'bauen': 'VERB',
+    'zeichnen': 'VERB',
+    'malen': 'VERB',
   };
 
   constructor(dbPath?: string) {
@@ -167,7 +255,18 @@ export class POSTagger {
       return {
         word,
         pos: 'VERB',
-        confidence: 0.85,
+        confidence: 0.95,
+        method: 'rule'
+      };
+    }
+
+    // 如果前面是 modal verb，很可能是不定式动词
+    const modalVerbs = ['können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen', 'möchte'];
+    if (context?.previous && modalVerbs.includes(context.previous)) {
+      return {
+        word,
+        pos: 'VERB',
+        confidence: 0.9,
         method: 'rule'
       };
     }
@@ -217,9 +316,61 @@ export class POSTagger {
    * 检查是否是已知动词变位
    */
   private checkVerbForm(word: string): boolean {
-    // 常见动词变位后缀
-    const verbEndings = ['e', 'st', 't', 'en', 'et', 'te', 'test', 'ten', 'tet'];
+    // 常见动词变位后缀（按长度排序）
+    const verbEndings = [
+      // 现在时
+      'e',      // ich gehe
+      'st',     // du gehst
+      't',      // er/sie/es geht
+      'en',     // wir gehen
+      'et',     // ihr gehet (archaic)
+      // 过去时（规则）
+      'te',     // ich ging
+      'test',   // du gingst
+      'ten',    // wir gingen
+      'tet',    // ihr ginget
+      // 过去分词
+      't',      // gemacht
+      'en',     // geworben
+      // 其他形式
+      'te',
+      'tes',
+      'tem',
+      'ten',
+      'ter',
+    ];
+
+    // 首先检查常见的完全不规则动词的变位
+    const irregularConjugations: Record<string, string[]> = {
+      'sein': ['bin', 'bist', 'ist', 'sind', 'seid', 'war', 'warst', 'waren', 'wart'],
+      'haben': ['habe', 'hast', 'hat', 'haben', 'habt', 'hatte', 'hattest', 'hatten', 'hattet'],
+      'werden': ['werde', 'wirst', 'wird', 'werden', 'werdet', 'wurde', 'wurdest', 'wurden', 'wurdet'],
+      'gehen': ['gehe', 'gehst', 'geht', 'gehen', 'geht', 'ging', 'gingst', 'gingen', 'gingt'],
+      'kommen': ['komme', 'kommst', 'kommt', 'kommen', 'kommt', 'kam', 'kamst', 'kamen', 'kamt'],
+      'geben': ['gebe', 'gibst', 'gibt', 'geben', 'gebt', 'gab', 'gabst', 'gaben', 'gabt'],
+      'sehen': ['sehe', 'siehst', 'sieht', 'sehen', 'seht', 'sah', 'sahst', 'sahen', 'saht'],
+      'sprechen': ['spreche', 'sprichst', 'spricht', 'sprechen', 'sprecht'],
+      'nehmen': ['nehme', 'nimmst', 'nimmt', 'nehmen', 'nehmt', 'nahm', 'nahmst', 'nahmen', 'nahmt'],
+      'machen': ['mache', 'machst', 'macht', 'machen', 'macht', 'machte', 'machtest', 'machten', 'machtet'],
+      'sagen': ['sage', 'sagst', 'sagt', 'sagen', 'sagt', 'sagte', 'sagtest', 'sagten', 'sagtet'],
+      'stehen': ['stehe', 'stehst', 'steht', 'stehen', 'steht', 'stand', 'standst', 'standen', 'standet'],
+      'essen': ['esse', 'isst', 'isst', 'essen', 'esst', 'aß', 'aßt', 'aßen'],
+      'trinken': ['trinke', 'trinkst', 'trinkt', 'trinken', 'trinkt', 'trank', 'trankst', 'tranken', 'trankt'],
+      'fahren': ['fahre', 'fährst', 'fährt', 'fahren', 'fahrt', 'fuhr', 'fuhrst', 'fuhren', 'fuhrt'],
+      'laufen': ['laufe', 'läufst', 'läuft', 'laufen', 'lauft', 'lief', 'liefst', 'liefen', 'lieft'],
+      'schreiben': ['schreibe', 'schreibst', 'schreibt', 'schreiben', 'schreibt', 'schrieb', 'schriebst', 'schrieben', 'schriebt'],
+      'lesen': ['lese', 'liest', 'liest', 'lesen', 'lest', 'las', 'last', 'lasen', 'last'],
+      'halten': ['halte', 'hältst', 'hält', 'halten', 'haltet', 'hielt', 'hieltest', 'hielten', 'hieltet'],
+    };
+
+    // 检查是否是已知不规则变位
+    for (const [infinitive, conjugations] of Object.entries(irregularConjugations)) {
+      if (conjugations.includes(word.toLowerCase())) {
+        return true;
+      }
+    }
     
+    // 检查规则变位
     for (const ending of verbEndings) {
       if (word.endsWith(ending) && word.length > ending.length + 2) {
         const root = word.substring(0, word.length - ending.length);
