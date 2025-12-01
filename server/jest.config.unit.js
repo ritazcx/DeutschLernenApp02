@@ -1,6 +1,6 @@
 /**
- * Main Jest Configuration
- * This is the integration test configuration with spaCy service management
+ * Jest Configuration for Unit Tests Only
+ * Excludes integration tests that require spaCy service
  */
 
 module.exports = {
@@ -9,7 +9,13 @@ module.exports = {
   roots: ['<rootDir>/src', '<rootDir>/tests'],
   testMatch: [
     '**/__tests__/**/*.test.ts',
-    '**/?(*.)+(spec|test).ts'
+    '**/?(*.)+(spec|test).ts',
+  ],
+  // Exclude integration and e2e tests
+  testPathIgnorePatterns: [
+    'tests/integration',
+    'tests/e2e',
+    'spacy-backed'
   ],
   transform: {
     '^.+\\.ts$': 'ts-jest',
@@ -17,7 +23,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/index.ts', // Exclude entry point
+    '!src/index.ts',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: [
@@ -35,11 +41,6 @@ module.exports = {
     }
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
-  // Global setup/teardown for spaCy service management
-  globalSetup: '<rootDir>/tests/globalSetup.ts',
-  globalTeardown: '<rootDir>/tests/globalTeardown.ts',
-  // Increase timeouts for spaCy integration tests
-  testTimeout: 30000,
-  // Ensure tests run serially to avoid spaCy service conflicts
-  maxWorkers: 1,
+  testTimeout: 10000,
+  maxWorkers: '50%',
 };

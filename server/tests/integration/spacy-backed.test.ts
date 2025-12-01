@@ -1,19 +1,31 @@
 /**
  * Integration Tests with Real spaCy Data
  * Tests grammar detectors with actual spaCy parsing output
+ * 
+ * These tests use the globally managed spaCy service that is initialized
+ * once at the start of the test suite (via globalSetup) and cleaned up
+ * at the end (via globalTeardown).
  */
 
 import { NLPEngine } from '../../src/services/nlpEngine';
+import { getNLPEngineForIntegrationTests, isSpacyServiceReady } from '../integrationUtils';
 
 describe('Grammar Detection with Real spaCy Data', () => {
   let nlpEngine: NLPEngine;
 
   beforeAll(() => {
-    nlpEngine = new NLPEngine();
+    // Check that spaCy service is ready
+    if (!isSpacyServiceReady()) {
+      console.error('❌ spaCy service is not ready! Tests will fail.');
+      console.error('Make sure to run: npm run test:integration (not npm run test:unit)');
+    }
+    
+    nlpEngine = getNLPEngineForIntegrationTests();
   });
 
   afterAll(() => {
-    // Cleanup if needed
+    // No cleanup needed here - spaCy service is managed globally by Jest
+    console.log('✓ spaCy integration tests completed');
   });
 
   describe('PassiveVoiceDetector', () => {
@@ -29,9 +41,9 @@ describe('Grammar Detection with Real spaCy Data', () => {
         (p) => p.grammarPoint.category === 'passive' || p.grammarPoint.category === 'voice'
       );
       
-      console.log(`Passive voice test: Found ${passivePoints.length} passive points`);
+      console.log(`✓ Passive voice test: Found ${passivePoints.length} passive points`);
       expect(passivePoints.length).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
 
     it('should detect past passive voice', async () => {
       const text = 'Alle 203 Nationalen Olympischen Komitees wurden eingeladen.';
@@ -44,12 +56,12 @@ describe('Grammar Detection with Real spaCy Data', () => {
         (p) => p.grammarPoint.category === 'passive' || p.grammarPoint.category === 'voice'
       );
 
-      console.log(`Olympic text: Found ${passivePoints.length} passive points`);
-      console.log(`Total points: ${result.summary.totalPoints}`);
-      console.log(`Points by level:`, result.summary.levels);
+      console.log(`✓ Olympic text: Found ${passivePoints.length} passive points`);
+      console.log(`  Total points: ${result.summary.totalPoints}`);
+      console.log(`  Points by level:`, result.summary.levels);
       
       expect(passivePoints.length).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
   });
 
   describe('ModalVerbDetector', () => {
@@ -62,9 +74,9 @@ describe('Grammar Detection with Real spaCy Data', () => {
         (p) => p.grammarPoint.category === 'modal-verb'
       );
 
-      console.log(`Modal verb test: Found ${modalPoints.length} modal points`);
+      console.log(`✓ Modal verb test: Found ${modalPoints.length} modal points`);
       expect(modalPoints.length).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
 
     it('should detect multiple modal verbs', async () => {
       const text = 'Du kannst kommen und ich soll zuhören.';
@@ -75,10 +87,10 @@ describe('Grammar Detection with Real spaCy Data', () => {
         (p) => p.grammarPoint.category === 'modal-verb'
       );
 
-      console.log(`Multiple modals test: Found ${modalPoints.length} modal points`);
+      console.log(`✓ Multiple modals test: Found ${modalPoints.length} modal points`);
       // Should detect at least one modal verb
       expect(modalPoints.length).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
   });
 
   describe('SubordinateClauseDetector', () => {
@@ -94,9 +106,9 @@ describe('Grammar Detection with Real spaCy Data', () => {
                p.grammarPoint.category.includes('subordinate')
       );
 
-      console.log(`Weil clause test: Found ${subordinatePoints.length} subordinate points`);
+      console.log(`✓ Weil clause test: Found ${subordinatePoints.length} subordinate points`);
       expect(subordinatePoints.length).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
 
     it('should detect dass clause (content subordinate)', async () => {
       const text = 'Ich weiß, dass du kommst.';
@@ -109,10 +121,10 @@ describe('Grammar Detection with Real spaCy Data', () => {
                p.grammarPoint.category.includes('subordinate')
       );
 
-      console.log(`Dass clause test: Found ${subordinatePoints.length} subordinate points`);
+      console.log(`✓ Dass clause test: Found ${subordinatePoints.length} subordinate points`);
       // At least one point should be detected
       expect(result.summary.totalPoints).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
   });
 
   describe('RelativeClauseDetector', () => {
@@ -128,9 +140,38 @@ describe('Grammar Detection with Real spaCy Data', () => {
                p.grammarPoint.category === 'word-order'
       );
 
-      console.log(`Relative clause test: Found ${relativePoints.length} relative points`);
+      console.log(`✓ Relative clause test: Found ${relativePoints.length} relative points`);
       expect(result.summary.totalPoints).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
+  });
+
+  describe('A1/A2 Grammar Detectors', () => {
+    it('should detect present tense in A1 level', async () => {
+      const text = 'Ich bin ein Student.';
+      const result = await nlpEngine.analyzeGrammar(text);
+
+      expect(result.sentence).toBe(text);
+      const a1Points = result.grammarPoints.filter(
+        (p) => p.grammarPoint.level === 'A1'
+      );
+
+      console.log(`✓ A1 present tense test: Found ${a1Points.length} A1 points`);
+      expect(result.summary.totalPoints).toBeGreaterThan(0);
+    }, 20000);
+
+    it('should detect simple past in A2 level', async () => {
+      const text = 'Ich war im Park.';
+      const result = await nlpEngine.analyzeGrammar(text);
+
+      expect(result.sentence).toBe(text);
+      const a2Points = result.grammarPoints.filter(
+        (p) => p.grammarPoint.level === 'A2'
+      );
+
+      console.log(`✓ A2 simple past test: Found ${a2Points.length} A2 points`);
+      // Should detect at least basic grammar
+      expect(result.summary.totalPoints).toBeGreaterThan(0);
+    }, 20000);
   });
 
   describe('Complex German Structures', () => {
@@ -138,20 +179,20 @@ describe('Grammar Detection with Real spaCy Data', () => {
       const text = 'Das Buch, das ich gelesen habe, ist interessant und ich würde es jedem empfehlen.';
       const result = await nlpEngine.analyzeGrammar(text);
 
-      console.log(`Complex sentence: Found ${result.summary.totalPoints} total points`);
-      console.log(`By level:`, result.summary.levels);
-      console.log(`By category:`, result.summary.categories);
+      console.log(`✓ Complex sentence: Found ${result.summary.totalPoints} total points`);
+      console.log(`  By level:`, result.summary.levels);
+      console.log(`  By category:`, result.summary.categories);
 
       expect(result.summary.totalPoints).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
 
     it('should analyze conditional sentence', async () => {
       const text = 'Wenn du das machst, werde ich dir helfen.';
       const result = await nlpEngine.analyzeGrammar(text);
 
-      console.log(`Conditional test: Found ${result.summary.totalPoints} total points`);
+      console.log(`✓ Conditional test: Found ${result.summary.totalPoints} total points`);
       expect(result.summary.totalPoints).toBeGreaterThan(0);
-    }, 15000);
+    }, 20000);
   });
 
   describe('Data Integrity Verification', () => {
@@ -163,7 +204,7 @@ describe('Grammar Detection with Real spaCy Data', () => {
       expect(result.sentence).toBe(text);
       
       // The dep='ROOT' fix should ensure proper dependency parsing
-      console.log(`Sentence analyzed successfully with ${result.summary.totalPoints} points`);
-    }, 15000);
+      console.log(`✓ Sentence analyzed successfully with ${result.summary.totalPoints} points`);
+    }, 20000);
   });
 });

@@ -192,15 +192,29 @@ export class SpacyService {
         this.ready = false;
       });
 
-      // Wait a bit for service to be ready
+      // Send a health check to verify service is actually ready
       setTimeout(() => {
-        if (!this.ready) {
-          console.warn('[spaCy Service] ⚠️ Service not marked as ready after 5s, assuming ready anyway');
-          this.ready = true;
-        } else {
-          console.log('[spaCy Service] ✓ Service ready confirmed');
-        }
-      }, 5000);
+        this.healthCheck()
+          .then(() => {
+            this.ready = true;
+            console.log('[spaCy Service] ✓ Health check passed, service is ready');
+          })
+          .catch((error) => {
+            console.warn('[spaCy Service] ⚠️ Health check failed, retrying...', error);
+            // Retry health check after 2 seconds
+            setTimeout(() => {
+              this.healthCheck()
+                .then(() => {
+                  this.ready = true;
+                  console.log('[spaCy Service] ✓ Health check passed on retry');
+                })
+                .catch(() => {
+                  console.warn('[spaCy Service] ⚠️ Health check failed again, assuming ready anyway');
+                  this.ready = true;
+                });
+            }, 2000);
+          });
+      }, 3000);
     } catch (error) {
       console.error(`[spaCy Service] ✗ Fatal error during initialization:`, error);
       console.error(`[spaCy Service] Stack:`, (error as Error).stack);
@@ -347,7 +361,97 @@ export class SpacyService {
   }
 
   /**
-   * Close the service
+   * Check if service is ready
+   */
+  isReady(): boolean {
+    return this.ready && this.process !== null;
+  }
+
+  /**
+   * Perform health check to verify service is working
+   */
+  private async healthCheck(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        reject(new Error('Health check timeout'));
+      }, 5000);
+
+      // Send a simple test request
+      this.sendRequest({
+        action: 'health_check',
+        test: 'Hallo'
+      })
+        .then(() => {
+          clearTimeout(timeout);
+          resolve();
+        })
+        .catch((error) => {
+          clearTimeout(timeout);
+          reject(error);
+        });
+    });
+  }
+
+  /**
+   * Gracefully shutdown the service
+   */
+  async shutdown(): Promise<void> {
+    console.log('[spaCy Service] Shutting down...');
+    
+    if (!this.process) {
+      console.log('[spaCy Service] Process already null');
+      return;
+    }
+
+    return new Promise((resolve) => {
+      const proc = this.process; // Keep reference
+      const timeout = setTimeout(() => {
+        console.warn('[spaCy Service] Shutdown timeout, force killing process');
+        if (proc) {
+          proc.kill('SIGKILL');
+        }
+        this.process = null;
+        this.ready = false;
+        resolve();
+      }, 5000);
+
+      // Try graceful shutdown first
+      if (proc && proc.stdin?.writable) {
+        try {
+          proc.stdin?.write(JSON.stringify({ action: 'shutdown' }) + '\n');
+        } catch (error) {
+          console.error('[spaCy Service] Error sending shutdown signal:', error);
+        }
+      }
+
+      // Wait for process to exit
+      if (proc) {
+        proc.once('exit', () => {
+          clearTimeout(timeout);
+          this.process = null;
+          this.ready = false;
+          console.log('[spaCy Service] Process exited cleanly');
+          resolve();
+        });
+
+        // Set a timeout for graceful shutdown, then force kill
+        setTimeout(() => {
+          if (proc) {
+            console.warn('[spaCy Service] Graceful shutdown timeout, killing process...');
+            proc.kill('SIGTERM');
+          }
+        }, 2000);
+      } else {
+        clearTimeout(timeout);
+        this.process = null;
+        this.ready = false;
+        resolve();
+      }
+    });
+  }
+
+  /**
+   * Close the service (legacy method)
    */
   close(): void {
     if (this.process) {
@@ -362,6 +466,12 @@ export class SpacyService {
 let instance: SpacyService | null = null;
 
 export function getSpacyService(): SpacyService {
+  // In test environment with global setup, check if service is managed globally
+  if ((global as any).__SPACY_SERVICE__) {
+    return (global as any).__SPACY_SERVICE__;
+  }
+  
+  // Otherwise, use the singleton pattern
   if (!instance) {
     instance = new SpacyService();
   }

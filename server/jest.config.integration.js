@@ -1,6 +1,6 @@
 /**
- * Main Jest Configuration
- * This is the integration test configuration with spaCy service management
+ * Jest Configuration for Integration Tests
+ * Includes all tests with spaCy service management
  */
 
 module.exports = {
@@ -17,7 +17,7 @@ module.exports = {
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/**/*.d.ts',
-    '!src/index.ts', // Exclude entry point
+    '!src/index.ts',
   ],
   coverageDirectory: 'coverage',
   coverageReporters: [
