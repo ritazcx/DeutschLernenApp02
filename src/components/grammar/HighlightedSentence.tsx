@@ -1,8 +1,11 @@
 import React from 'react';
-import { SentenceAnalysis, GrammarPoint, VocabularyPoint } from '../../types/grammar';
+import { SentenceAnalysis, GrammarPoint, VocabularyPoint, CEFRLevel } from '../../types/grammar';
 
 interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
+  onGrammarPointClick?: (sentenceIndex: number, pointIndex: number) => void;
+  sentenceIndex: number;
+  selectedLevels?: CEFRLevel[];
 }
 
 // CEFR level color mapping for vocabulary
@@ -16,34 +19,53 @@ const vocabLevelColors: Record<string, string> = {
 };
 
 const colorMap: Record<GrammarPoint['type'], string> = {
-  // Legacy types
-  verb: 'bg-blue-200 hover:bg-blue-300',
+  // Backend categories with distinct colors
+  tense: 'bg-blue-200 hover:bg-blue-300',
   case: 'bg-green-200 hover:bg-green-300',
-  clause: 'bg-purple-200 hover:bg-purple-300',
+  mood: 'bg-purple-200 hover:bg-purple-300',
+  voice: 'bg-red-200 hover:bg-red-300',
+  'verb-form': 'bg-indigo-200 hover:bg-indigo-300',
+  preposition: 'bg-yellow-200 hover:bg-yellow-300',
   conjunction: 'bg-orange-200 hover:bg-orange-300',
+  agreement: 'bg-pink-200 hover:bg-pink-300',
+  'word-order': 'bg-cyan-200 hover:bg-cyan-300',
+  article: 'bg-lime-200 hover:bg-lime-300',
+  pronoun: 'bg-emerald-200 hover:bg-emerald-300',
+  adjective: 'bg-teal-200 hover:bg-teal-300',
+  noun: 'bg-violet-200 hover:bg-violet-300',
+  'separable-verb': 'bg-rose-200 hover:bg-rose-300',
+  'modal-verb': 'bg-amber-200 hover:bg-amber-300',
+  collocation: 'bg-fuchsia-200 hover:bg-fuchsia-300',
+  'special-construction': 'bg-slate-200 hover:bg-slate-300',
+  // Legacy types (backward compatibility)
+  verb: 'bg-blue-200 hover:bg-blue-300',
+  clause: 'bg-purple-200 hover:bg-purple-300',
   special: 'bg-pink-200 hover:bg-pink-300',
-  // New B2/C1 types
-  collocation: 'bg-amber-200 hover:bg-amber-300',
-  special_construction: 'bg-indigo-200 hover:bg-indigo-300',
+  special_construction: 'bg-slate-200 hover:bg-slate-300',
   subjunctive: 'bg-rose-200 hover:bg-rose-300',
-  modal: 'bg-cyan-200 hover:bg-cyan-300',
+  modal: 'bg-amber-200 hover:bg-amber-300',
   functional_verb: 'bg-lime-200 hover:bg-lime-300',
   advanced_conjunction: 'bg-fuchsia-200 hover:bg-fuchsia-300',
   nominalization: 'bg-teal-200 hover:bg-teal-300',
-  passive: 'bg-emerald-200 hover:bg-emerald-300',
+  passive: 'bg-red-200 hover:bg-red-300',
 };
 
-const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) => {
+const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onGrammarPointClick, sentenceIndex, selectedLevels = [] }) => {
 
   // Build highlighted spans from grammar points
   const points = [...sentence.grammarPoints].sort((a, b) => a.position.start - b.position.start);
+  
+  // Filter points by selected levels if any levels are specified
+  const levelFilteredPoints = selectedLevels.length > 0 
+    ? points.filter(point => selectedLevels.includes(point.level))
+    : points;
   
   // Get vocabulary points (if any)
   const vocabPoints = sentence.vocabularyPoints || [];
   
   // Filter out overlapping points - keep only the first one
   const filteredPoints: typeof points = [];
-  points.forEach(point => {
+  levelFilteredPoints.forEach(point => {
     const overlaps = filteredPoints.some(
       existing => 
         (point.position.start >= existing.position.start && point.position.start < existing.position.end) ||
@@ -134,7 +156,9 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence }) =
     parts.push(
       <span
         key={`point-${idx}`}
-        className={`${colorMap[type as GrammarPoint['type']] || colorMap.special} px-1 rounded transition-colors ${vocabHere ? 'underline decoration-dashed decoration-2 decoration-green-500' : ''}`}
+        className={`${colorMap[type as GrammarPoint['type']] || colorMap.special} px-1 rounded transition-colors cursor-pointer ${vocabHere ? 'underline decoration-dashed decoration-2 decoration-green-500' : ''}`}
+        onClick={() => onGrammarPointClick?.(sentenceIndex, idx)}
+        title={`Click to view explanation: ${explanation}`}
       >
         {highlighted}
       </span>

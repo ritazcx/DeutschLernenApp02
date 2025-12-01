@@ -55,6 +55,7 @@ export class SpacyService {
   private maxCacheSize = 10000;
 
   constructor() {
+    console.log('SpacyService constructor called');
     this.initialize();
   }
 
@@ -62,13 +63,20 @@ export class SpacyService {
    * Initialize the spaCy Python service
    */
   private initialize(): void {
-    const scriptPath = path.resolve(__dirname, '../../../spacy-service.py');
+    // Use absolute path to spacy-service.py
+    const scriptPath = '/Users/chenxuanzhang/Documents/my-AI-projects/DeutschLernenApp02/server/spacy-service.py';
+    console.log('spaCy script path:', scriptPath);
+    console.log('spaCy __dirname:', __dirname);
+    console.log('spaCy cwd:', process.cwd());
     
     try {
       this.process = spawn('python3', [scriptPath], {
         stdio: ['pipe', 'pipe', 'pipe'],
-        detached: false
+        detached: false,
+        cwd: path.dirname(scriptPath) // Set working directory to script directory
       });
+
+      console.log('spaCy process spawned, PID:', this.process.pid);
 
       // Handle stdout (responses)
       this.process.stdout?.on('data', (data: Buffer) => {
@@ -92,6 +100,7 @@ export class SpacyService {
       // Handle stderr (logs)
       this.process.stderr?.on('data', (data: Buffer) => {
         const message = data.toString().trim();
+        console.log('spaCy stderr:', message);
         if (message.includes('ready')) {
           this.ready = true;
           console.log('✓ spaCy service initialized');
@@ -110,9 +119,18 @@ export class SpacyService {
         setTimeout(() => this.initialize(), 5000);
       });
 
+      // Handle process error
+      this.process.on('error', (error) => {
+        console.error('spaCy process error:', error);
+        this.ready = false;
+      });
+
       // Wait a bit for service to be ready
       setTimeout(() => {
-        this.ready = true;
+        if (!this.ready) {
+          console.log('spaCy service timeout - forcing ready state');
+          this.ready = true;
+        }
       }, 5000); // Increased from 2000 to 5000
     } catch (error) {
       console.error('Failed to start spaCy service:', error);

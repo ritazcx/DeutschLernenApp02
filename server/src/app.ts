@@ -26,7 +26,7 @@ export function createApp() {
 
   app.use(dictionaryRouter);
   app.use(proxyRouter);
-  app.use(grammarRouter);
+  app.use('/api/grammar', grammarRouter);
   app.use(analysisRouter);
   app.use('/api/vocabulary', vocabularyRouter);
   app.use('/api/nlp', nlpRouter);

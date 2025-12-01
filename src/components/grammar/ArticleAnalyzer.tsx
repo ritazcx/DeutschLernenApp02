@@ -7,27 +7,16 @@ import GrammarExplanationPanel from './GrammarExplanationPanel';
 import SavedAnalyses from '../analysis/SavedAnalyses';
 import GrammarFilterPanel from './GrammarFilterPanel';
 
-// Helper function to convert NLP response to SentenceAnalysis format
-function convertNLPResponseToSentenceAnalysis(nlpSentenceAnalysis: any): SentenceAnalysis {
-  const grammarPoints: GrammarPoint[] = (nlpSentenceAnalysis.grammarPoints || []).map((point: any) => ({
-    type: point.category as GrammarType,
-    text: point.text,
-    explanation: point.explanation,
-    position: { start: point.startPos, end: point.endPos },
-  }));
-
-  return {
-    sentence: nlpSentenceAnalysis.sentence?.text || '',
-    translation: '', // NLP doesn't provide translation
-    grammarPoints,
-    vocabularyPoints: [],
-  };
-}
-
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [sentences, setSentences] = useState<SentenceAnalysis[]>([]);
   const [selectedSentence, setSelectedSentence] = useState<number | null>(null);
+  const [selectedGrammarPoint, setSelectedGrammarPoint] = useState<number | null>(null);
+
+  const handleGrammarPointClick = (sentenceIndex: number, pointIndex: number) => {
+    setSelectedSentence(sentenceIndex);
+    setSelectedGrammarPoint(pointIndex);
+  };
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -35,7 +24,7 @@ const ArticleAnalyzer: React.FC = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [showSavedModal, setShowSavedModal] = useState(false);
-  const [useNLPAnalyzer, setUseNLPAnalyzer] = useState(false);
+  const [useNLPAnalyzer, setUseNLPAnalyzer] = useState(true);
   
   // Grammar filter state - load from localStorage or default to all selected
   const [selectedGrammarTypes, setSelectedGrammarTypes] = useState<GrammarType[]>(() => {
@@ -49,6 +38,12 @@ const ArticleAnalyzer: React.FC = () => {
     return saved ? JSON.parse(saved) : ['B1', 'B2'];
   });
 
+  // Grammar level filter state - load from localStorage or default to B1 and B2
+  const [selectedGrammarLevels, setSelectedGrammarLevels] = useState<CEFRLevel[]>(() => {
+    const saved = localStorage.getItem('grammar_levels');
+    return saved ? JSON.parse(saved) : ['B1', 'B2'];
+  });
+
   // Persist filter changes to localStorage
   useEffect(() => {
     localStorage.setItem('grammar_filters', JSON.stringify(selectedGrammarTypes));
@@ -57,6 +52,10 @@ const ArticleAnalyzer: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('vocabulary_levels', JSON.stringify(selectedVocabularyLevels));
   }, [selectedVocabularyLevels]);
+
+  useEffect(() => {
+    localStorage.setItem('grammar_levels', JSON.stringify(selectedGrammarLevels));
+  }, [selectedGrammarLevels]);
 
   const handleTypeToggle = (type: GrammarType) => {
     setSelectedGrammarTypes(prev => 
@@ -84,6 +83,14 @@ const ArticleAnalyzer: React.FC = () => {
 
   const handleVocabularyLevelToggle = (level: string) => {
     setSelectedVocabularyLevels(prev =>
+      prev.includes(level)
+        ? prev.filter(l => l !== level)
+        : [...prev, level]
+    );
+  };
+
+  const handleGrammarLevelToggle = (level: CEFRLevel) => {
+    setSelectedGrammarLevels(prev =>
       prev.includes(level)
         ? prev.filter(l => l !== level)
         : [...prev, level]
@@ -162,7 +169,7 @@ const ArticleAnalyzer: React.FC = () => {
                 📝 Article Grammar Analyzer
               </h1>
               <p className="text-slate-600">
-                Paste a German article to analyze its grammar sentence by sentence (B2 Level)
+                Paste German text to analyze grammar from A1 to C2 levels
               </p>
             </div>
             {/* NLP vs DeepSeek Toggle */}
@@ -246,6 +253,8 @@ const ArticleAnalyzer: React.FC = () => {
                 onLevelToggle={handleLevelToggle}
                 selectedVocabularyLevels={selectedVocabularyLevels}
                 onVocabularyLevelToggle={handleVocabularyLevelToggle}
+                selectedGrammarLevels={selectedGrammarLevels}
+                onGrammarLevelToggle={handleGrammarLevelToggle}
               />
             </div>
           </div>
@@ -319,7 +328,12 @@ const ArticleAnalyzer: React.FC = () => {
                         : 'hover:bg-slate-50'
                     }`}
                   >
-                    <HighlightedSentence sentence={sentence} />
+                    <HighlightedSentence 
+                      sentence={sentence} 
+                      onGrammarPointClick={handleGrammarPointClick}
+                      sentenceIndex={index}
+                      selectedLevels={selectedGrammarLevels}
+                    />
                   </div>
                 ))}
               </div>
@@ -333,7 +347,10 @@ const ArticleAnalyzer: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm p-6">
               <h2 className="text-xl font-bold text-slate-900 mb-4">Grammar Analysis</h2>
               {selectedSentence !== null ? (
-                <GrammarExplanationPanel sentence={sentences[selectedSentence]} />
+                <GrammarExplanationPanel 
+                  sentence={sentences[selectedSentence]} 
+                  selectedGrammarPoint={selectedGrammarPoint}
+                />
               ) : (
                 <div className="text-center text-slate-500 py-12">
                   <p className="text-lg">Click on a sentence to see its grammar analysis</p>

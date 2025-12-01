@@ -18,7 +18,9 @@ export class ModalVerbDetector extends BaseGrammarDetector {
     'kann', 'muss', 'will', 'soll', 'darf', 'mag',
     'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
     'könnt', 'müsst', 'wollt', 'sollt', 'dürft', 'mögt',
-    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen'
+    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
+    // Also check for lemmas that might be returned as conjugated forms
+    'muss', 'kann', 'will', 'soll', 'darf', 'mag'
   ];
 
   /**
@@ -35,24 +37,25 @@ export class ModalVerbDetector extends BaseGrammarDetector {
       }
 
       // Look for the infinitive that follows (typically at end of clause)
-      const infinitiveIndex = this.findFollowingInfinitive(sentence.tokens, index);
+      const infinitiveIndex = this.findInfinitive(sentence.tokens, index);
       if (infinitiveIndex !== -1) {
         const infinitiveToken = sentence.tokens[infinitiveIndex];
+        const infinitiveText = this.getFullInfinitiveText(sentence.tokens, infinitiveIndex);
 
         results.push(
           this.createResult(
             B1_GRAMMAR['modal-verbs'],
-            this.calculatePosition(sentence.tokens, index, infinitiveIndex),
+            this.calculatePosition(sentence.tokens, Math.min(index, infinitiveIndex), Math.max(index, infinitiveIndex)),
             0.95,
             {
               modalVerb: token.text,
-              infinitive: infinitiveToken.text,
+              infinitive: infinitiveText,
               modalLemma: token.lemma,
               infinitiveLemma: infinitiveToken.lemma,
             },
           ),
         );
-      } else if (token.pos === 'VERB' || token.pos === 'AUX') {
+      } else if (this.isLikelyStandaloneModal(token, sentence.tokens, index)) {
         // Modal verb without infinitive (e.g., in questions or standalone)
         results.push(
           this.createResult(
@@ -80,22 +83,32 @@ export class ModalVerbDetector extends BaseGrammarDetector {
   }
 
   /**
-   * Find the infinitive that follows a modal verb
+   * Find the infinitive associated with a modal verb
+   * Can be before or after the modal verb depending on clause structure
    */
-  private findFollowingInfinitive(tokens: TokenData[], modalIndex: number): number {
-    // Look for the next verb that is an infinitive
+  private findInfinitive(tokens: TokenData[], modalIndex: number): number {
+    // First try to find infinitive after the modal (main clause)
+    let infinitiveIndex = this.findInfinitiveAfter(tokens, modalIndex);
+    if (infinitiveIndex !== -1) return infinitiveIndex;
+
+    // Then try to find infinitive before the modal (subordinate clause)
+    infinitiveIndex = this.findInfinitiveBefore(tokens, modalIndex);
+    if (infinitiveIndex !== -1) return infinitiveIndex;
+
+    return -1;
+  }
+
+  /**
+   * Find infinitive after modal verb
+   */
+  private findInfinitiveAfter(tokens: TokenData[], modalIndex: number): number {
     for (let i = modalIndex + 1; i < tokens.length; i++) {
       const token = tokens[i];
-      // Check for infinitive forms - could be VERB with INF tag or just the next verb
-      if (token.pos === 'VERB' && (token.tag === 'INF' || token.tag === 'VVINF')) {
-        return i;
-      }
-      // Also check for separable verbs that might be combined
-      if (token.pos === 'VERB' && this.couldBeInfinitiveAfterModal(token, tokens, i)) {
+      if (token.pos === 'VERB' && (token.tag === 'INF' || token.tag === 'VVINF' || this.isInfinitiveForm(token) || this.isLikelyInfinitive(token))) {
         return i;
       }
       // Stop if we hit another finite verb (end of clause)
-      if (token.pos === 'VERB' && token.tag !== 'INF' && token.tag !== 'VVINF') {
+      if (token.pos === 'VERB' && token.tag !== 'INF' && token.tag !== 'VVINF' && !this.isInfinitiveForm(token) && !this.isLikelyInfinitive(token)) {
         break;
       }
     }
@@ -103,11 +116,95 @@ export class ModalVerbDetector extends BaseGrammarDetector {
   }
 
   /**
-   * Check if a verb could be an infinitive following a modal
+   * Find infinitive before modal verb
    */
-  private couldBeInfinitiveAfterModal(token: TokenData, tokens: TokenData[], index: number): boolean {
-    // For now, accept any verb that follows a modal
-    // In German, modal + infinitive is common
-    return true;
+  private findInfinitiveBefore(tokens: TokenData[], modalIndex: number): number {
+    for (let i = modalIndex - 1; i >= 0; i--) {
+      const token = tokens[i];
+      if (token.pos === 'VERB' && (token.tag === 'INF' || token.tag === 'VVINF' || this.isInfinitiveForm(token) || this.isLikelyInfinitive(token))) {
+        return i;
+      }
+      // Stop if we hit another finite verb
+      if (token.pos === 'VERB' && token.tag !== 'INF' && token.tag !== 'VVINF' && !this.isInfinitiveForm(token) && !this.isLikelyInfinitive(token)) {
+        break;
+      }
+    }
+    return -1;
+  }
+
+  /**
+   * Check if a verb token is in infinitive form
+   */
+  private isInfinitiveForm(token: TokenData): boolean {
+    // Check morphological features
+    return token.morph?.VerbForm === 'Inf' || 
+           token.morph?.VerbForm === 'Inf,Part' ||
+           token.tag?.includes('INF');
+  }
+
+  /**
+   * Check if a verb token is likely an infinitive (fallback check)
+   */
+  private isLikelyInfinitive(token: TokenData): boolean {
+    // For German, infinitives often end with -en, -eln, -ern
+    return token.text.match(/[a-zäöü]+(en|eln|ern)$/) !== null;
+  }
+
+  /**
+   * Get the full infinitive text, including separable prefixes
+   */
+  private getFullInfinitiveText(tokens: TokenData[], infinitiveIndex: number): string {
+    const infinitiveToken = tokens[infinitiveIndex];
+    
+    // Check if there's a separable prefix before the infinitive
+    if (infinitiveIndex > 0) {
+      const prevToken = tokens[infinitiveIndex - 1];
+      if (prevToken.pos === 'PART' && this.isSeparablePrefix(prevToken)) {
+        return prevToken.text + infinitiveToken.text;
+      }
+    }
+    
+    return infinitiveToken.text;
+  }
+
+  /**
+   * Check if a token is a separable verb prefix
+   */
+  private isSeparablePrefix(token: TokenData): boolean {
+    // Common separable prefixes in German
+    const separablePrefixes = ['ab', 'an', 'auf', 'aus', 'bei', 'ein', 'her', 'hin', 'mit', 'nach', 'vor', 'weg', 'zu', 'zurück'];
+    return separablePrefixes.includes(token.lemma.toLowerCase());
+  }
+
+  /**
+   * Check if a modal verb is likely standalone (not part of modal + infinitive construction)
+   */
+  private isLikelyStandaloneModal(token: TokenData, tokens: TokenData[], index: number): boolean {
+    // Only consider standalone if it's clearly not part of a modal + infinitive
+    // For example, in questions: "Muss ich das machen?" - here "muss" is standalone
+    // But in statements like "Ich muss das machen" - this should have an infinitive
+    
+    // If there's no infinitive nearby, it might be standalone
+    const hasNearbyInfinitive = this.findInfinitive(tokens, index) !== -1;
+    if (hasNearbyInfinitive) return false;
+    
+    // Check if it's in a question context
+    const isInQuestion = this.isInQuestionContext(tokens, index);
+    
+    // For now, be conservative - only detect standalone modals in clear cases
+    return isInQuestion;
+  }
+
+  /**
+   * Check if modal verb is in a question context
+   */
+  private isInQuestionContext(tokens: TokenData[], modalIndex: number): boolean {
+    // Look for question marks or inverted word order
+    const hasQuestionMark = tokens.some(t => t.text === '?');
+    if (hasQuestionMark) return true;
+    
+    // Check for V2 word order (verb second) which is common in questions
+    // This is a simplified check
+    return false;
   }
 }

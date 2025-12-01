@@ -85,21 +85,9 @@ export class NLPEngine {
       }
     }
 
-    // Check sentence features
-    const hasPassive = this.checkPassive(tokens);
-    const hasSubjunctive = this.checkSubjunctive(tokens);
-    const hasSubordinateClause = this.checkSubordinateClause(tokens);
-
-    // Estimate difficulty level
-    const estimatedLevel = this.estimateLevel(tokens, hasPassive, hasSubjunctive, hasSubordinateClause);
-
     return {
       text,
       tokens,
-      hasPassive,
-      hasSubjunctive,
-      hasSubordinateClause,
-      estimatedLevel,
       usedSpaCy: true
     };
   }
@@ -121,70 +109,86 @@ export class NLPEngine {
    * Analyze grammar points in a sentence using grammar detectors
    */
   async analyzeGrammar(text: string): Promise<GrammarAnalysisResult> {
-    // First, parse the sentence to get tokens
-    const parsed = await this.parseSentence(text);
-    
-    // TEMPORARILY ALLOW FALLBACK FOR DEBUGGING
-    // if (!parsed.usedSpaCy) {
-    //   console.warn('SpaCy analysis failed, skipping grammar detection to prevent fallback token contamination');
-    //   return {
-    //     sentence: text,
-    //     grammarPoints: [],
-    //     byLevel: { A1: [], A2: [], B1: [], B2: [], C1: [], C2: [] },
-    //     byCategory: {
-    //       tense: [], case: [], voice: [], mood: [], agreement: [], article: [],
-    //       adjective: [], pronoun: [], preposition: [], conjunction: [], 'verb-form': [],
-    //       'word-order': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
-    //       passive: []
-    //     },
-    //     summary: {
-    //       totalPoints: 0,
-    //       levels: { A1: 0, A2: 0, B1: 0, B2: 0, C1: 0, C2: 0 },
-    //       categories: {
-    //         tense: 0, case: 0, voice: 0, mood: 0, agreement: 0, article: 0,
-    //         adjective: 0, pronoun: 0, preposition: 0, conjunction: 0, 'verb-form': 0,
-    //         'word-order': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
-    //         passive: 0
-    //       }
-    //     }
-    //   };
-    // }
-    
-    // Convert ParsedSentence tokens to SentenceData tokens for grammar engine
-    // Filter out "n/a" values from morph object
-    const cleanMorph = (morph: Record<string, any>): Record<string, string> => {
-      const cleaned: Record<string, string> = {};
-      for (const [key, value] of Object.entries(morph)) {
-        if (value && value !== 'n/a') {
-          // Convert key to spaCy format (e.g., case -> Case, person -> Person)
-          const spacyKey = key.charAt(0).toUpperCase() + key.slice(1);
-          // Convert value to spaCy abbreviations (e.g., nominative -> Nom)
-          const abbreviatedValue = this.abbreviateMorphValue(key, value as string);
-          if (abbreviatedValue) {
-            cleaned[spacyKey] = abbreviatedValue;
+    try {
+      // First, parse the sentence to get tokens
+      const parsed = await this.parseSentence(text);
+
+      // If spaCy failed and we have fallback tokens, still try grammar detection
+      // but with reduced confidence
+      const hasGoodTokens = parsed.tokens.length > 0 && parsed.tokens.some(t => t.pos !== 'X');
+
+      if (!hasGoodTokens) {
+        console.warn('No reliable tokens available for grammar analysis, returning empty result');
+        return this.createEmptyResult(text);
+      }
+
+      // Convert ParsedSentence tokens to SentenceData tokens for grammar engine
+      // Filter out "n/a" values from morph object
+      const cleanMorph = (morph: Record<string, any>): Record<string, string> => {
+        const cleaned: Record<string, string> = {};
+        for (const [key, value] of Object.entries(morph)) {
+          if (value && value !== 'n/a') {
+            // Convert key to spaCy format (e.g., case -> Case, person -> Person)
+            const spacyKey = key.charAt(0).toUpperCase() + key.slice(1);
+            // Convert value to spaCy abbreviations (e.g., nominative -> Nom)
+            const abbreviatedValue = this.abbreviateMorphValue(key, value as string);
+            if (abbreviatedValue) {
+              cleaned[spacyKey] = abbreviatedValue;
+            }
           }
         }
+        return cleaned;
+      };
+
+      const sentenceData: SentenceData = {
+        text,
+        tokens: parsed.tokens.map((token) => ({
+          text: token.word,
+          lemma: token.lemma,
+          pos: token.pos,
+          tag: token.pos, // Use POS as tag for now
+          dep: 'ROOT', // TODO: Add dependency parsing
+          morph: cleanMorph(token.morph),
+          index: token.id,
+          characterStart: token.position.start,
+          characterEnd: token.position.end,
+        })),
+      };
+
+      // Analyze grammar with detection engine (minimal AI fallback for edge cases)
+      return grammarDetectionEngine.analyzeWithMinimalAIFallback(sentenceData);
+    } catch (error) {
+      console.error('Grammar analysis failed:', error);
+      // Return empty result instead of throwing to keep API stable
+      return this.createEmptyResult(text);
+    }
+  }
+
+  /**
+   * Create empty grammar analysis result for fallback cases
+   */
+  private createEmptyResult(text: string): GrammarAnalysisResult {
+    return {
+      sentence: text,
+      grammarPoints: [],
+      byLevel: { A1: [], A2: [], B1: [], B2: [], C1: [], C2: [] },
+      byCategory: {
+        tense: [], case: [], voice: [], mood: [], agreement: [], article: [],
+        adjective: [], pronoun: [], preposition: [], conjunction: [], 'verb-form': [],
+        'word-order': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
+        passive: []
+      },
+      summary: {
+        totalPoints: 0,
+        levels: { A1: 0, A2: 0, B1: 0, B2: 0, C1: 0, C2: 0 },
+        categories: {
+          tense: 0, case: 0, voice: 0, mood: 0, agreement: 0, article: 0,
+          adjective: 0, pronoun: 0, preposition: 0, conjunction: 0, 'verb-form': 0,
+          'word-order': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
+          passive: 0
+        }
       }
-      return cleaned;
     };
-
-    const sentenceData: SentenceData = {
-      text,
-      tokens: parsed.tokens.map((token) => ({
-        text: token.word,
-        lemma: token.lemma,
-        pos: token.pos,
-        tag: token.pos, // Use POS as tag for now
-        dep: 'ROOT', // TODO: Add dependency parsing
-        morph: cleanMorph(token.morph),
-        index: token.id,
-        characterStart: token.position.start,
-        characterEnd: token.position.end,
-      })),
-    };
-
-    // Analyze grammar with detection engine (minimal AI fallback for edge cases)
-    return grammarDetectionEngine.analyzeWithMinimalAIFallback(sentenceData);
   }
 
   /**
@@ -294,21 +298,9 @@ export class NLPEngine {
       charPosition += cleanWord.length + 1;  // +1 for space
     }
 
-    // 步骤3: 检查句子特征
-    const hasPassive = this.checkPassive(tokens);
-    const hasSubjunctive = this.checkSubjunctive(tokens);
-    const hasSubordinateClause = this.checkSubordinateClause(tokens);
-
-    // 步骤4: 估计难度级别
-    const estimatedLevel = this.estimateLevel(tokens, hasPassive, hasSubjunctive, hasSubordinateClause);
-
     return {
       text,
       tokens,
-      hasPassive,
-      hasSubjunctive,
-      hasSubordinateClause,
-      estimatedLevel,
       usedSpaCy: false
     };
   }
@@ -413,113 +405,7 @@ export class NLPEngine {
     return null;
   }
 
-  /**
-   * 检查是否是被动语态
-   */
-  private checkPassive(tokens: Token[]): boolean {
-    // REPLACED: Using proper passive voice detection
-    // Passive voice: werden/sein (AUX) + past participle (VERB)
-    // Check morphology for VerbForm=Part (past participle)
-    for (let i = 0; i < tokens.length - 1; i++) {
-      const token = tokens[i];
-      const nextToken = tokens[i + 1];
-      
-      if ((token.lemma === 'werden' || token.lemma === 'sein') && 
-          nextToken.pos === 'VERB') {
-        // Check if next token looks like a past participle (usually starts with 'ge' in German)
-        if (nextToken.word.startsWith('ge') || nextToken.lemma.startsWith('ge')) {
-          return true;
-        }
-      }
-    }
-    return false;
-  }
 
-  /**
-   * Check if sentence contains subjunctive mood
-   */
-  private checkSubjunctive(tokens: Token[]): boolean {
-    // REPLACED: Using proper subjunctive detection via morphology
-    // Konjunktiv II verbs have Mood=subjunctive or specific umlaut forms
-    const umlautVerbs = ['würde', 'könnte', 'möchte', 'sollte', 'hätte', 'wäre', 'müsste', 'dürfte'];
-    
-    return tokens.some(t => {
-      // Check for explicit subjunctive mood marker
-      if (t.morph?.['mood'] === 'subjunctive') return true;
-      // Check for common umlaut forms
-      if (umlautVerbs.includes(t.lemma.toLowerCase())) return true;
-      return false;
-    });
-  }
-
-  /**
-   * Check if sentence contains subordinate clause
-   */
-  private checkSubordinateClause(tokens: Token[]): boolean {
-    // REPLACED: Using proper subordinate clause detection
-    // Subordinate conjunctions trigger subordinate clauses
-    const subordinateConjunctions = new Set([
-      'dass', 'weil', 'wenn', 'obwohl', 'während', 'bis', 'nachdem', 'bevor',
-      'seit', 'sobald', 'sooft', 'sofern', 'indem', 'falls', 'insofern',
-      'darin', 'dazu', 'dessen', 'ob', 'damit'
-    ]);
-    
-    return tokens.some(t => subordinateConjunctions.has(t.lemma.toLowerCase()));
-  }
-
-  /**
-   * 估计句子难度等级
-   */
-  private estimateLevel(tokens: Token[], hasPassive: boolean, hasSubjunctive: boolean, hasSubordinateClause: boolean): 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2' {
-    let score = 0;
-
-    // 基础: 长度
-    if (tokens.length < 5) score += 1;
-    else if (tokens.length < 10) score += 2;
-    else if (tokens.length < 15) score += 3;
-    else score += 4;
-
-    // 从句 (B1+)
-    if (hasSubordinateClause) score += 2;
-
-    // 被动语态 (B1+)
-    if (hasPassive) score += 2;
-
-    // 虚拟语气 (B2+)
-    if (hasSubjunctive) score += 3;
-
-    // 基于词汇库中词的难度等级
-    const levelCounts: Record<string, number> = {};
-    for (const token of tokens) {
-      const vocabLevel = this.getVocabLevel(token.lemma);
-      levelCounts[vocabLevel] = (levelCounts[vocabLevel] || 0) + 1;
-    }
-
-    if (levelCounts['C1'] || levelCounts['C2']) score += 3;
-    else if (levelCounts['B2']) score += 2;
-    else if (levelCounts['B1']) score += 1;
-
-    // 根据分数估计等级
-    if (score <= 2) return 'A1';
-    if (score <= 4) return 'A2';
-    if (score <= 6) return 'B1';
-    if (score <= 8) return 'B2';
-    if (score <= 10) return 'C1';
-    return 'C2';
-  }
-
-  /**
-   * 获取词的CEFR难度等级
-   */
-  private getVocabLevel(lemma: string): string {
-    try {
-      const stmt = this.db.prepare('SELECT level FROM vocabulary WHERE LOWER(word) = ?');
-      const result = stmt.get(lemma) as {level: string} | undefined;
-      return result?.level || 'A1';
-    } catch (error) {
-      return 'A1';
-    }
-  }
 
   /**
    * 检测代词的人称

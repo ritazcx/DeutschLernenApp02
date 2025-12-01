@@ -11,19 +11,19 @@ export type GrammarCategory =
   | 'case'
   | 'mood'
   | 'voice'
-  | 'verb_form'
+  | 'verb-form'
   | 'preposition'
   | 'conjunction'
   | 'agreement'
-  | 'word_order'
+  | 'word-order'
   | 'article'
   | 'pronoun'
   | 'adjective'
   | 'noun'
-  | 'separable_verb'
-  | 'modal_verb'
+  | 'separable-verb'
+  | 'modal-verb'
   | 'collocation'
-  | 'special_construction';
+  | 'special-construction';
 
 export interface GrammarPoint {
   id: string;

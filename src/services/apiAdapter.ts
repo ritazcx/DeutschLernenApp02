@@ -102,12 +102,10 @@ export async function translateOrExplain(query: string) {
 
 // TTS left to provider preference, but default to gemini if available (per your request to leave TTS alone)
 export async function generateSpeech(text: string) {
-  if (PREFERRED_PROVIDER === 'deepseek' && deepseek.generateSpeech) return deepseek.generateSpeech(text);
   return gemini.generateSpeech ? gemini.generateSpeech(text) : undefined;
 }
 
 export const createTutorChat = () => {
-  if (PREFERRED_PROVIDER === 'deepseek' && deepseek.createTutorChat) return deepseek.createTutorChat();
   return gemini.createTutorChat ? gemini.createTutorChat() : undefined;
 };
 

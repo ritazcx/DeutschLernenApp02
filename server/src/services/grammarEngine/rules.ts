@@ -390,7 +390,7 @@ export class SubordinatingConjunctionRule extends BaseRule {
  */
 export class ModalVerbRule extends BaseRule {
   name = 'Modal Verb';
-  category: GrammarCategory = 'modal_verb';
+  category: GrammarCategory = 'modal-verb';
   level: CEFRLevel = 'B1';
 
   private readonly modalVerbs = ['können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen', 'möchten'];
@@ -409,7 +409,7 @@ export class ModalVerbRule extends BaseRule {
 
     return {
       id: this.generateId(),
-      category: 'modal_verb',
+      category: 'modal-verb',
       level: 'B1',
       text: infinitive ? `${token.word}...${infinitive.word}` : token.word,
       startPos: token.position.start,

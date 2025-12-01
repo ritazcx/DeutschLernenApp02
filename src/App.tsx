@@ -32,9 +32,6 @@ const App: React.FC = () => {
       const levels = ['A1', 'A2', 'B1'];
       const level = levels[Math.floor(Math.random() * levels.length)];
       const data = await fetchWordOfTheDay(level);
-      // debug: log raw WOD result to help diagnose missing fields
-      // eslint-disable-next-line no-console
-      console.debug('[App] fetchWordOfTheDay result:', data);
       setWodData(data);
       // Only set displayed word if we aren't looking at a search result, or if it's first load
       if (!wordData || wordData === wodData) {
@@ -179,7 +176,7 @@ const App: React.FC = () => {
                       </div>
                       <h3 className="text-2xl font-bold text-slate-800 mb-2">Grammar</h3>
                       <p className="text-slate-500 leading-relaxed">
-                        Analyze articles sentence by sentence (B2 Level).
+                        Analyze German text with AI-powered grammar detection (A1-C2 levels).
                       </p>
                     </div>
                   </button>

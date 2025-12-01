@@ -12,7 +12,7 @@ import { BaseRule } from './rules';
  */
 export class SeparableVerbRule extends BaseRule {
   name = 'Separable Verb';
-  category: GrammarCategory = 'separable_verb';
+  category: GrammarCategory = 'separable-verb';
   level: CEFRLevel = 'B1';
 
   // Common separable verb prefixes
@@ -40,7 +40,7 @@ export class SeparableVerbRule extends BaseRule {
 
           return {
             id: this.generateId(),
-            category: 'separable_verb',
+            category: 'separable-verb',
             level: 'B1',
             text: particle ? `${word}...${particle.word}` : word,
             startPos: token.position.start,
@@ -120,7 +120,7 @@ export class AdjectiveEndingRule extends BaseRule {
  */
 export class SubordinateClauseWordOrderRule extends BaseRule {
   name = 'Subordinate Clause Word Order';
-  category: GrammarCategory = 'word_order';
+  category: GrammarCategory = 'word-order';
   level: CEFRLevel = 'B1';
 
   private readonly subordinatingConjunctions = [
@@ -144,7 +144,7 @@ export class SubordinateClauseWordOrderRule extends BaseRule {
 
     return {
       id: this.generateId(),
-      category: 'word_order',
+      category: 'word-order',
       level: 'B1',
       text: `${token.word}...${lastVerb.word}`,
       startPos: token.position.start,
@@ -324,7 +324,7 @@ export class NounGenderRule extends BaseRule {
  */
 export class QuestionWordRule extends BaseRule {
   name = 'Question Word';
-  category: GrammarCategory = 'special_construction';
+  category: GrammarCategory = 'special-construction';
   level: CEFRLevel = 'B1';
 
   private readonly questionWords = ['was', 'wer', 'wen', 'wem', 'wessen', 'wo', 'wohin', 'woher', 'wann', 'warum', 'wie', 'welch'];
@@ -339,7 +339,7 @@ export class QuestionWordRule extends BaseRule {
 
     return {
       id: this.generateId(),
-      category: 'special_construction',
+      category: 'special-construction',
       level: 'B1',
       text: token.word,
       startPos: token.position.start,

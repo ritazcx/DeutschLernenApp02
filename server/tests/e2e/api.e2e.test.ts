@@ -1,0 +1,216 @@
+/**
+ * End-to-End Tests for Grammar Analysis API
+ * Tests the complete user-facing functionality
+ */
+
+import { spawn } from 'child_process';
+import http from 'http';
+import path from 'path';
+
+/**
+ * Helper function to make HTTP requests using Node.js http module
+ */
+function makeRequest(url: string, options: { method: string; headers?: Record<string, string>; body?: string }): Promise<{ statusCode: number; data: any }> {
+  return new Promise((resolve, reject) => {
+    const urlObj = new URL(url);
+    const requestOptions = {
+      hostname: urlObj.hostname,
+      port: urlObj.port,
+      path: urlObj.pathname,
+      method: options.method,
+      headers: options.headers || {},
+    };
+
+    const req = http.request(requestOptions, (res) => {
+      let data = '';
+      res.on('data', (chunk) => {
+        data += chunk;
+      });
+      res.on('end', () => {
+        try {
+          const parsedData = JSON.parse(data);
+          resolve({ statusCode: res.statusCode || 0, data: parsedData });
+        } catch (e) {
+          resolve({ statusCode: res.statusCode || 0, data });
+        }
+      });
+    });
+
+    req.on('error', (err) => {
+      reject(err);
+    });
+
+    if (options.body) {
+      req.write(options.body);
+    }
+    req.end();
+  });
+}
+
+describe('Grammar Analysis API End-to-End', () => {
+  let server: any;
+
+  beforeAll(async () => {
+    // Start the server
+    const serverPath = path.join(__dirname, '../../dist/src/index.js');
+    server = spawn('node', [serverPath], {
+      cwd: path.join(__dirname, '../..'),
+      stdio: ['pipe', 'pipe', 'pipe'],
+      env: { ...process.env, PORT: '4001' }
+    });
+
+    // Wait for server to start
+    await new Promise((resolve) => {
+      let output = '';
+      const checkServer = (data: Buffer) => {
+        output += data.toString();
+        if (output.includes('Server listening on http://localhost:4001')) {
+          server.stdout.off('data', checkServer);
+          // Wait a bit more for spaCy to initialize
+          setTimeout(resolve, 8000);
+        }
+      };
+
+      server.stdout.on('data', checkServer);
+      server.stderr.on('data', (data: Buffer) => {
+        console.error('Server error:', data.toString());
+      });
+    });
+  }, 20000);
+
+  afterAll(() => {
+    if (server) {
+      server.kill();
+    }
+  });
+
+  describe('Grammar Detection API', () => {
+    const testCases = [
+      {
+        text: 'Das Haus wird von meinem Vater gebaut.',
+        expectedCategory: 'passive',
+        description: 'Present passive voice'
+      },
+      {
+        text: 'Ich muss arbeiten.',
+        expectedCategory: 'modal-verb',
+        description: 'Modal verb construction'
+      },
+      {
+        text: 'Ich bleibe zu Hause, weil es regnet.',
+        expectedCategory: 'word-order',
+        description: 'Subordinate clause'
+      },
+      {
+        text: 'Die Studenten machen ihre Hausaufgaben.',
+        expectedPoints: 0, // Simple sentence, might not trigger complex grammar
+        description: 'Simple sentence'
+      }
+    ];
+
+    testCases.forEach(({ text, expectedCategory, expectedPoints, description }) => {
+      it(`should analyze ${description}`, async () => {
+        const response = await makeRequest('http://localhost:4001/analyze-detection', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ text })
+        });
+
+        expect(response.statusCode).toBe(200);
+        const data = response.data;
+
+        expect(data).toHaveProperty('sentence');
+        expect(data).toHaveProperty('grammarPoints');
+        expect(data).toHaveProperty('summary');
+        expect(data.summary.totalPoints).toBeGreaterThanOrEqual(expectedPoints || 0);
+
+        if (expectedCategory) {
+          const categories = data.grammarPoints.map((p: any) => p.grammarPoint.category);
+          expect(categories).toContain(expectedCategory);
+        }
+      }, 15000);
+    });
+  });
+
+  describe('API Robustness', () => {
+    it('should handle empty input', async () => {
+      const response = await makeRequest('http://localhost:4001/analyze-detection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: '' })
+      });
+
+      expect(response.statusCode).toBe(400);
+      const data = response.data;
+      expect(data.error).toContain('required');
+    });
+
+    it('should handle invalid input', async () => {
+      const response = await makeRequest('http://localhost:4001/analyze-detection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: 123 })
+      });
+
+      expect(response.statusCode).toBe(400);
+      const data = response.data;
+      expect(data.error).toContain('string');
+    });
+
+    it('should handle long texts', async () => {
+      const longText = 'Das ist ein langer Text. '.repeat(20) + 'Er enthält viele Sätze mit verschiedenen grammatikalischen Konstruktionen.';
+
+      const response = await makeRequest('http://localhost:4001/analyze-detection', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text: longText })
+      });
+
+      expect(response.statusCode).toBe(200);
+      const data = response.data;
+      expect(data.summary.totalPoints).toBeGreaterThanOrEqual(0);
+    }, 30000);
+  });
+
+  describe('Utility Endpoints', () => {
+    it('should return health status', async () => {
+      const response = await makeRequest('http://localhost:4001/health', {
+        method: 'GET'
+      });
+      expect(response.statusCode).toBe(200);
+      expect(response.data).toEqual({ status: 'ok' });
+    });
+
+    it('should return available grammar categories', async () => {
+      const response = await makeRequest('http://localhost:4001/categories', {
+        method: 'GET'
+      });
+      expect(response.statusCode).toBe(200);
+
+      const data = response.data;
+      expect(data).toHaveProperty('categories');
+      expect(Array.isArray(data.categories)).toBe(true);
+      expect(data.categories.length).toBeGreaterThan(0);
+    });
+
+    it('should return CEFR levels', async () => {
+      const response = await makeRequest('http://localhost:4001/levels', {
+        method: 'GET'
+      });
+      expect(response.statusCode).toBe(200);
+
+      const data = response.data;
+      expect(data).toHaveProperty('levels');
+      expect(Array.isArray(data.levels)).toBe(true);
+      expect(data.levels).toContain('B1');
+    });
+  });
+});
