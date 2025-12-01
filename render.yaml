@@ -14,7 +14,7 @@ services:
       - key: DEEPSEEK_API_KEY
         from: secret
       - key: FRONTEND_URL
-        value: "https://<your-frontend-url>"
+        value: "https://deutschlernenapp02-2.onrender.com"
       - key: NODE_ENV
         value: production
     # Optional: configure a disk for SQLite persistence (replace with actual disk config in Render UI)
@@ -30,4 +30,4 @@ services:
     publishPath: dist
     envVars:
       - key: VITE_DICTIONARY_API_BASE
-        value: "https://<your-server-url>"
+        value: "https://deutschlernenapp02-server.onrender.com"
