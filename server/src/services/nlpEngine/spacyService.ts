@@ -66,7 +66,25 @@ export class SpacyService {
     const scriptPath = path.join(__dirname, '../../../spacy-service.py');
 
     try {
-      this.process = spawn('python3', [scriptPath], {
+      // Try python3 first, then python, then use which to find it
+      let pythonCmd = 'python3';
+      
+      // For Render environment where python might be the only available command
+      const { execSync } = require('child_process');
+      try {
+        execSync('which python3', { stdio: 'pipe' });
+      } catch {
+        try {
+          execSync('which python', { stdio: 'pipe' });
+          pythonCmd = 'python';
+        } catch {
+          console.warn('Neither python3 nor python found in PATH');
+        }
+      }
+
+      console.log(`[spaCy Service] Attempting to spawn with: ${pythonCmd} ${scriptPath}`);
+      
+      this.process = spawn(pythonCmd, [scriptPath], {
         stdio: ['pipe', 'pipe', 'pipe'],
         detached: false,
         cwd: path.dirname(scriptPath) // Set working directory to script directory
@@ -94,8 +112,10 @@ export class SpacyService {
       // Handle stderr (logs)
       this.process.stderr?.on('data', (data: Buffer) => {
         const message = data.toString().trim();
+        console.log(`[spaCy Service] stderr: ${message}`);
         if (message.includes('ready')) {
           this.ready = true;
+          console.log('[spaCy Service] Service is ready');
         } else if (message.includes('ERROR')) {
           console.error('spaCy service error:', message);
         }
@@ -118,12 +138,15 @@ export class SpacyService {
       // Wait a bit for service to be ready
       setTimeout(() => {
         if (!this.ready) {
+          console.warn('[spaCy Service] Service not marked as ready after 5s, assuming ready anyway');
           this.ready = true;
         }
       }, 5000); // Increased from 2000 to 5000
     } catch (error) {
       console.error('Failed to start spaCy service:', error);
       this.ready = false;
+      // Try to restart after a delay
+      setTimeout(() => this.initialize(), 5000);
     }
   }
 
