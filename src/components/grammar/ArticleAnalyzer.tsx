@@ -156,29 +156,6 @@ const ArticleAnalyzer: React.FC = () => {
                 Paste German text to analyze grammar from A1 to C2 levels
               </p>
             </div>
-            {/* NLP vs DeepSeek Toggle */}
-            <div className="flex gap-2">
-              <button
-                onClick={() => setUseNLPAnalyzer(false)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  !useNLPAnalyzer
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                DeepSeek
-              </button>
-              <button
-                onClick={() => setUseNLPAnalyzer(true)}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
-                  useNLPAnalyzer
-                    ? 'bg-slate-900 text-white'
-                    : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                }`}
-              >
-                NLP Engine
-              </button>
-            </div>
           </div>
         </div>
 
