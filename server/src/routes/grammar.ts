@@ -3,19 +3,14 @@ import { NLPEngine } from '../services/nlpEngine';
 
 const router = express.Router();
 
-// Initialize NLP engine
-let nlpEngine: NLPEngine;
-try {
-  nlpEngine = new NLPEngine();
-  console.log('NLP Engine initialized successfully');
-} catch (error) {
-  console.error('Failed to initialize NLP Engine:', error);
-  throw error;
-}
-
-console.log('Grammar router initialized');
-
-/**
+  // Initialize NLP engine
+  let nlpEngine: NLPEngine;
+  try {
+    nlpEngine = new NLPEngine();
+  } catch (error) {
+    console.error('Failed to initialize NLP Engine:', error);
+    throw error;
+  }/**
  * Robust sentence splitting that handles dates, abbreviations, and German text
  * Treats titles and subtitles as single sentences
  */
@@ -132,6 +127,26 @@ router.get('/categories', (req, res) => {
 });
 
 /**
+ * GET /levels
+ * Get available CEFR levels
+ */
+router.get('/levels', (req, res) => {
+  const levels = [
+    'A1',
+    'A2', 
+    'B1',
+    'B2',
+    'C1',
+    'C2'
+  ];
+
+  res.json({
+    levels,
+    count: levels.length,
+  });
+});
+
+/**
  * POST /analyze-detection
  * Analyze text using the new rule-based grammar detection engine
  * Splits text into sentences and analyzes each one individually
@@ -144,11 +159,8 @@ router.post('/analyze-detection', async (req, res) => {
       return res.status(400).json({ error: 'Text is required and must be a string' });
     }
 
-    console.log('Analyzing text with detection engine:', text.substring(0, 100) + '...');
-
     // More robust sentence splitting that handles dates and abbreviations
     const sentences = splitIntoSentences(text);
-    console.log(`Split into ${sentences.length} sentences`);
 
     const sentenceAnalyses = await Promise.all(
       sentences.map(async (sentenceText: string, index: number) => {
@@ -184,8 +196,6 @@ router.post('/analyze-detection', async (req, res) => {
       });
       return acc;
     }, {} as Record<string, number>);
-
-    console.log(`Found ${totalPoints} grammar points across ${Object.values(allLevels).reduce((a: number, b: number) => a + b, 0)} levels in ${sentences.length} sentences`);
 
     res.json({
       success: true,

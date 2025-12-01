@@ -15,7 +15,6 @@ router.get('/api/dictionary/:word', async (req, res) => {
     
     // If not found in database, fetch from DeepSeek and insert
     if (!vocabEntry) {
-      console.log(`Word "${raw}" not in database, fetching from DeepSeek...`);
       try {
         const aiEntry = await fetchDictionaryEntry(raw);
         
@@ -31,8 +30,6 @@ router.get('/api/dictionary/:word', async (req, res) => {
           example_de: aiEntry.example_german || '',
           example_en: aiEntry.example_english || '',
         });
-        
-        console.log(`✓ Inserted new vocabulary: "${raw}" (${aiEntry.level})`);
         
         // Use the AI-generated entry
         vocabEntry = {
