@@ -3,10 +3,11 @@
  * Tests the actual grammar detection API endpoint
  */
 
-import http from 'http';
+import * as http from 'http';
+
+const TEST_PORT = 4003; // Use different port for tests
 
 describe('Morphological Analysis Integration', () => {
-  const TEST_PORT = 4003; // Use different port for tests
   let serverProcess: any;
 
   beforeAll(async () => {
