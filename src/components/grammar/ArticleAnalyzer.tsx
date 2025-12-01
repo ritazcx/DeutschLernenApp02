@@ -4,7 +4,6 @@ import { analyzeArticle, analyzeTextWithDetection } from '../../services/grammar
 import { saveAnalysis } from '../../services/analysisService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
-import SavedAnalyses from '../analysis/SavedAnalyses';
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -28,7 +27,6 @@ const ArticleAnalyzer: React.FC = () => {
   const [savedId, setSavedId] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [showSavedModal, setShowSavedModal] = useState(false);
   const [useNLPAnalyzer, setUseNLPAnalyzer] = useState(true);
   
   // Grammar filter state - load from localStorage or default to all selected
@@ -143,7 +141,6 @@ const ArticleAnalyzer: React.FC = () => {
     setSavedId(analysis.id);
     setIsSaved(true);
     setShowSuccessMessage(false);
-    setShowSavedModal(false);
   };
 
   return (
@@ -213,13 +210,6 @@ const ArticleAnalyzer: React.FC = () => {
                   className="px-6 py-3 bg-slate-200 text-slate-700 rounded-lg hover:bg-slate-300 disabled:opacity-50 transition-colors font-medium"
                 >
                   Clear
-                </button>
-                <button
-                  onClick={() => setShowSavedModal(true)}
-                  disabled={loading}
-                  className="px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 transition-colors font-medium"
-                >
-                  Choose an analyzed article
                 </button>
               </div>
               {selectedGrammarTypes.length === 0 && (
