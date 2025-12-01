@@ -62,18 +62,11 @@ export class SpacyService {
    * Initialize the spaCy Python service
    */
   private initialize(): void {
-    // Use absolute path to spacy-service.py from project root
-    // In development: from src/services/nlpEngine -> ../../../spacy-service.py
-    // In production: from dist/src/services/nlpEngine -> ../../../../server/spacy-service.py
-    const isProduction = process.env.NODE_ENV === 'production' || !__dirname.includes('/src/');
-    const scriptPath = isProduction
-      ? path.join(__dirname, '../../../../server/spacy-service.py')
-      : path.join(__dirname, '../../../spacy-service.py');
+    // Use relative path to spacy-service.py
+    const scriptPath = path.join(__dirname, '../../../spacy-service.py');
 
     try {
-      // Try python3 first, fallback to python
-      const pythonCmd = process.platform === 'win32' ? 'python' : 'python3';
-      this.process = spawn(pythonCmd, [scriptPath], {
+      this.process = spawn('python3', [scriptPath], {
         stdio: ['pipe', 'pipe', 'pipe'],
         detached: false,
         cwd: path.dirname(scriptPath) // Set working directory to script directory
