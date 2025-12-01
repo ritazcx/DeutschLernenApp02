@@ -17,6 +17,11 @@ const ArticleAnalyzer: React.FC = () => {
     setSelectedGrammarPoint(pointIndex);
   };
 
+  const handleSentenceClick = (sentenceIndex: number) => {
+    setSelectedSentence(sentenceIndex);
+    setSelectedGrammarPoint(null); // Reset grammar point selection to show sentence overview
+  };
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -225,10 +230,10 @@ const ArticleAnalyzer: React.FC = () => {
             </div>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 h-[calc(100vh-300px)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Left Panel: Article with Highlights */}
-            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col overflow-hidden">
-              <div className="flex justify-between items-center mb-4">
+            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col h-[calc(100vh-150px)]">
+              <div className="flex justify-between items-center mb-4 flex-shrink-0">
                 <h2 className="text-xl font-bold text-slate-900">Article</h2>
                 <div className="flex items-center gap-2">
                   <button
@@ -248,6 +253,7 @@ const ArticleAnalyzer: React.FC = () => {
                         ? 'border-slate-900 bg-slate-50'
                         : 'border-slate-200 hover:bg-slate-50'
                     }`}
+                    onClick={() => handleSentenceClick(index)}
                   >
                     <HighlightedSentence 
                       sentence={sentence} 
@@ -260,8 +266,8 @@ const ArticleAnalyzer: React.FC = () => {
             </div>
 
             {/* Right Panel: Grammar Explanation */}
-            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col">
-              <h2 className="text-xl font-bold text-slate-900 mb-4">Grammar Analysis</h2>
+            <div className="bg-white rounded-xl shadow-sm p-6 flex flex-col h-[calc(100vh-150px)]">
+              <h2 className="text-xl font-bold text-slate-900 mb-4 flex-shrink-0">Grammar Analysis</h2>
               {selectedSentence !== null ? (
                 <div className="overflow-y-auto flex-1">
                   <GrammarExplanationPanel 

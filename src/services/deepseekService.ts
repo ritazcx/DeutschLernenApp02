@@ -110,3 +110,15 @@ Return your answer as plain text.`;
   const responseText = await generateFromDeepSeek([{ role: 'system', content: prompt }]);
   return responseText;
 }
+
+// --- German to English Translation ---
+export async function translateGermanToEnglish(germanText: string): Promise<string> {
+  const prompt = `Translate the following German text to natural, accurate English. Provide only the English translation without any additional explanation or notes:
+
+German: "${germanText}"
+
+English:`;
+
+  const responseText = await generateFromDeepSeek([{ role: 'system', content: prompt }]);
+  return responseText.trim();
+}

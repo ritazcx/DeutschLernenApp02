@@ -1,5 +1,5 @@
 import { ArticleAnalysis, GrammarType, CEFRLevel, SentenceAnalysis, GrammarPoint } from '../types/grammar';
-import { translateOrExplain } from './apiAdapter';
+import { translateOrExplain, translateGermanToEnglish } from './apiAdapter';
 
 const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
 
@@ -50,10 +50,7 @@ export async function analyzeTextWithDetection(text: string): Promise<{
       // Get translation for each sentence
       let translation = '';
       try {
-        const translationResult = await translateOrExplain(`Translate this German sentence to English: "${sentenceData.sentence}"`);
-        // Extract just the translation part (remove any explanation)
-        const lines = translationResult.split('\n');
-        translation = lines[0] || translationResult;
+        translation = await translateGermanToEnglish(sentenceData.sentence);
       } catch (error) {
         console.warn('Failed to get translation for sentence:', sentenceData.sentence, error);
         translation = 'Translation unavailable';

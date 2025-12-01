@@ -100,6 +100,10 @@ export async function translateOrExplain(query: string) {
   return gemini.translateOrExplain ? gemini.translateOrExplain(query) : deepseek.translateOrExplain(query);
 }
 
+export async function translateGermanToEnglish(germanText: string) {
+  return deepseek.translateGermanToEnglish(germanText);
+}
+
 // TTS left to provider preference, but default to gemini if available (per your request to leave TTS alone)
 export async function generateSpeech(text: string) {
   return gemini.generateSpeech ? gemini.generateSpeech(text) : undefined;
@@ -120,6 +124,7 @@ export default {
   fetchWordOfTheDay,
   searchDictionaryWord,
   translateOrExplain,
+  translateGermanToEnglish,
   generateSpeech,
   createTutorChat,
 };

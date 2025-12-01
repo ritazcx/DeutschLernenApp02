@@ -64,7 +64,7 @@ const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sente
   }
 
   return (
-    <div className="max-h-[70vh] overflow-y-auto space-y-6">
+    <div className="space-y-6">
       {/* Translation */}
       <div>
         <h3 className="text-sm font-semibold text-slate-700 mb-2">Translation:</h3>
