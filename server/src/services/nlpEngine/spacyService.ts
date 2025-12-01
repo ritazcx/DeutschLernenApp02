@@ -55,7 +55,6 @@ export class SpacyService {
   private maxCacheSize = 10000;
 
   constructor() {
-    console.log('SpacyService constructor called');
     this.initialize();
   }
 
@@ -63,11 +62,8 @@ export class SpacyService {
    * Initialize the spaCy Python service
    */
   private initialize(): void {
-    // Use absolute path to spacy-service.py
-    const scriptPath = '/Users/chenxuanzhang/Documents/my-AI-projects/DeutschLernenApp02/server/spacy-service.py';
-    console.log('spaCy script path:', scriptPath);
-    console.log('spaCy __dirname:', __dirname);
-    console.log('spaCy cwd:', process.cwd());
+    // Use relative path to spacy-service.py
+    const scriptPath = path.join(__dirname, '../../../spacy-service.py');
     
     try {
       this.process = spawn('python3', [scriptPath], {
@@ -75,8 +71,6 @@ export class SpacyService {
         detached: false,
         cwd: path.dirname(scriptPath) // Set working directory to script directory
       });
-
-      console.log('spaCy process spawned, PID:', this.process.pid);
 
       // Handle stdout (responses)
       this.process.stdout?.on('data', (data: Buffer) => {
@@ -100,14 +94,10 @@ export class SpacyService {
       // Handle stderr (logs)
       this.process.stderr?.on('data', (data: Buffer) => {
         const message = data.toString().trim();
-        console.log('spaCy stderr:', message);
         if (message.includes('ready')) {
           this.ready = true;
-          console.log('✓ spaCy service initialized');
         } else if (message.includes('ERROR')) {
           console.error('spaCy service error:', message);
-        } else {
-          console.log('spaCy service:', message);
         }
       });
 
@@ -128,7 +118,6 @@ export class SpacyService {
       // Wait a bit for service to be ready
       setTimeout(() => {
         if (!this.ready) {
-          console.log('spaCy service timeout - forcing ready state');
           this.ready = true;
         }
       }, 5000); // Increased from 2000 to 5000

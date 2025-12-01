@@ -10,6 +10,7 @@ export interface MorphFeature {
   mood?: 'indicative' | 'subjunctive' | 'conditional' | 'imperative' | 'n/a';
   person?: '1sg' | '2sg' | '3sg' | '1pl' | '2pl' | '3pl' | 'n/a';
   voice?: 'active' | 'passive' | 'n/a';
+  verbForm?: 'fin' | 'inf' | 'part' | 'ger' | 'n/a';
 }
 
 export interface Token {

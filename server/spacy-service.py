@@ -80,6 +80,14 @@ def analyze_sentence(text: str) -> dict:
             # Convert vector_norm to float to avoid JSON serialization issues
             vector_norm = float(token.vector_norm) if token.has_vector else None
             
+            # Convert morphological features to dictionary
+            morph_dict = {}
+            if token.morph:
+                for feature in str(token.morph).split('|'):
+                    if '=' in feature:
+                        key, val = feature.split('=', 1)
+                        morph_dict[key] = val
+            
             tokens.append({
                 "text": token.text,
                 "lemma": token.lemma_,
@@ -88,7 +96,8 @@ def analyze_sentence(text: str) -> dict:
                 "dep": token.dep_,
                 "head": token.head.text,
                 "has_vector": token.has_vector,
-                "vector_norm": vector_norm
+                "vector_norm": vector_norm,
+                "morph": morph_dict  # Morphological features (case, tense, etc.)
             })
         
         # Extract named entities
