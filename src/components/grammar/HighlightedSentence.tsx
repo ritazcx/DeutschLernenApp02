@@ -5,7 +5,6 @@ interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
   onGrammarPointClick?: (sentenceIndex: number, pointIndex: number) => void;
   sentenceIndex: number;
-  selectedLevels?: CEFRLevel[];
 }
 
 // CEFR level color mapping for vocabulary
@@ -50,22 +49,17 @@ const colorMap: Record<GrammarPoint['type'], string> = {
   passive: 'bg-red-200 hover:bg-red-300',
 };
 
-const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onGrammarPointClick, sentenceIndex, selectedLevels = [] }) => {
+const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onGrammarPointClick, sentenceIndex }) => {
 
   // Build highlighted spans from grammar points
   const points = [...sentence.grammarPoints].sort((a, b) => a.position.start - b.position.start);
-  
-  // Filter points by selected levels if any levels are specified
-  const levelFilteredPoints = selectedLevels.length > 0 
-    ? points.filter(point => selectedLevels.includes(point.level))
-    : points;
   
   // Get vocabulary points (if any)
   const vocabPoints = sentence.vocabularyPoints || [];
   
   // Filter out overlapping points - keep only the first one
   const filteredPoints: typeof points = [];
-  levelFilteredPoints.forEach(point => {
+  points.forEach(point => {
     const overlaps = filteredPoints.some(
       existing => 
         (point.position.start >= existing.position.start && point.position.start < existing.position.end) ||
