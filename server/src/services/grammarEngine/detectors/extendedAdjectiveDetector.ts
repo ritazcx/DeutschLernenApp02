@@ -33,7 +33,7 @@ export class ExtendedAdjectiveDetector extends BaseGrammarDetector {
 
       // Look backwards for extended adjective phrase
       const adjectivePhrase = this.findExtendedAdjectivePhrase(sentence.tokens, i);
-      if (adjectivePhrase.length > 0) {
+      if (adjectivePhrase.length > 1) { // Only flag if there are multiple modifiers (truly extended)
         const startIndex = i - adjectivePhrase.length;
         const endIndex = i;
 
@@ -70,6 +70,12 @@ export class ExtendedAdjectiveDetector extends BaseGrammarDetector {
         break;
       }
 
+      // Skip dates and numbers - they shouldn't be part of adjective phrases
+      if (this.isDateOrNumber(token)) {
+        currentIndex--;
+        continue;
+      }
+
       // Include adjectives, participles, prepositions in extended phrases
       if (token.pos === 'ADJ' ||
           (token.pos === 'VERB' && token.tag === 'VVPP') || // past participle
@@ -91,6 +97,21 @@ export class ExtendedAdjectiveDetector extends BaseGrammarDetector {
   private isAttributivePreposition(token: SentenceData['tokens'][0]): boolean {
     const attributivePreps = ['von', 'mit', 'für', 'aus', 'in', 'auf', 'über', 'unter', 'vor', 'nach'];
     return attributivePreps.includes(token.lemma);
+  }
+
+  /**
+   * Check if token is a date or number that shouldn't be part of adjective phrases
+   */
+  private isDateOrNumber(token: SentenceData['tokens'][0]): boolean {
+    // Check for date patterns like "4.", "21.", etc.
+    if (/^\d+\.$/.test(token.text)) {
+      return true;
+    }
+    // Check for numbers
+    if (token.pos === 'NUM') {
+      return true;
+    }
+    return false;
   }
 
   /**

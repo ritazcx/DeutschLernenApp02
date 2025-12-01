@@ -111,6 +111,7 @@ export class SubjunctiveDetector extends BaseGrammarDetector {
 
   /**
    * Check if a verb form is an umlaut Konjunktiv II verb
+   * Only check against known irregular verbs, not just any word with umlauts
    */
   private isUmlautVerb(word: string): boolean {
     const lowerWord = word.toLowerCase();
@@ -119,7 +120,7 @@ export class SubjunctiveDetector extends BaseGrammarDetector {
         return true;
       }
     }
-    return /[äöü]/.test(word); // Simple heuristic: contains umlaut
+    return false; // Remove the crude umlaut heuristic
   }
 
   /**

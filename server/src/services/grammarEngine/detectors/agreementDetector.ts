@@ -93,15 +93,29 @@ export class AgreementDetector extends BaseGrammarDetector {
     const nounGender = MorphAnalyzer.extractGender(noun.morph || {});
     const nounNumber = MorphAnalyzer.extractNumber(noun.morph || {});
 
-    // Check if all agree (allowing for some missing features)
-    const caseAgrees = !articleCase || !adjectiveCase || !nounCase ||
-                      (articleCase === adjectiveCase && adjectiveCase === nounCase);
+    // Must have morphological features to detect agreement
+    // 'unknown' means the feature is missing
+    const hasCaseFeatures = articleCase && articleCase !== 'unknown' && 
+                           adjectiveCase && adjectiveCase !== 'unknown' && 
+                           nounCase && nounCase !== 'unknown';
+    const hasGenderFeatures = articleGender && articleGender !== 'unknown' && 
+                             adjectiveGender && adjectiveGender !== 'unknown' && 
+                             nounGender && nounGender !== 'unknown';
+    const hasNumberFeatures = articleNumber && articleNumber !== 'unknown' && 
+                             adjectiveNumber && adjectiveNumber !== 'unknown' && 
+                             nounNumber && nounNumber !== 'unknown';
 
-    const genderAgrees = !articleGender || !adjectiveGender || !nounGender ||
-                        (articleGender === adjectiveGender && adjectiveGender === nounGender);
+    // If we don't have the necessary features, we can't verify agreement
+    if (!hasCaseFeatures && !hasGenderFeatures && !hasNumberFeatures) {
+      return { isCorrect: false };
+    }
 
-    const numberAgrees = !articleNumber || !adjectiveNumber || !nounNumber ||
-                        (articleNumber === adjectiveNumber && adjectiveNumber === nounNumber);
+    // Check agreement for features that are present
+    // Note: In German, gender agreement is not required in plural forms
+    const isPlural = (articleNumber === 'Plur' || adjectiveNumber === 'Plur' || nounNumber === 'Plur');
+    const caseAgrees = !hasCaseFeatures || (articleCase === adjectiveCase && adjectiveCase === nounCase);
+    const genderAgrees = !hasGenderFeatures || isPlural || (articleGender === adjectiveGender && adjectiveGender === nounGender);
+    const numberAgrees = !hasNumberFeatures || (articleNumber === adjectiveNumber && adjectiveNumber === nounNumber);
 
     return {
       isCorrect: caseAgrees && genderAgrees && numberAgrees,

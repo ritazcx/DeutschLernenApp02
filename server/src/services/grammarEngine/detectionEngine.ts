@@ -104,9 +104,6 @@ export class GrammarDetectionEngine {
     // First run rule-based detectors
     const ruleBasedResult = this.analyze(sentenceData);
 
-    // TEMPORARILY DISABLE AI FALLBACK - focus on rule-based detection only
-    // TODO: Re-enable AI fallback once API issues are resolved
-    console.log(`Rule-based detection completed: ${ruleBasedResult.summary.totalPoints} grammar points found`);
     return ruleBasedResult;
 
     // Only use AI fallback if we have very few grammar points (less than 2)
@@ -114,8 +111,6 @@ export class GrammarDetectionEngine {
     if (ruleBasedResult.summary.totalPoints >= 2) {
       return ruleBasedResult;
     }
-
-    console.log(`Rule-based detection found only ${ruleBasedResult.summary.totalPoints} grammar points, attempting AI fallback...`);
 
     // Run AI detector for additional insights only when rule-based is sparse
     try {
@@ -136,7 +131,6 @@ export class GrammarDetectionEngine {
         const byCategory = this.organizeByCategory(deduplicated);
         const summary = this.createSummary(deduplicated, byLevel, byCategory);
 
-        console.log(`AI fallback added ${aiResults.length} additional grammar points`);
         return {
           sentence: sentenceData.text,
           grammarPoints: deduplicated,
