@@ -22,6 +22,8 @@ import { RelativeClauseDetector } from './detectors/relativeClauseDetector';
 import { ReflexiveVerbDetector } from './detectors/reflexiveVerbDetector';
 import { PrepositionDetector } from './detectors/prepositionDetector';
 import { CausativeDetector } from './detectors/causativeDetector';
+import { A1GrammarDetector } from './detectors/a1GrammarDetector';
+import { A2GrammarDetector } from './detectors/a2GrammarDetector';
 import { AIGrammarDetector } from './detectors/aiGrammarDetector';
 import { BaseGrammarDetector, DetectionResult, SentenceData } from './detectors/baseDetector';
 import { GrammarCategory, CEFRLevel } from './cefr-taxonomy';
@@ -40,6 +42,8 @@ export interface GrammarAnalysisResult {
 
 export class GrammarDetectionEngine {
   private detectors: BaseGrammarDetector[] = [
+    new A1GrammarDetector(),
+    new A2GrammarDetector(),
     new TenseDetector(),
     new CaseDetector(),
     new PassiveVoiceDetector(),

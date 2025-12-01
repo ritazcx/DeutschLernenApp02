@@ -27,6 +27,7 @@ export interface SpacyToken {
   head: string;
   has_vector: boolean;
   vector_norm?: number;
+  morph?: Record<string, string>;  // Morphological features
 }
 
 export interface SpacyAnalysisResult {
