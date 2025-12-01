@@ -34,11 +34,15 @@ export class NLPEngine {
    * Parse sentence using spaCy service
    */
   private async parseSentenceSpaCy(text: string): Promise<ParsedSentence> {
+    console.log(`[Grammar Engine] Attempting spaCy parsing for: "${text.substring(0, 50)}..."`);
     const result = await this.spacyService.analyzeSentence(text);
 
     if (!result.success || !result.tokens) {
+      console.error(`[Grammar Engine] ✗ spaCy parsing FAILED: ${result.error || 'No tokens returned'}`);
       throw new Error(result.error || 'spaCy analysis failed');
     }
+
+    console.log(`[Grammar Engine] ✓ spaCy parsing succeeded, got ${result.tokens.length} tokens`);
 
     const tokens: Token[] = result.tokens.map((spacyToken, i) => {
       // Normalize spaCy POS to our format
@@ -93,14 +97,16 @@ export class NLPEngine {
   }
 
   /**
-   * 解析单个句子
+   * Parse sentence
    */
   async parseSentence(text: string): Promise<ParsedSentence> {
     try {
       // Try spaCy first
       return await this.parseSentenceSpaCy(text);
     } catch (error) {
-      console.warn('spaCy parsing failed, falling back to rule-based parsing:', (error as Error).message);
+      console.warn(`[Grammar Engine] ⚠️ spaCy parsing failed, falling back to rule-based parsing`);
+      console.warn(`[Grammar Engine] ⚠️ Error was:`, (error as Error).message);
+      console.warn(`[Grammar Engine] ⚠️ This will result in fewer grammar points detected!`);
       return this.parseSentenceFallback(text);
     }
   }

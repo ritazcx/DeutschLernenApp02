@@ -65,6 +65,13 @@ export class SpacyService {
     // Use relative path to spacy-service.py
     const scriptPath = path.join(__dirname, '../../../spacy-service.py');
 
+    console.log(`[spaCy Service] Initialization starting...`);
+    console.log(`[spaCy Service] Script path: ${scriptPath}`);
+    console.log(`[spaCy Service] Script exists: ${require('fs').existsSync(scriptPath)}`);
+    console.log(`[spaCy Service] Node version: ${process.version}`);
+    console.log(`[spaCy Service] Current working directory: ${process.cwd()}`);
+    console.log(`[spaCy Service] Environment PATH: ${process.env.PATH}`);
+
     try {
       // Try python3 first, then python, then use which to find it
       let pythonCmd = 'python3';
@@ -73,16 +80,20 @@ export class SpacyService {
       const { execSync } = require('child_process');
       try {
         execSync('which python3', { stdio: 'pipe' });
+        console.log(`[spaCy Service] Found python3 in PATH`);
       } catch {
+        console.warn(`[spaCy Service] python3 not found in PATH, trying python...`);
         try {
           execSync('which python', { stdio: 'pipe' });
           pythonCmd = 'python';
+          console.log(`[spaCy Service] Found python in PATH`);
         } catch {
-          console.warn('Neither python3 nor python found in PATH');
+          console.error(`[spaCy Service] ERROR: Neither python3 nor python found in PATH`);
+          console.error(`[spaCy Service] Attempting spawn anyway with: ${pythonCmd}`);
         }
       }
 
-      console.log(`[spaCy Service] Attempting to spawn with: ${pythonCmd} ${scriptPath}`);
+      console.log(`[spaCy Service] Spawning process with: ${pythonCmd} ${scriptPath}`);
       
       this.process = spawn(pythonCmd, [scriptPath], {
         stdio: ['pipe', 'pipe', 'pipe'],
@@ -90,10 +101,17 @@ export class SpacyService {
         cwd: path.dirname(scriptPath) // Set working directory to script directory
       });
 
+      console.log(`[spaCy Service] Process spawned, PID: ${this.process?.pid}`);
+      
+      if (!this.process) {
+        throw new Error('Failed to spawn process - process is null');
+      }
+
       // Handle stdout (responses)
       this.process.stdout?.on('data', (data: Buffer) => {
         const lines = data.toString().split('\n').filter(l => l.trim());
         for (const line of lines) {
+          console.log(`[spaCy Service] stdout: ${line}`);
           try {
             const response = JSON.parse(line);
             const queued = this.queue.shift();
@@ -115,7 +133,7 @@ export class SpacyService {
         console.log(`[spaCy Service] stderr: ${message}`);
         if (message.includes('ready')) {
           this.ready = true;
-          console.log('[spaCy Service] Service is ready');
+          console.log('[spaCy Service] ✓ Service marked as READY');
         } else if (message.includes('ERROR')) {
           console.error('spaCy service error:', message);
         }
@@ -123,30 +141,41 @@ export class SpacyService {
 
       // Handle process exit
       this.process.on('exit', (code: number) => {
-        console.error(`spaCy service exited with code ${code}`);
+        console.error(`[spaCy Service] ✗ Process exited with code ${code}`);
+        console.error(`[spaCy Service] This means spaCy Python service failed to start or crashed`);
         this.ready = false;
         // Attempt restart after delay
-        setTimeout(() => this.initialize(), 5000);
+        setTimeout(() => {
+          console.log(`[spaCy Service] Attempting to restart...`);
+          this.initialize();
+        }, 5000);
       });
 
       // Handle process error
       this.process.on('error', (error) => {
-        console.error('spaCy process error:', error);
+        console.error(`[spaCy Service] ✗ Process error:`, error);
+        console.error(`[spaCy Service] This could mean: python not found, permission denied, or other OS error`);
         this.ready = false;
       });
 
       // Wait a bit for service to be ready
       setTimeout(() => {
         if (!this.ready) {
-          console.warn('[spaCy Service] Service not marked as ready after 5s, assuming ready anyway');
+          console.warn('[spaCy Service] ⚠️ Service not marked as ready after 5s, assuming ready anyway');
           this.ready = true;
+        } else {
+          console.log('[spaCy Service] ✓ Service ready confirmed');
         }
-      }, 5000); // Increased from 2000 to 5000
+      }, 5000);
     } catch (error) {
-      console.error('Failed to start spaCy service:', error);
+      console.error(`[spaCy Service] ✗ Fatal error during initialization:`, error);
+      console.error(`[spaCy Service] Stack:`, (error as Error).stack);
       this.ready = false;
       // Try to restart after a delay
-      setTimeout(() => this.initialize(), 5000);
+      setTimeout(() => {
+        console.log(`[spaCy Service] Attempting to restart after fatal error...`);
+        this.initialize();
+      }, 5000);
     }
   }
 
@@ -155,20 +184,37 @@ export class SpacyService {
    */
   private async sendRequest(request: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.ready || !this.process) {
+      if (!this.ready) {
+        console.error(`[spaCy Service] ✗ Cannot send request - service not ready (ready=${this.ready}, process=${this.process ? 'exists' : 'null'})`);
         reject(new Error('spaCy service not ready'));
         return;
       }
 
+      if (!this.process) {
+        console.error(`[spaCy Service] ✗ Cannot send request - process is null`);
+        reject(new Error('spaCy service process is null'));
+        return;
+      }
+
+      const requestId = Math.random().toString(36).substring(7);
+      console.log(`[spaCy Service] → Sending request [${requestId}]: ${JSON.stringify(request).substring(0, 100)}...`);
+
       this.queue.push({
         request: JSON.stringify(request),
-        resolve,
-        reject
+        resolve: (data: any) => {
+          console.log(`[spaCy Service] ← Received response [${requestId}]: ${JSON.stringify(data).substring(0, 100)}...`);
+          resolve(data);
+        },
+        reject: (error: any) => {
+          console.error(`[spaCy Service] ✗ Error response [${requestId}]:`, error);
+          reject(error);
+        }
       });
 
       try {
         this.process.stdin?.write(JSON.stringify(request) + '\n');
       } catch (error) {
+        console.error(`[spaCy Service] ✗ Error writing to stdin [${requestId}]:`, error);
         this.queue.pop();
         reject(error);
       }
