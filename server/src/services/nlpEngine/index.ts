@@ -8,6 +8,7 @@ import path from 'path';
 import { GermanLemmatizer } from './lemmatizer';
 import { POSTagger } from './posTagger';
 import { MorphAnalyzer } from './morphAnalyzer';
+import { SpacyService, getSpacyService } from './spacyService';
 import { Token, ParsedSentence, MorphFeature } from './types';
 import { grammarDetectionEngine, GrammarAnalysisResult } from '../grammarEngine/detectionEngine';
 import { SentenceData } from '../grammarEngine/detectors/baseDetector';
@@ -17,6 +18,7 @@ export class NLPEngine {
   private lemmatizer: GermanLemmatizer;
   private posTagger: POSTagger;
   private morphAnalyzer: MorphAnalyzer;
+  private spacyService: SpacyService;
 
   constructor(dbPath?: string) {
     // Use provided path or compute from __dirname (which is dist/services/nlpEngine in production)
@@ -25,15 +27,94 @@ export class NLPEngine {
     this.lemmatizer = new GermanLemmatizer(dbPath);
     this.posTagger = new POSTagger(dbPath);
     this.morphAnalyzer = new MorphAnalyzer(dbPath);
+    this.spacyService = getSpacyService();
+  }
+
+  /**
+   * Parse sentence using spaCy service
+   */
+  private async parseSentenceSpaCy(text: string): Promise<ParsedSentence> {
+    const result = await this.spacyService.analyzeSentence(text);
+
+    if (!result.success || !result.tokens) {
+      throw new Error(result.error || 'spaCy analysis failed');
+    }
+
+    const tokens: Token[] = result.tokens.map((spacyToken, i) => {
+      // Normalize spaCy POS to our format
+      const normalizedPos = this.normalizeSpacyPOS(spacyToken.pos);
+
+      // Get morphological features from spaCy morph dict
+      const morph: MorphFeature = {};
+      if (spacyToken.tag) {
+        // Extract morphological info from spaCy tag if available
+        // This is a simplified mapping - spaCy provides detailed morph features
+      }
+
+      // Try to get additional morphology from our analyzer
+      const additionalMorph = this.analyzeMorphology(
+        spacyToken.text,
+        spacyToken.lemma,
+        normalizedPos
+      );
+
+      // Merge morphological features
+      Object.assign(morph, additionalMorph);
+
+      return {
+        id: i,
+        word: spacyToken.text,
+        lemma: spacyToken.lemma,
+        pos: normalizedPos,
+        morph,
+        position: {
+          start: 0, // Will be calculated below
+          end: 0
+        }
+      };
+    });
+
+    // Calculate character positions more accurately
+    let currentPos = 0;
+    for (const token of tokens) {
+      const start = text.indexOf(token.word, currentPos);
+      if (start !== -1) {
+        token.position.start = start;
+        token.position.end = start + token.word.length;
+        currentPos = token.position.end;
+      }
+    }
+
+    // Check sentence features
+    const hasPassive = this.checkPassive(tokens);
+    const hasSubjunctive = this.checkSubjunctive(tokens);
+    const hasSubordinateClause = this.checkSubordinateClause(tokens);
+
+    // Estimate difficulty level
+    const estimatedLevel = this.estimateLevel(tokens, hasPassive, hasSubjunctive, hasSubordinateClause);
+
+    return {
+      text,
+      tokens,
+      hasPassive,
+      hasSubjunctive,
+      hasSubordinateClause,
+      estimatedLevel,
+      usedSpaCy: true
+    };
   }
 
   /**
    * 解析单个句子
    */
   async parseSentence(text: string): Promise<ParsedSentence> {
-    // TEMPORARILY FORCE FALLBACK TO DEBUG
-    console.log('⚠️ Forcing fallback parsing for debugging');
-    return this.parseSentenceFallback(text);
+    try {
+      // Try spaCy first
+      return await this.parseSentenceSpaCy(text);
+    } catch (error) {
+      console.warn('spaCy parsing failed, falling back to rule-based parsing:', (error as Error).message);
+      return this.parseSentenceFallback(text);
+    }
   }
 
   /**
@@ -101,21 +182,6 @@ export class NLPEngine {
         characterEnd: token.position.end,
       })),
     };
-
-    // DEBUG: Write tokens to file
-    const fs = await import('fs');
-    const debugInfo = {
-      text: sentenceData.text,
-      tokens: sentenceData.tokens.map((token, i) => ({
-        index: i,
-        text: token.text,
-        pos: token.pos,
-        lemma: token.lemma,
-        morph: token.morph
-      }))
-    };
-    fs.writeFileSync('/tmp/debug-tokens.json', JSON.stringify(debugInfo, null, 2));
-    console.log('🔍 Debug tokens written to /tmp/debug-tokens.json');
 
     // Analyze grammar with detection engine (minimal AI fallback for edge cases)
     return grammarDetectionEngine.analyzeWithMinimalAIFallback(sentenceData);

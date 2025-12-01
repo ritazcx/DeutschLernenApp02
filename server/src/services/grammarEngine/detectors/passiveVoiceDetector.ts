@@ -20,7 +20,16 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
         return;
       }
 
-      const tense = MorphAnalyzer.extractTense(token.morph || {});
+      // Determine tense based on the actual word form (spaCy's Tense field seems unreliable for German)
+      let tense = 'Pres'; // default
+      if (token.text === 'wurde') {
+        tense = 'Past';
+      } else if (token.text === 'wird') {
+        tense = 'Pres';
+      } else {
+        // Fallback to morphology for other forms
+        tense = MorphAnalyzer.extractTense(token.morph || {});
+      }
 
       // Look for past participle after werden (may be separated by prepositional phrases)
       let participleIndex = -1;
@@ -30,8 +39,8 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
           participleIndex = i;
           break;
         }
-        // Skip over determiners, nouns, adjectives, adpositions that might be part of agent phrase
-        if (!['DET', 'NOUN', 'ADJ', 'ADP', 'PRON'].includes(candidate.pos)) {
+        // Skip over determiners, nouns, adjectives, adpositions, pronouns, prepositions, articles that might be part of agent phrase
+        if (!['DET', 'NOUN', 'ADJ', 'ADP', 'PRON', 'PREP', 'ART'].includes(candidate.pos)) {
           break; // Stop if we hit something unexpected
         }
       }
@@ -45,8 +54,8 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
       const participleTense = MorphAnalyzer.extractTense(participleToken.morph || {});
       const verbForm = MorphAnalyzer.extractVerbForm(participleToken.morph || {});
 
-      // Check if it's a past participle (VerbForm="Part")
-      const isParticiple = verbForm === 'Part';
+      // Check if it's a past participle (VerbForm="Part" or Tense="Perf" for German)
+      const isParticiple = verbForm === 'Part' || participleTense === 'Perf';
 
       if (!isParticiple) {
         return;

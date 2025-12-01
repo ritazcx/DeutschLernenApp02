@@ -113,7 +113,7 @@ export class SpacyService {
       // Wait a bit for service to be ready
       setTimeout(() => {
         this.ready = true;
-      }, 2000);
+      }, 5000); // Increased from 2000 to 5000
     } catch (error) {
       console.error('Failed to start spaCy service:', error);
       this.ready = false;
