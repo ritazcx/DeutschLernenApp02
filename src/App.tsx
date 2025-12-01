@@ -32,9 +32,6 @@ const App: React.FC = () => {
       const levels = ['A1', 'A2', 'B1'];
       const level = levels[Math.floor(Math.random() * levels.length)];
       const data = await fetchWordOfTheDay(level);
-      // debug: log raw WOD result to help diagnose missing fields
-      // eslint-disable-next-line no-console
-      console.debug('[App] fetchWordOfTheDay result:', data);
       setWodData(data);
       // Only set displayed word if we aren't looking at a search result, or if it's first load
       if (!wordData || wordData === wodData) {
@@ -179,7 +176,7 @@ const App: React.FC = () => {
                       </div>
                       <h3 className="text-2xl font-bold text-slate-800 mb-2">Grammar</h3>
                       <p className="text-slate-500 leading-relaxed">
-                        Analyze articles sentence by sentence (B2 Level).
+                        Analyze German text with AI-powered grammar detection (A1-C2 levels).
                       </p>
                     </div>
                   </button>
@@ -251,7 +248,11 @@ const App: React.FC = () => {
           </div>
         );
       case AppView.GRAMMAR:
-        return <ArticleAnalyzer />;
+        return (
+          <div className="w-full h-full overflow-y-auto">
+            <ArticleAnalyzer />
+          </div>
+        );
     }
   };
 
@@ -339,7 +340,7 @@ const App: React.FC = () => {
       )}
 
       {/* Main Content */}
-      <main className="flex-1 h-full overflow-hidden pt-16 md:pt-0 relative">
+      <main className="flex-1 h-full overflow-y-auto pt-16 md:pt-0 relative">
         {/* Background decoration for home */}
         {view === AppView.HOME && (
           <div className="absolute top-0 left-0 w-full h-full pointer-events-none z-0 opacity-50">

@@ -27,4 +27,5 @@ export enum AppView {
   CHAT,
   WRITING,
   GRAMMAR,
+  SAVED,
 }

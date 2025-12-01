@@ -3,6 +3,9 @@ import cors from 'cors';
 import dictionaryRouter from './routes/dictionary';
 import proxyRouter from './routes/proxy';
 import grammarRouter from './routes/grammar';
+import analysisRouter from './routes/analysis';
+import vocabularyRouter from './routes/vocabulary';
+import nlpRouter from './routes/nlp';
 
 export function createApp() {
   const app = express();
@@ -23,7 +26,10 @@ export function createApp() {
 
   app.use(dictionaryRouter);
   app.use(proxyRouter);
-  app.use(grammarRouter);
+  app.use('/api/grammar', grammarRouter);
+  app.use(analysisRouter);
+  app.use('/api/vocabulary', vocabularyRouter);
+  app.use('/api/nlp', nlpRouter);
 
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
 

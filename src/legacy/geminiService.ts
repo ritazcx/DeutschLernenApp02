@@ -98,3 +98,38 @@ export const generateSpeech = async (text: string): Promise<string | undefined> 
     return undefined;
   }
 };
+
+export const translateOrExplain = async (query: string): Promise<string> => {
+  if (isBrowser) {
+    const prompt = `User Query: "${query}"
+
+Act as a German Language Writing Assistant.
+1. If the input is German: Correct any grammar/spelling errors. Provide the corrected version and a brief explanation.
+2. If the input is English: Translate it to natural-sounding German and provide a usage example.
+3. If it is a question about German: Answer it clearly and concisely.
+
+Return your answer as plain text.`;
+    const content = await proxyChat([{ role: 'system', content: prompt }]);
+    return content;
+  }
+
+  const mod = await import('@google/genai');
+  const { GoogleGenAI } = mod as any;
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY });
+  const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: [{ parts: [{ text: `Act as a German Language Writing Assistant. Query: "${query}"` }] }] });
+  const text = response.text; if (!text) throw new Error('No data');
+  return text;
+};
+
+export const generateFromGemini = async (messages: any[]): Promise<string> => {
+  if (isBrowser) {
+    return await proxyChat(messages);
+  }
+
+  const mod = await import('@google/genai');
+  const { GoogleGenAI } = mod as any;
+  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY });
+  const response = await ai.models.generateContent({ model: 'gemini-2.5-flash', contents: messages.map(m => ({ parts: [{ text: m.content || m.text }] })) });
+  const text = response.text; if (!text) throw new Error('No data');
+  return text;
+};

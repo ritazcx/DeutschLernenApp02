@@ -7,7 +7,20 @@ const API_KEY = process.env.DEEPSEEK_API_KEY;
 export async function fetchDictionaryEntry(word: string): Promise<DictionaryEntry> {
   if (!API_KEY) throw new Error('DEEPSEEK_API_KEY not set');
 
-  const prompt = `You are a concise German dictionary generator. Provide a JSON object for the term: "${word}" with the following fields: word, gender, translation, definition, example_german, example_english, difficulty, image_url. Keep responses compact and valid JSON.`;
+  const prompt = `You are a German dictionary expert. For the German word or phrase "${word}", provide a JSON object with these fields:
+- word: the German word
+- level: CEFR level (A1, A2, B1, B2, C1, or C2 only)
+- pos: part of speech (noun, verb, adjective, adverb, preposition, pronoun, conjunction, interjection, or particle)
+- article: for nouns only (der, die, das, or null)
+- plural: plural form for nouns (or null)
+- gender: article/gender (der=m, die=f, das=n)
+- translation: brief English translation
+- definition: concise German definition
+- example_german: example sentence in German
+- example_english: English translation of example
+- difficulty: same as level field
+
+Be accurate with CEFR levels. Return valid JSON only.`;
 
   const res = await axios.post(
     DEEPSEEK_URL,
@@ -54,7 +67,13 @@ export async function fetchDictionaryEntry(word: string): Promise<DictionaryEntr
     example_english: parsed.example_english || parsed.example_en || '',
     difficulty: parsed.difficulty || '',
     image_url: parsed.image_url || parsed.imageUrl || undefined,
-  };
+    // Additional fields for database insertion
+    level: parsed.level || 'B1',
+    pos: parsed.pos || null,
+    article: parsed.article || null,
+    plural: parsed.plural || null,
+    meaning_de: parsed.definition || '',
+  } as any;
 
   return entry;
 }
