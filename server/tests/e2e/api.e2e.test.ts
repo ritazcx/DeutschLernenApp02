@@ -59,28 +59,74 @@ describe('Grammar Analysis API End-to-End', () => {
       env: { ...process.env, PORT: '4001' }
     });
 
+    // Handle server errors
+    server.on('error', (err: Error) => {
+      console.error('Server spawn error:', err);
+    });
+
     // Wait for server to start
-    await new Promise((resolve) => {
+    await new Promise<void>((resolve, reject) => {
       let output = '';
+      let readyTimeout: NodeJS.Timeout | null = null;
       const checkServer = (data: Buffer) => {
         output += data.toString();
         if (output.includes('Server listening on http://localhost:4001')) {
-          server.stdout.off('data', checkServer);
+          server.stdout?.off('data', checkServer);
+          server.stderr?.off('data', stderrHandler);
+          if (readyTimeout) clearTimeout(readyTimeout);
           // Wait a bit more for spaCy to initialize
-          setTimeout(resolve, 8000);
+          setTimeout(() => resolve(), 8000);
         }
       };
 
-      server.stdout.on('data', checkServer);
-      server.stderr.on('data', (data: Buffer) => {
-        console.error('Server error:', data.toString());
-      });
-    });
-  }, 20000);
+      const stderrHandler = (data: Buffer) => {
+        const msg = data.toString();
+        console.error('Server stderr:', msg);
+        if (msg.includes('ERROR') && msg.includes('FATAL')) {
+          if (readyTimeout) clearTimeout(readyTimeout);
+          reject(new Error('Server failed to start: ' + msg));
+        }
+      };
 
-  afterAll(() => {
+      server.stdout?.on('data', checkServer);
+      server.stderr?.on('data', stderrHandler);
+
+      // Set a timeout in case the server doesn't start
+      readyTimeout = setTimeout(() => {
+        console.warn('Server startup timeout - continuing anyway (may fail with actual requests)');
+        server.stdout?.off('data', checkServer);
+        server.stderr?.off('data', stderrHandler);
+        resolve();
+      }, 18000);
+    }).catch((err) => {
+      console.error('Error starting server:', err);
+      if (server) server.kill();
+      throw err;
+    });
+  }, 25000);
+
+  afterAll(async () => {
     if (server) {
-      server.kill();
+      try {
+        // Give the server time to clean up
+        await new Promise<void>((resolve) => {
+          const killTimeout = setTimeout(() => {
+            console.warn('Server did not exit gracefully, force killing');
+            server.kill('SIGKILL');
+            resolve();
+          }, 3000);
+
+          server.on('exit', () => {
+            clearTimeout(killTimeout);
+            resolve();
+          });
+
+          server.kill('SIGTERM');
+        });
+      } catch (err) {
+        console.error('Error killing server:', err);
+      }
+      server = null;
     }
   });
 
@@ -159,7 +205,7 @@ describe('Grammar Analysis API End-to-End', () => {
     });
 
     it('should handle invalid input', async () => {
-      const response = await makeRequest('http://localhost:4001/analyze-detection', {
+      const response = await makeRequest('http://localhost:4001/api/grammar/analyze-detection', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -39,8 +39,8 @@ export class AgreementDetector extends BaseGrammarDetector {
         // Check if they agree in case, gender, number
         const agreement = this.checkAgreement(article, adjective, noun);
 
-        if (agreement.isCorrect) {
-          // Correct agreement - this is a learning opportunity
+        if (!agreement.isCorrect) {
+          // Agreement error - this is a learning opportunity
           results.push(
             this.createResult(
               B1_GRAMMAR['adjective-agreement'],
@@ -53,7 +53,7 @@ export class AgreementDetector extends BaseGrammarDetector {
                 case: agreement.case,
                 gender: agreement.gender,
                 number: agreement.number,
-                correct: true,
+                correct: false,
               },
             ),
           );

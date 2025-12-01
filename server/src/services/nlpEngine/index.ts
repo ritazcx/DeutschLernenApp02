@@ -33,7 +33,7 @@ export class NLPEngine {
   /**
    * Parse sentence using spaCy service
    */
-  private async parseSentenceSpaCy(text: string): Promise<ParsedSentence> {
+  private async parseSentenceSpaCy(text: string): Promise<ParsedSentence & { spacyTokens?: any[] }> {
     console.log(`[Grammar Engine] Attempting spaCy parsing for: "${text.substring(0, 50)}..."`);
     const result = await this.spacyService.analyzeSentence(text);
 
@@ -43,6 +43,9 @@ export class NLPEngine {
     }
 
     console.log(`[Grammar Engine] ✓ spaCy parsing succeeded, got ${result.tokens.length} tokens`);
+
+    // Store spaCy tokens for access to dep field
+    const spacyTokens = result.tokens;
 
     const tokens: Token[] = result.tokens.map((spacyToken, i) => {
       // Normalize spaCy POS to our format
@@ -92,7 +95,8 @@ export class NLPEngine {
     return {
       text,
       tokens,
-      usedSpaCy: true
+      usedSpaCy: true,
+      spacyTokens
     };
   }
 
@@ -148,17 +152,23 @@ export class NLPEngine {
 
       const sentenceData: SentenceData = {
         text,
-        tokens: parsed.tokens.map((token) => ({
-          text: token.word,
-          lemma: token.lemma,
-          pos: token.pos,
-          tag: token.pos, // Use POS as tag for now
-          dep: 'ROOT', // TODO: Add dependency parsing
-          morph: cleanMorph(token.morph),
-          index: token.id,
-          characterStart: token.position.start,
-          characterEnd: token.position.end,
-        })),
+        tokens: parsed.tokens.map((token, idx) => {
+          // Extract dep from spaCy tokens if available
+          const spacyToken = (parsed as any).spacyTokens?.[idx];
+          const dep = spacyToken?.dep || 'ROOT';
+          
+          return {
+            text: token.word,
+            lemma: token.lemma,
+            pos: token.pos,
+            tag: token.pos, // Use POS as tag for now
+            dep,
+            morph: cleanMorph(token.morph),
+            index: token.id,
+            characterStart: token.position.start,
+            characterEnd: token.position.end,
+          };
+        }),
       };
 
       // Analyze grammar with detection engine (minimal AI fallback for edge cases)
