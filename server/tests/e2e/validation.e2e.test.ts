@@ -162,7 +162,7 @@ describe('German Grammar Accuracy Validation', () => {
 
   validationTests.forEach(({ text, expectedDetections, description }) => {
     it(`should correctly detect grammar in: ${description}`, async () => {
-      const response = await makeRequest('http://localhost:4002/analyze-detection', {
+      const response = await makeRequest('http://localhost:4001/api/grammar/analyze-detection', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -173,9 +173,13 @@ describe('German Grammar Accuracy Validation', () => {
       expect(response.statusCode).toBe(200);
       const data = response.data;
 
+      expect(data.sentences).toBeDefined();
+      expect(data.sentences.length).toBeGreaterThan(0);
+      const grammarPoints = data.sentences[0].grammarPoints;
+
       // Check that all expected detections are found
       expectedDetections.forEach(expected => {
-        const matchingPoints = data.grammarPoints.filter((point: any) => {
+        const matchingPoints = grammarPoints.filter((point: any) => {
           const categoryMatch = point.grammarPoint.category === expected.category;
           const levelMatch = !expected.level || point.grammarPoint.level === expected.level;
           const nameMatch = !expected.namePattern || expected.namePattern.test(point.grammarPoint.name);
@@ -187,7 +191,7 @@ describe('German Grammar Accuracy Validation', () => {
       });
 
       // Ensure no false positives for categories that shouldn't be detected
-      const detectedCategories = [...new Set(data.grammarPoints.map((p: any) => p.grammarPoint.category))];
+      const detectedCategories = [...new Set(grammarPoints.map((p: any) => p.grammarPoint.category))];
       const expectedCategories = expectedDetections.map(d => d.category);
 
       // All detected categories should be in the expected list (allowing for additional detections)
@@ -217,8 +221,12 @@ describe('German Grammar Accuracy Validation', () => {
       expect(response.ok).toBe(true);
       const data = await response.json() as any;
 
+      expect(data.sentences).toBeDefined();
+      expect(data.sentences.length).toBeGreaterThan(0);
+      const grammarPoints = data.sentences[0].grammarPoints;
+
       // Should detect multiple grammar patterns
-      const categories = [...new Set(data.grammarPoints.map((p: any) => p.grammarPoint.category))];
+      const categories = [...new Set(grammarPoints.map((p: any) => p.grammarPoint.category))];
       expect(categories.length).toBeGreaterThan(1);
 
       // Should include passive and modal verb at minimum
@@ -229,7 +237,7 @@ describe('German Grammar Accuracy Validation', () => {
     it('should handle separable verbs', async () => {
       const text = 'Ich stehe jeden Morgen um 7 Uhr auf.';
 
-      const response = await fetch('http://localhost:4002/analyze-detection', {
+      const response = await fetch('http://localhost:4001/api/grammar/analyze-detection', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -240,8 +248,12 @@ describe('German Grammar Accuracy Validation', () => {
       expect(response.ok).toBe(true);
       const data = await response.json() as any;
 
+      expect(data.sentences).toBeDefined();
+      expect(data.sentences.length).toBeGreaterThan(0);
+      const grammarPoints = data.sentences[0].grammarPoints;
+
       // Should detect separable verb if implemented
-      const separablePoints = data.grammarPoints.filter((p: any) =>
+      const separablePoints = grammarPoints.filter((p: any) =>
         p.grammarPoint.category === 'separable-verb'
       );
 
@@ -271,7 +283,7 @@ describe('German Grammar Accuracy Validation', () => {
 
     levelTests.forEach(({ text, expectedLevel, description }) => {
       it(`should correctly identify ${expectedLevel} level grammar: ${description}`, async () => {
-        const response = await fetch('http://localhost:4002/analyze-detection', {
+        const response = await fetch('http://localhost:4001/api/grammar/analyze-detection', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -282,12 +294,16 @@ describe('German Grammar Accuracy Validation', () => {
         expect(response.ok).toBe(true);
         const data = await response.json() as any;
 
+        expect(data.sentences).toBeDefined();
+        expect(data.sentences.length).toBeGreaterThan(0);
+        const grammarPoints = data.sentences[0].grammarPoints;
+
         // Check if any detected grammar points match the expected level
-        const levelMatches = data.grammarPoints.some((point: any) =>
+        const levelMatches = grammarPoints.some((point: any) =>
           point.grammarPoint.level === expectedLevel
         );
 
-        if (data.grammarPoints.length > 0) {
+        if (grammarPoints.length > 0) {
           // If grammar points are detected, at least one should match expected level
           expect(levelMatches).toBe(true);
         }

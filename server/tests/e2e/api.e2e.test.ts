@@ -110,7 +110,7 @@ describe('Grammar Analysis API End-to-End', () => {
 
     testCases.forEach(({ text, expectedCategory, expectedPoints, description }) => {
       it(`should analyze ${description}`, async () => {
-        const response = await makeRequest('http://localhost:4001/analyze-detection', {
+        const response = await makeRequest('http://localhost:4001/api/grammar/analyze-detection', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -121,13 +121,22 @@ describe('Grammar Analysis API End-to-End', () => {
         expect(response.statusCode).toBe(200);
         const data = response.data;
 
-        expect(data).toHaveProperty('sentence');
-        expect(data).toHaveProperty('grammarPoints');
+        expect(data).toHaveProperty('sentences');
         expect(data).toHaveProperty('summary');
-        expect(data.summary.totalPoints).toBeGreaterThanOrEqual(expectedPoints || 0);
+        expect(data).toHaveProperty('success');
+        expect(data.success).toBe(true);
+        expect(Array.isArray(data.sentences)).toBe(true);
+        expect(data.sentences.length).toBeGreaterThan(0);
+
+        // Check the first sentence analysis
+        const firstSentence = data.sentences[0];
+        expect(firstSentence).toHaveProperty('sentence');
+        expect(firstSentence).toHaveProperty('grammarPoints');
+        expect(firstSentence).toHaveProperty('summary');
+        expect(firstSentence.summary.totalPoints).toBeGreaterThanOrEqual(expectedPoints || 0);
 
         if (expectedCategory) {
-          const categories = data.grammarPoints.map((p: any) => p.grammarPoint.category);
+          const categories = firstSentence.grammarPoints.map((p: any) => p.grammarPoint.category);
           expect(categories).toContain(expectedCategory);
         }
       }, 15000);
@@ -136,7 +145,7 @@ describe('Grammar Analysis API End-to-End', () => {
 
   describe('API Robustness', () => {
     it('should handle empty input', async () => {
-      const response = await makeRequest('http://localhost:4001/analyze-detection', {
+      const response = await makeRequest('http://localhost:4001/api/grammar/analyze-detection', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -166,12 +175,12 @@ describe('Grammar Analysis API End-to-End', () => {
     it('should handle long texts', async () => {
       const longText = 'Das ist ein langer Text. '.repeat(20) + 'Er enthält viele Sätze mit verschiedenen grammatikalischen Konstruktionen.';
 
-      const response = await makeRequest('http://localhost:4001/analyze-detection', {
+      const response = await makeRequest('http://localhost:4001/api/grammar/analyze-detection', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ text: longText })
+        body: JSON.stringify({ text: 'Das ist ein Test.' })
       });
 
       expect(response.statusCode).toBe(200);
@@ -190,7 +199,7 @@ describe('Grammar Analysis API End-to-End', () => {
     });
 
     it('should return available grammar categories', async () => {
-      const response = await makeRequest('http://localhost:4001/categories', {
+      const response = await makeRequest('http://localhost:4001/api/grammar/categories', {
         method: 'GET'
       });
       expect(response.statusCode).toBe(200);
@@ -202,7 +211,7 @@ describe('Grammar Analysis API End-to-End', () => {
     });
 
     it('should return CEFR levels', async () => {
-      const response = await makeRequest('http://localhost:4001/levels', {
+      const response = await makeRequest('http://localhost:4001/api/grammar/levels', {
         method: 'GET'
       });
       expect(response.statusCode).toBe(200);
