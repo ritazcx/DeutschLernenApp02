@@ -62,12 +62,45 @@ export class SpacyService {
    * Initialize the spaCy Python service
    */
   private initialize(): void {
-    // Use relative path to spacy-service.py
-    const scriptPath = path.join(__dirname, '../../../spacy-service.py');
+    // Calculate the correct path to spacy-service.py
+    // In production (dist), __dirname is /path/to/dist/services/nlpEngine
+    // We need to go up to the server root and find spacy-service.py
+    // The file is at /server/spacy-service.py relative to the project
+    const scriptPath = path.join(__dirname, '../../../../spacy-service.py');
+    
+    // Fallback: try to find it in common locations
+    const fallbackPaths = [
+      path.join(__dirname, '../../../../spacy-service.py'),  // From dist/services/nlpEngine
+      path.join(__dirname, '../../../spacy-service.py'),      // From dist
+      path.join(process.cwd(), 'spacy-service.py'),          // In current working directory
+      '/opt/render/project/src/server/spacy-service.py',     // Render specific path
+    ];
 
     console.log(`[spaCy Service] Initialization starting...`);
-    console.log(`[spaCy Service] Script path: ${scriptPath}`);
-    console.log(`[spaCy Service] Script exists: ${require('fs').existsSync(scriptPath)}`);
+    console.log(`[spaCy Service] __dirname: ${__dirname}`);
+    console.log(`[spaCy Service] process.cwd(): ${process.cwd()}`);
+    console.log(`[spaCy Service] Primary script path: ${scriptPath}`);
+    
+    // Find the first path that exists
+    let resolvedScriptPath = scriptPath;
+    let found = false;
+    
+    const fs = require('fs');
+    for (const p of fallbackPaths) {
+      if (fs.existsSync(p)) {
+        resolvedScriptPath = p;
+        found = true;
+        console.log(`[spaCy Service] ✓ Found script at: ${p}`);
+        break;
+      }
+    }
+    
+    if (!found) {
+      console.error(`[spaCy Service] ✗ Could not find spacy-service.py in any location:`);
+      fallbackPaths.forEach(p => console.error(`  - ${p}`));
+    }
+
+    console.log(`[spaCy Service] Script exists: ${fs.existsSync(resolvedScriptPath)}`);
     console.log(`[spaCy Service] Node version: ${process.version}`);
     console.log(`[spaCy Service] Current working directory: ${process.cwd()}`);
     console.log(`[spaCy Service] Environment PATH: ${process.env.PATH}`);
@@ -93,12 +126,12 @@ export class SpacyService {
         }
       }
 
-      console.log(`[spaCy Service] Spawning process with: ${pythonCmd} ${scriptPath}`);
+      console.log(`[spaCy Service] Spawning process with: ${pythonCmd} ${resolvedScriptPath}`);
       
-      this.process = spawn(pythonCmd, [scriptPath], {
+      this.process = spawn(pythonCmd, [resolvedScriptPath], {
         stdio: ['pipe', 'pipe', 'pipe'],
         detached: false,
-        cwd: path.dirname(scriptPath) // Set working directory to script directory
+        cwd: path.dirname(resolvedScriptPath) // Set working directory to script directory
       });
 
       console.log(`[spaCy Service] Process spawned, PID: ${this.process?.pid}`);
