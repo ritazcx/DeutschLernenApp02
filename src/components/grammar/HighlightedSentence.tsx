@@ -5,6 +5,7 @@ interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
   onGrammarPointClick?: (sentenceIndex: number, pointIndex: number) => void;
   sentenceIndex: number;
+  selectedCEFRLevels?: CEFRLevel[];
 }
 
 // CEFR level color mapping for vocabulary
@@ -49,10 +50,11 @@ const colorMap: Record<GrammarPoint['type'], string> = {
   passive: 'bg-red-200 hover:bg-red-300',
 };
 
-const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onGrammarPointClick, sentenceIndex }) => {
+const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onGrammarPointClick, sentenceIndex, selectedCEFRLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] }) => {
 
   // Build highlighted spans from grammar points using POSITIONS (not text)
-  const points = [...sentence.grammarPoints].sort((a, b) => a.position.start - b.position.start);
+  // Keep ALL points, but track which to display based on CEFR filter
+  const allPoints = [...sentence.grammarPoints].sort((a, b) => a.position.start - b.position.start);
   
   // Get vocabulary points (if any)
   const vocabPoints = sentence.vocabularyPoints || [];
@@ -63,27 +65,30 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
     end: number;
     type: string;
     explanation: string;
-    pointIndex: number; // Track original point index for clicking
+    originalIndex: number; // Index in sentence.grammarPoints
     level: string;
   }
   
   const highlightRegions: HighlightRegion[] = [];
   
-  // Add all points as regions, using their position data
-  points.forEach((point, idx) => {
+  // Add all points as regions, using their position data and original index
+  sentence.grammarPoints.forEach((point, originalIndex) => {
     const start = point.position.start;
     const end = point.position.end;
     
     // Validate positions are within sentence bounds
     if (start >= 0 && end <= sentence.sentence.length && start < end) {
-      highlightRegions.push({
-        start,
-        end,
-        type: point.type,
-        explanation: point.explanation,
-        pointIndex: idx,
-        level: point.level
-      });
+      // Only add to regions if this point's CEFR level is selected
+      if (selectedCEFRLevels.includes(point.level)) {
+        highlightRegions.push({
+          start,
+          end,
+          type: point.type,
+          explanation: point.explanation,
+          originalIndex, // Store the original index from sentence.grammarPoints
+          level: point.level
+        });
+      }
     }
   });
   
@@ -136,7 +141,10 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
           className={`${colorMap[primaryRegion.type as GrammarPoint['type']] || colorMap.special} px-1 rounded transition-colors cursor-pointer relative group ${
             vocabHere ? 'underline decoration-dashed decoration-2 decoration-green-500' : ''
           }`}
-          onClick={() => onGrammarPointClick?.(sentenceIndex, primaryRegion.pointIndex)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onGrammarPointClick?.(sentenceIndex, primaryRegion.originalIndex);
+          }}
           title={allExplanations}
         >
           {highlighted}

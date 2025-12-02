@@ -4,6 +4,7 @@ import { analyzeArticle, analyzeTextWithDetection } from '../../services/grammar
 import { saveAnalysis } from '../../services/analysisService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
+import CEFRLevelFilter from './CEFRLevelFilter';
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -28,7 +29,7 @@ const ArticleAnalyzer: React.FC = () => {
   const [isSaved, setIsSaved] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [useNLPAnalyzer, setUseNLPAnalyzer] = useState(true);
-  
+
   // Grammar filter state - load from localStorage or default to all selected
   const [selectedGrammarTypes, setSelectedGrammarTypes] = useState<GrammarType[]>(() => {
     const saved = localStorage.getItem('grammar_filters');
@@ -41,7 +42,12 @@ const ArticleAnalyzer: React.FC = () => {
     return saved ? JSON.parse(saved) : ['B1', 'B2'];
   });
 
-  // Persist filter changes to localStorage
+  // CEFR level filter state - load from localStorage or default to all levels selected
+  const [selectedCEFRLevels, setSelectedCEFRLevels] = useState<CEFRLevel[]>(() => {
+    const saved = localStorage.getItem('cefr_levels');
+    return saved ? JSON.parse(saved) : ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+  });
+
   useEffect(() => {
     localStorage.setItem('grammar_filters', JSON.stringify(selectedGrammarTypes));
   }, [selectedGrammarTypes]);
@@ -50,32 +56,9 @@ const ArticleAnalyzer: React.FC = () => {
     localStorage.setItem('vocabulary_levels', JSON.stringify(selectedVocabularyLevels));
   }, [selectedVocabularyLevels]);
 
-  const handleTypeToggle = (type: GrammarType) => {
-    setSelectedGrammarTypes(prev => 
-      prev.includes(type) 
-        ? prev.filter(t => t !== type)
-        : [...prev, type]
-    );
-  };
 
-  const handleLevelToggle = (level: CEFRLevel, selectAll: boolean) => {
-    const category = GRAMMAR_CATEGORIES.find(cat => cat.level === level);
-    if (!category) return;
-
-    if (selectAll) {
-      setSelectedGrammarTypes(prev => {
-        const without = prev.filter(t => !category.types.includes(t));
-        return [...without, ...category.types];
-      });
-    } else {
-      setSelectedGrammarTypes(prev => 
-        prev.filter(t => !category.types.includes(t))
-      );
-    }
-  };
-
-  const handleVocabularyLevelToggle = (level: string) => {
-    setSelectedVocabularyLevels(prev =>
+  const handleCEFRLevelToggle = (level: CEFRLevel) => {
+    setSelectedCEFRLevels(prev =>
       prev.includes(level)
         ? prev.filter(l => l !== level)
         : [...prev, level]
@@ -132,17 +115,6 @@ const ArticleAnalyzer: React.FC = () => {
     setShowSuccessMessage(false);
   };
 
-  const loadSavedAnalysis = (analysis: any) => {
-    // Load saved analysis without calling API
-    setInputText(analysis.text || '');
-    setSentences(analysis.sentences || []);
-    setSelectedSentence(null);
-    setError(null);
-    setSavedId(analysis.id);
-    setIsSaved(true);
-    setShowSuccessMessage(false);
-  };
-
   return (
     <div className="bg-slate-50 p-4 md:p-8">
       <div className="max-w-7xl mx-auto">
@@ -156,6 +128,10 @@ const ArticleAnalyzer: React.FC = () => {
                 Paste German text to analyze grammar from A1 to C2 levels
               </p>
             </div>
+            <CEFRLevelFilter
+              selectedLevels={selectedCEFRLevels}
+              onLevelChange={handleCEFRLevelToggle}
+            />
           </div>
         </div>
 
@@ -189,11 +165,6 @@ const ArticleAnalyzer: React.FC = () => {
                   Clear
                 </button>
               </div>
-              {selectedGrammarTypes.length === 0 && (
-                <div className="mt-3 text-sm text-amber-600">
-                  ⚠️ Please select at least one grammar type to analyze
-                </div>
-              )}
             </div>
           </div>
         ) : (
@@ -226,6 +197,7 @@ const ArticleAnalyzer: React.FC = () => {
                       sentence={sentence} 
                       onGrammarPointClick={handleGrammarPointClick}
                       sentenceIndex={index}
+                      selectedCEFRLevels={selectedCEFRLevels}
                     />
                   </div>
                 ))}
@@ -240,6 +212,7 @@ const ArticleAnalyzer: React.FC = () => {
                   <GrammarExplanationPanel 
                     sentence={sentences[selectedSentence]} 
                     selectedGrammarPoint={selectedGrammarPoint}
+                    selectedCEFRLevels={selectedCEFRLevels}
                   />
                 </div>
               ) : (

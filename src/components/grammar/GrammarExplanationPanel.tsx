@@ -1,9 +1,10 @@
-import React, { useEffect, useRef } from 'react';
-import { SentenceAnalysis, GrammarPoint } from '../../types/grammar';
+import React, { useEffect } from 'react';
+import { SentenceAnalysis, GrammarPoint, CEFRLevel } from '../../types/grammar';
 
 interface GrammarExplanationPanelProps {
   sentence: SentenceAnalysis;
   selectedGrammarPoint?: number;
+  selectedCEFRLevels?: CEFRLevel[];
 }
 
 // CEFR level color mapping for vocabulary display
@@ -48,17 +49,22 @@ const typeLabels: Record<GrammarPoint['type'], { label: string; color: string }>
   passive: { label: 'Passive Voice', color: 'bg-red-200' },
 };
 
-const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sentence, selectedGrammarPoint }) => {
-  const grammarPointRefs = useRef<(HTMLDivElement | null)[]>([]);
+const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sentence, selectedGrammarPoint, selectedCEFRLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] }) => {
+  // Filter grammar points by selected CEFR levels
+  const filteredGrammarPoints = sentence.grammarPoints.filter(point => 
+    selectedCEFRLevels.includes(point.level)
+  );
 
+  // Scroll to selected point when selectedGrammarPoint changes
   useEffect(() => {
-    if (selectedGrammarPoint !== undefined && grammarPointRefs.current[selectedGrammarPoint]) {
-      grammarPointRefs.current[selectedGrammarPoint]?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center'
-      });
+    if (selectedGrammarPoint !== undefined) {
+      const element = document.querySelector(`[data-grammar-index="${selectedGrammarPoint}"]`);
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
     }
   }, [selectedGrammarPoint]);
+  
   if (!sentence || !sentence.grammarPoints) {
     return <div className="p-4 text-slate-500">No grammar analysis available</div>;
   }
@@ -77,14 +83,17 @@ const GrammarExplanationPanel: React.FC<GrammarExplanationPanelProps> = ({ sente
       <div>
         <h3 className="text-sm font-semibold text-slate-700 mb-3">Grammar Points:</h3>
         <div className="space-y-3">
-          {sentence.grammarPoints.map((point, index) => {
+          {filteredGrammarPoints.map((point) => {
+            const originalIndex = sentence.grammarPoints.indexOf(point);
             const typeInfo = typeLabels[point.type as GrammarPoint['type']] || { label: point.type, color: 'bg-gray-400' };
+            const isSelected = selectedGrammarPoint === originalIndex;
+            
             return (
               <div
-                key={index}
-                ref={(el) => grammarPointRefs.current[index] = el}
+                key={originalIndex}
+                data-grammar-index={originalIndex}
                 className={`p-3 border rounded-lg transition-colors ${
-                  selectedGrammarPoint === index
+                  isSelected
                     ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
                     : 'border-slate-200 hover:border-slate-300'
                 }`}
