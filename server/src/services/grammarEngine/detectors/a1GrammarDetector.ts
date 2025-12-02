@@ -26,9 +26,6 @@ export class A1GrammarDetector extends BaseGrammarDetector {
     // Detect nominative case usage
     this.detectNominativeCase(sentence, results);
 
-    // Detect basic verb-subject agreement
-    this.detectSubjectVerbAgreement(sentence, results);
-
     return results;
   }
 
@@ -121,7 +118,6 @@ export class A1GrammarDetector extends BaseGrammarDetector {
       'fallen': ['falle', 'fällst', 'fällt', 'fallen', 'fallt'],
       'halten': ['halte', 'hältst', 'hält', 'halten', 'haltet'],
       'schlafen': ['schlafe', 'schläfst', 'schläft', 'schlafen', 'schlaft'],
-      'tragen': ['trage', 'trägst', 'trägt', 'tragen', 'tragt'],
       'geben': ['gebe', 'gibst', 'gibt', 'geben', 'gebt'],
       'denken': ['denke', 'denkst', 'denkt', 'denken', 'denkt'],
       'wissen': ['weiß', 'weißt', 'weiß', 'wissen', 'wisst'],

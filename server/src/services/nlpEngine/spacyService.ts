@@ -376,17 +376,19 @@ export class SpacyService {
         reject(new Error('Health check timeout'));
       }, 5000);
 
-      // Send a simple test request
+      // Send a simple test request using analyze action (which the service supports)
       this.sendRequest({
-        action: 'health_check',
-        test: 'Hallo'
+        action: 'analyze',
+        text: 'Hallo'
       })
         .then(() => {
           clearTimeout(timeout);
+          console.log('[spaCy Service] ✓ Health check passed, service is ready');
           resolve();
         })
         .catch((error) => {
           clearTimeout(timeout);
+          console.warn('[spaCy Service] ⚠️ Health check failed:', error);
           reject(error);
         });
     });

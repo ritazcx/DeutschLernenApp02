@@ -31,9 +31,6 @@ export class A2GrammarDetector extends BaseGrammarDetector {
     // Detect dative case usage
     this.detectDativeCase(sentence, results);
 
-    // Detect accusative case usage
-    this.detectAccusativeCase(sentence, results);
-
     // Detect modal verbs
     this.detectModalVerbs(sentence, results);
 
@@ -125,7 +122,6 @@ export class A2GrammarDetector extends BaseGrammarDetector {
       'arbeiten': ['arbeitete', 'arbeitetest', 'arbeitetet'],
       'lernen': ['lernte', 'lerntest', 'lerntet'],
       'spielen': ['spielte', 'spieltest', 'spieltet'],
-      'arbeiten': ['arbeitete', 'arbeitetest', 'arbeitetet'],
     };
 
     if (pastTenseForms[lemmaLower]) {
