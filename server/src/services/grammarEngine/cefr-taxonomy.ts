@@ -33,6 +33,7 @@ export interface GrammarPoint {
   explanation: string;
   relatedVocabulary?: string[];
   commonMistakes?: string[];
+  contextVariants?: Record<string, string>;
   spaCyFeatures?: {
     tense?: string[];
     mood?: string[];
@@ -191,6 +192,11 @@ export const A2_GRAMMAR: Record<string, GrammarPoint> = {
     explanation: 'Dative is the indirect object. Answer: to/for whom? Common verbs: geben, helfen, zeigen, antworten.',
     spaCyFeatures: {
       case: ['Dat'],
+    },
+    contextVariants: {
+      'indirect-object': 'Dative with verbs like geben, helfen, zeigen, antworten. Answer: to/for whom does the action happen?',
+      'prepositional': 'Dative after these prepositions: mit, bei, von, zu, aus, nach, seit. Example: "zwischen dem 5. und 21. August"',
+      'temporal': 'Dative in time and date expressions. Example: "am 4. Juni" (on June 4th), "dem Sommer" (in the summer)',
     },
   },
   'genitive-case': {

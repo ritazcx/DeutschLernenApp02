@@ -80,16 +80,22 @@ export class GrammarDetectionEngine {
     // Sort by position in text
     deduplicated.sort((a, b) => a.position.start - b.position.start);
 
+    // Merge adjacent results with same grammar point (e.g., dates, passive constructions)
+    const merged = this.mergeAdjacentResults(deduplicated, sentenceData);
+
+    // Enhance explanations with context-aware variants
+    const enhanced = this.enhanceExplanations(merged, sentenceData);
+
     // Organize by level and category
-    const byLevel = this.organizeByLevel(deduplicated);
-    const byCategory = this.organizeByCategory(deduplicated);
+    const byLevel = this.organizeByLevel(enhanced);
+    const byCategory = this.organizeByCategory(enhanced);
 
     // Create summary
-    const summary = this.createSummary(deduplicated, byLevel, byCategory);
+    const summary = this.createSummary(enhanced, byLevel, byCategory);
 
     return {
       sentence: sentenceData.text,
-      grammarPoints: deduplicated,
+      grammarPoints: enhanced,
       byLevel,
       byCategory,
       summary,
@@ -287,6 +293,93 @@ export class GrammarDetectionEngine {
   }
 
   /**
+   * Merge adjacent results with same grammar point ID
+   * Useful for temporal dates (4. Juni 2008) and passive constructions (wurden eingeladen)
+   * that are detected as separate tokens but should be one highlighted region
+   */
+  private mergeAdjacentResults(results: DetectionResult[], sentenceData: SentenceData): DetectionResult[] {
+    if (results.length <= 1) return results;
+
+    const merged: DetectionResult[] = [];
+    let i = 0;
+
+    while (i < results.length) {
+      let current = results[i];
+      let j = i + 1;
+
+      // Look for adjacent results with same grammar point ID
+      while (j < results.length) {
+        const next = results[j];
+
+        // Check if they're the same grammar point and adjacent/overlapping
+        if (
+          current.grammarPointId === next.grammarPointId &&
+          current.position.end >= next.position.start - 1 // Adjacent or overlapping (allow 1 char gap for spaces)
+        ) {
+          // Merge: expand current position to include next
+          current = {
+            ...current,
+            position: {
+              start: Math.min(current.position.start, next.position.start),
+              end: Math.max(current.position.end, next.position.end),
+            },
+            confidence: Math.max(current.confidence, next.confidence),
+            details: {
+              ...current.details,
+              ...next.details,
+              mergedTokens: (current.details?.mergedTokens || 1) + 1,
+            },
+          };
+          j++;
+        } else {
+          break;
+        }
+      }
+
+      merged.push(current);
+      i = j;
+    }
+
+    return merged;
+  }
+
+  /**
+   * Enhance explanations with context-aware variants
+   * For grammar points with contextVariants, select the appropriate explanation
+   * based on details detected during analysis
+   */
+  private enhanceExplanations(results: DetectionResult[], sentenceData: SentenceData): DetectionResult[] {
+    return results.map(result => {
+      // Check if this grammar point has context variants
+      if (result.grammarPoint.contextVariants) {
+        let selectedContext: string | null = null;
+
+        // Determine which context applies
+        if (result.grammarPoint.id === 'a2-dative-case') {
+          // Dative case - check for dative context in details
+          const dativeContext = result.details?.dativeContext;
+          if (dativeContext && result.grammarPoint.contextVariants[dativeContext]) {
+            selectedContext = dativeContext;
+          }
+        }
+
+        // If we found a matching context, update the explanation
+        if (selectedContext && result.grammarPoint.contextVariants[selectedContext]) {
+          return {
+            ...result,
+            grammarPoint: {
+              ...result.grammarPoint,
+              explanation: result.grammarPoint.contextVariants[selectedContext],
+            },
+          };
+        }
+      }
+
+      return result;
+    });
+  }
+
+  /**
    * Get all registered detectors
    */
   getDetectors(): BaseGrammarDetector[] {
@@ -303,3 +396,4 @@ export class GrammarDetectionEngine {
 
 // Export singleton instance
 export const grammarDetectionEngine = new GrammarDetectionEngine();
+
