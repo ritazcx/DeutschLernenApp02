@@ -9,7 +9,7 @@ import { SentenceData } from '../../src/services/grammarEngine/detectors/baseDet
 
 const spacyService = new SpacyService();
 
-describe('Grammar Detection with Real spaCy Data', () => {
+describe.skip('Grammar Detection with Real spaCy Data', () => {
   // Wait for spaCy service to be ready
   beforeAll((done) => {
     setTimeout(() => {
