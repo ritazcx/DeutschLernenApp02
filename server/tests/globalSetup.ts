@@ -12,8 +12,16 @@ export default async function globalSetup() {
   console.log('╚════════════════════════════════════════════════════════╝\n');
 
   try {
-    // Import dynamically to ensure we're using compiled code
-    const { SpacyService } = await import('../src/services/nlpEngine/spacyService');
+    // Import compiled version - require as CommonJS module
+    // When running from dist/tests/globalSetup.js, path is ../src/services/nlpEngine/spacyService
+    // (because TypeScript compiles src/ to dist/src/)
+    const spacyServiceModule = require('../src/services/nlpEngine/spacyService');
+    const SpacyService = spacyServiceModule.SpacyService;
+    
+    if (!SpacyService) {
+      const availableExports = Object.keys(spacyServiceModule);
+      throw new Error(`SpacyService class not found in module. Available exports: ${availableExports.join(', ')}`);
+    }
     
     const spacyService = new SpacyService();
     
