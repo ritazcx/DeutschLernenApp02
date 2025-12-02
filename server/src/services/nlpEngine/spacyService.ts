@@ -194,9 +194,11 @@ export class SpacyService {
 
       // Send a health check to verify service is actually ready
       setTimeout(() => {
+        // Mark as ready tentatively so healthCheck can send requests
+        this.ready = true;
+        
         this.healthCheck()
           .then(() => {
-            this.ready = true;
             console.log('[spaCy Service] ✓ Health check passed, service is ready');
           })
           .catch((error) => {
@@ -205,12 +207,11 @@ export class SpacyService {
             setTimeout(() => {
               this.healthCheck()
                 .then(() => {
-                  this.ready = true;
                   console.log('[spaCy Service] ✓ Health check passed on retry');
                 })
                 .catch(() => {
-                  console.warn('[spaCy Service] ⚠️ Health check failed again, assuming ready anyway');
-                  this.ready = true;
+                  console.warn('[spaCy Service] ⚠️ Health check failed again, but keeping ready=true anyway');
+                  // Keep ready=true to allow requests to proceed
                 });
             }, 2000);
           });
@@ -232,16 +233,14 @@ export class SpacyService {
    */
   private async sendRequest(request: any): Promise<any> {
     return new Promise((resolve, reject) => {
-      if (!this.ready) {
-        console.error(`[spaCy Service] ✗ Cannot send request - service not ready (ready=${this.ready}, process=${this.process ? 'exists' : 'null'})`);
-        reject(new Error('spaCy service not ready'));
-        return;
-      }
-
       if (!this.process) {
         console.error(`[spaCy Service] ✗ Cannot send request - process is null`);
         reject(new Error('spaCy service process is null'));
         return;
+      }
+
+      if (!this.ready) {
+        console.warn(`[spaCy Service] ⚠️ Service not marked ready yet, but attempting request anyway`);
       }
 
       const requestId = Math.random().toString(36).substring(7);
