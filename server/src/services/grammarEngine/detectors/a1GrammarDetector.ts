@@ -34,6 +34,7 @@ export class A1GrammarDetector extends BaseGrammarDetector {
 
   /**
    * Detect present tense (A1 basic)
+   * Includes fallback pattern matching for incomplete morphological data
    */
   private detectPresentTense(sentence: SentenceData, results: DetectionResult[]): void {
     sentence.tokens.forEach((token, index) => {
@@ -43,9 +44,8 @@ export class A1GrammarDetector extends BaseGrammarDetector {
         const verbForm = MorphAnalyzer.extractVerbForm(token.morph || {});
 
         // Present finite verb (basic A1)
+        // Primary detection: if morphology is complete
         if (tense === 'Pres' && verbForm === 'Fin') {
-          // Don't report if already reported by TenseDetector
-          // This is a fallback for completeness
           const confidenceBoost = this.isCommonA1Verb(token.lemma) ? 0.95 : 0.85;
 
           results.push(
@@ -58,12 +58,80 @@ export class A1GrammarDetector extends BaseGrammarDetector {
                 word: token.text,
                 lemma: token.lemma,
                 verbType: this.classifyVerb(token.lemma),
+                method: 'morphology',
               },
             ),
           );
         }
+        // Fallback detection: if morphology is incomplete, use pattern matching
+        else if (!tense || (tense === 'Pres' && !verbForm)) {
+          // Try pattern matching for common A1 verbs
+          if (this.looksLikePresentTense(token.text, token.lemma)) {
+            const patternConfidence = this.isCommonA1Verb(token.lemma) ? 0.80 : 0.65;
+
+            results.push(
+              this.createResult(
+                A1_GRAMMAR['present-tense'],
+                this.calculatePosition(sentence.tokens, index, index),
+                patternConfidence,
+                {
+                  tense: 'present',
+                  word: token.text,
+                  lemma: token.lemma,
+                  verbType: this.classifyVerb(token.lemma),
+                  method: 'pattern-matching (incomplete morphology)',
+                },
+              ),
+            );
+          }
+        }
       }
     });
+  }
+
+  /**
+   * Check if a word looks like present tense based on verb conjugation patterns
+   * Fallback for when morphological analysis is incomplete
+   */
+  private looksLikePresentTense(word: string, lemma: string): boolean {
+    const wordLower = word.toLowerCase();
+    const lemmaLower = lemma.toLowerCase();
+
+    // Common A1 verbs with their present tense conjugations
+    const presentConjugations: Record<string, string[]> = {
+      'sein': ['bin', 'bist', 'ist', 'sind', 'seid'],
+      'haben': ['habe', 'hast', 'hat', 'haben', 'habt'],
+      'werden': ['werde', 'wirst', 'wird', 'werden', 'werdet'],
+      'machen': ['mache', 'machst', 'macht', 'machen', 'macht'],
+      'gehen': ['gehe', 'gehst', 'geht', 'gehen', 'geht'],
+      'kommen': ['komme', 'kommst', 'kommt', 'kommen', 'kommt'],
+      'sehen': ['sehe', 'siehst', 'sieht', 'sehen', 'seht'],
+      'sagen': ['sage', 'sagst', 'sagt', 'sagen', 'sagt'],
+      'sprechen': ['spreche', 'sprichst', 'spricht', 'sprechen', 'sprecht'],
+      'schreiben': ['schreibe', 'schreibst', 'schreibt', 'schreiben', 'schreibt'],
+      'lesen': ['lese', 'liest', 'liest', 'lesen', 'lest'],
+      'hören': ['höre', 'hörst', 'hört', 'hören', 'hört'],
+      'lernen': ['lerne', 'lernst', 'lernt', 'lernen', 'lernt'],
+      'arbeiten': ['arbeite', 'arbeitest', 'arbeitet', 'arbeiten', 'arbeitet'],
+      'essen': ['esse', 'isst', 'isst', 'essen', 'esst'],
+      'trinken': ['trinke', 'trinkst', 'trinkt', 'trinken', 'trinkt'],
+      'fahren': ['fahre', 'fährst', 'fährt', 'fahren', 'fahrt'],
+      'tragen': ['trage', 'trägst', 'trägt', 'tragen', 'tragt'],
+      'laufen': ['laufe', 'läufst', 'läuft', 'laufen', 'lauft'],
+      'fallen': ['falle', 'fällst', 'fällt', 'fallen', 'fallt'],
+      'halten': ['halte', 'hältst', 'hält', 'halten', 'haltet'],
+      'schlafen': ['schlafe', 'schläfst', 'schläft', 'schlafen', 'schlaft'],
+      'tragen': ['trage', 'trägst', 'trägt', 'tragen', 'tragt'],
+      'geben': ['gebe', 'gibst', 'gibt', 'geben', 'gebt'],
+      'denken': ['denke', 'denkst', 'denkt', 'denken', 'denkt'],
+      'wissen': ['weiß', 'weißt', 'weiß', 'wissen', 'wisst'],
+    };
+
+    if (presentConjugations[lemmaLower]) {
+      return presentConjugations[lemmaLower].includes(wordLower);
+    }
+
+    return false;
   }
 
   /**
@@ -162,17 +230,29 @@ export class A1GrammarDetector extends BaseGrammarDetector {
   }
 
   /**
-   * Check if a noun looks like the subject (simplified heuristic)
+   * Check if a noun looks like the subject
+   * Uses both dependency parsing and positional heuristics
    */
   private looksLikeSubject(tokens: TokenData[], index: number): boolean {
-    // Simple heuristic: it's near the beginning and before the main verb
     const token = tokens[index];
 
+    // Priority 1: Use dependency parsing if available
+    if (token.dep === 'nsubj' || token.dep === 'nsubj:pass') {
+      return true;  // This is explicitly marked as subject
+    }
+
+    // Priority 2: If not marked as subject but has other indicators, check position
     // Look ahead for a verb
     for (let i = index + 1; i < Math.min(index + 8, tokens.length); i++) {
       if ((tokens[i].pos === 'VERB' || tokens[i].pos === 'AUX') && 
           tokens[i].morph?.['VerbForm'] === 'Fin') {
+        // Found finite verb after noun
         return true;
+      }
+      // If we encounter another noun or pronoun marked as subject, this isn't the main one
+      if ((tokens[i].pos === 'NOUN' || tokens[i].pos === 'PRON') &&
+          (tokens[i].dep === 'nsubj' || tokens[i].dep === 'nsubj:pass')) {
+        return false;
       }
     }
 

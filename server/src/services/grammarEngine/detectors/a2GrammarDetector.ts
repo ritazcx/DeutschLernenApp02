@@ -44,7 +44,8 @@ export class A2GrammarDetector extends BaseGrammarDetector {
   }
 
   /**
-   * Detect simple past tense
+   * Detect simple past tense (Präteritum)
+   * Includes fallback pattern matching for incomplete morphological data
    */
   private detectSimplePast(sentence: SentenceData, results: DetectionResult[]): void {
     sentence.tokens.forEach((token, index) => {
@@ -53,6 +54,7 @@ export class A2GrammarDetector extends BaseGrammarDetector {
         const verbForm = MorphAnalyzer.extractVerbForm(token.morph || {});
 
         // Simple past finite verb (A2)
+        // Primary detection: if morphology is complete
         if (tense === 'Past' && verbForm === 'Fin') {
           results.push(
             this.createResult(
@@ -64,12 +66,73 @@ export class A2GrammarDetector extends BaseGrammarDetector {
                 word: token.text,
                 lemma: token.lemma,
                 verbType: this.classifyVerb(token.lemma),
+                method: 'morphology',
               },
             ),
           );
         }
+        // Fallback detection: if morphology is incomplete
+        else if (!tense || (tense === 'Past' && !verbForm)) {
+          // Try pattern matching for common irregular past verbs
+          if (this.looksLikePastTense(token.text, token.lemma)) {
+            results.push(
+              this.createResult(
+                A2_GRAMMAR['simple-past-tense'],
+                this.calculatePosition(sentence.tokens, index, index),
+                0.75,
+                {
+                  tense: 'simple-past',
+                  word: token.text,
+                  lemma: token.lemma,
+                  verbType: this.classifyVerb(token.lemma),
+                  method: 'pattern-matching (incomplete morphology)',
+                },
+              ),
+            );
+          }
+        }
       }
     });
+  }
+
+  /**
+   * Check if a word looks like past tense based on irregular verb patterns
+   */
+  private looksLikePastTense(word: string, lemma: string): boolean {
+    const wordLower = word.toLowerCase();
+    const lemmaLower = lemma.toLowerCase();
+
+    // Common irregular verbs with past tense forms
+    const pastTenseForms: Record<string, string[]> = {
+      'sein': ['war', 'warst', 'wart'],
+      'haben': ['hatte', 'hattest', 'hattet'],
+      'werden': ['wurde', 'wurdest', 'wurdet'],
+      'gehen': ['ging', 'gingst', 'gingt'],
+      'kommen': ['kam', 'kamst', 'kamt'],
+      'sehen': ['sah', 'sahst', 'saht'],
+      'sagen': ['sagte', 'sagtest', 'sagtet'],
+      'sprechen': ['sprach', 'sprachst', 'spracht'],
+      'geben': ['gab', 'gabst', 'gabt'],
+      'denken': ['dachte', 'dachtest', 'dachtet'],
+      'wissen': ['wusste', 'wusstest', 'wusstet'],
+      'essen': ['aß', 'aßest', 'aßet'],
+      'trinken': ['trank', 'trankst', 'trankt'],
+      'fahren': ['fuhr', 'fuhrst', 'fuhrt'],
+      'tragen': ['trug', 'trugst', 'trugt'],
+      'laufen': ['lief', 'liefst', 'lieft'],
+      'halten': ['hielt', 'hieltst', 'hieltet'],
+      'schlafen': ['schlief', 'schliefst', 'schlieft'],
+      'arbeiten': ['arbeitete', 'arbeitetest', 'arbeitetet'],
+      'lernen': ['lernte', 'lerntest', 'lerntet'],
+      'spielen': ['spielte', 'spieltest', 'spieltet'],
+      'arbeiten': ['arbeitete', 'arbeitetest', 'arbeitetet'],
+    };
+
+    if (pastTenseForms[lemmaLower]) {
+      return pastTenseForms[lemmaLower].includes(wordLower);
+    }
+
+    return false;
   }
 
   /**
@@ -115,15 +178,39 @@ export class A2GrammarDetector extends BaseGrammarDetector {
 
   /**
    * Detect dative case usage
+   * Uses both morphological and dependency-based detection
    */
   private detectDativeCase(sentence: SentenceData, results: DetectionResult[]): void {
-    // Look for dative objects after dative prepositions or dative verbs
     const dativePrepositions = ['mit', 'bei', 'zu', 'von', 'aus', 'seit', 'ausser', 'außer'];
 
     for (let i = 0; i < sentence.tokens.length; i++) {
       const token = sentence.tokens[i];
 
-      // Check for dative preposition
+      // Method 1: Use dependency parsing (most reliable)
+      // In German, dative objects are often marked as 'iobj' or appear after 'case' (preposition)
+      if (token.dep === 'iobj' || token.dep === 'obl:tmod' || token.dep === 'obl') {
+        const caseVal = MorphAnalyzer.extractCase(token.morph || {});
+
+        // If explicitly marked as dative, report it
+        if (caseVal === 'Dat') {
+          results.push(
+            this.createResult(
+              A2_GRAMMAR['dative-case'],
+              this.calculatePosition(sentence.tokens, i, i),
+              0.90,
+              {
+                case: 'dative',
+                word: token.text,
+                lemma: token.lemma,
+                method: 'dependency-parsing',
+              },
+            ),
+          );
+          continue;
+        }
+      }
+
+      // Method 2: Check for dative preposition with following noun
       if (token.pos === 'ADP' && dativePrepositions.includes(token.lemma.toLowerCase())) {
         // Look for noun/pronoun after preposition
         for (let j = i + 1; j < Math.min(i + 4, sentence.tokens.length); j++) {
@@ -132,43 +219,43 @@ export class A2GrammarDetector extends BaseGrammarDetector {
           if (nounToken.pos === 'NOUN' || nounToken.pos === 'PRON' || nounToken.pos === 'DET') {
             const caseVal = MorphAnalyzer.extractCase(nounToken.morph || {});
 
+            // If case is explicitly marked as dative, report it
             if (caseVal === 'Dat') {
               results.push(
                 this.createResult(
                   A2_GRAMMAR['dative-case'],
-                  this.calculatePosition(sentence.tokens, i, j),
+                  this.calculatePosition(sentence.tokens, j, j),
                   0.88,
                   {
                     case: 'dative',
+                    word: nounToken.text,
+                    lemma: nounToken.lemma,
                     preposition: token.text,
-                    object: nounToken.text,
-                    usage: 'prepositional-object',
+                    method: 'preposition-pattern',
+                  },
+                ),
+              );
+              break;
+            }
+            // If no case marking, infer from preposition (less confident)
+            else if (!caseVal) {
+              results.push(
+                this.createResult(
+                  A2_GRAMMAR['dative-case'],
+                  this.calculatePosition(sentence.tokens, j, j),
+                  0.70,  // Lower confidence without explicit morphology
+                  {
+                    case: 'dative',
+                    word: nounToken.text,
+                    lemma: nounToken.lemma,
+                    preposition: token.text,
+                    method: 'preposition-inference',
                   },
                 ),
               );
               break;
             }
           }
-        }
-      }
-
-      // Check for dative object with articles
-      if ((token.pos === 'DET' || token.pos === 'NOUN') && i > 0) {
-        const caseVal = MorphAnalyzer.extractCase(token.morph || {});
-
-        if (caseVal === 'Dat' && this.isLikelyDativeObject(sentence.tokens, i)) {
-          results.push(
-            this.createResult(
-              A2_GRAMMAR['dative-case'],
-              this.calculatePosition(sentence.tokens, i, i),
-              0.80,
-              {
-                case: 'dative',
-                word: token.text,
-                usage: 'indirect-object',
-              },
-            ),
-          );
         }
       }
     }
