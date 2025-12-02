@@ -83,10 +83,20 @@ def analyze_sentence(text: str) -> dict:
             # Convert morphological features to dictionary
             morph_dict = {}
             if token.morph:
-                for feature in str(token.morph).split('|'):
-                    if '=' in feature:
-                        key, val = feature.split('=', 1)
-                        morph_dict[key] = val
+                morph_str = str(token.morph)
+                # Debug: check if morph is actually populated
+                if morph_str and morph_str != "":
+                    for feature in morph_str.split('|'):
+                        if '=' in feature:
+                            key, val = feature.split('=', 1)
+                            morph_dict[key] = val
+                # Log if we have a verb/noun/adj with no morphology
+                if not morph_dict and token.pos_ in ['VERB', 'NOUN', 'ADJ']:
+                    print(f"WARNING: No morphology for '{token.text}' (pos={token.pos_}, tag={token.tag_})", file=sys.stderr)
+            else:
+                # Log if token.morph is falsy
+                if token.pos_ in ['VERB', 'NOUN', 'ADJ']:
+                    print(f"WARNING: token.morph is empty/falsy for '{token.text}' (pos={token.pos_})", file=sys.stderr)
             
             tokens.append({
                 "text": token.text,
