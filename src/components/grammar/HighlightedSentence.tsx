@@ -51,75 +51,54 @@ const colorMap: Record<GrammarPoint['type'], string> = {
 
 const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onGrammarPointClick, sentenceIndex }) => {
 
-  // Build highlighted spans from grammar points
+  // Build highlighted spans from grammar points using POSITIONS (not text)
   const points = [...sentence.grammarPoints].sort((a, b) => a.position.start - b.position.start);
   
   // Get vocabulary points (if any)
   const vocabPoints = sentence.vocabularyPoints || [];
   
-  // Filter out overlapping points - keep only the first one
-  const filteredPoints: typeof points = [];
-  points.forEach(point => {
-    const overlaps = filteredPoints.some(
-      existing => 
-        (point.position.start >= existing.position.start && point.position.start < existing.position.end) ||
-        (point.position.end > existing.position.start && point.position.end <= existing.position.end) ||
-        (point.position.start <= existing.position.start && point.position.end >= existing.position.end)
-    );
-    if (!overlaps) {
-      filteredPoints.push(point);
-    }
-  });
-  
-  // Build highlight regions - for separable verbs, only highlight the two parts
+  // Build highlight regions - use positions directly, allow overlapping
   interface HighlightRegion {
     start: number;
     end: number;
     type: string;
     explanation: string;
+    pointIndex: number; // Track original point index for clicking
+    level: string;
   }
   
   const highlightRegions: HighlightRegion[] = [];
   
-  filteredPoints.forEach(point => {
-    // Check if this is a non-contiguous phrase (contains "...")
-    if (point.text.includes('...')) {
-      const parts = point.text.split('...').map(p => p.trim()).filter(p => p.length > 0);
-      if (parts.length === 2) {
-        const firstIndex = sentence.sentence.indexOf(parts[0]);
-        const secondIndex = sentence.sentence.indexOf(parts[1]);
-        
-        if (firstIndex !== -1) {
-          highlightRegions.push({
-            start: firstIndex,
-            end: firstIndex + parts[0].length,
-            type: point.type,
-            explanation: point.explanation
-          });
-        }
-        
-        if (secondIndex !== -1) {
-          highlightRegions.push({
-            start: secondIndex,
-            end: secondIndex + parts[1].length,
-            type: point.type,
-            explanation: point.explanation
-          });
-        }
-      }
-    } else {
-      // Regular contiguous phrase
+  // Add all points as regions, using their position data
+  points.forEach((point, idx) => {
+    const start = point.position.start;
+    const end = point.position.end;
+    
+    // Validate positions are within sentence bounds
+    if (start >= 0 && end <= sentence.sentence.length && start < end) {
       highlightRegions.push({
-        start: point.position.start,
-        end: point.position.end,
+        start,
+        end,
         type: point.type,
-        explanation: point.explanation
+        explanation: point.explanation,
+        pointIndex: idx,
+        level: point.level
       });
     }
   });
   
-  // Sort regions by start position
-  highlightRegions.sort((a, b) => a.start - b.start);
+  // Sort regions by start position, then by length (longer first for better visibility)
+  highlightRegions.sort((a, b) => {
+    if (a.start !== b.start) return a.start - b.start;
+    return (b.end - b.start) - (a.end - a.start);
+  });
+  
+  // Helper function to get all regions that overlap with a position
+  const getOverlappingRegions = (start: number, end: number): HighlightRegion[] => {
+    return highlightRegions.filter(region =>
+      !(region.end <= start || region.start >= end) // Overlaps if not completely separate
+    );
+  };
   
   // Helper function to check if a position overlaps with vocabulary
   const getVocabAtPosition = (start: number, end: number): VocabularyPoint | null => {
@@ -131,41 +110,64 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
   };
   
   const parts: React.ReactElement[] = [];
-  let lastIndex = 0;
+  let pos = 0;
 
-  highlightRegions.forEach((region, idx) => {
-    const { start, end, type, explanation } = region;
+  while (pos < sentence.sentence.length) {
+    // Find all regions that start at the current position
+    const regionsAtPos = highlightRegions.filter(r => r.start === pos);
     
-    // Add text before this region (checking for vocabulary)
-    if (start > lastIndex) {
-      const textBefore = sentence.sentence.substring(lastIndex, start);
-      const beforeParts = renderTextWithVocabulary(textBefore, lastIndex, vocabPoints);
-      parts.push(...beforeParts.map((p, i) => React.cloneElement(p, { key: `before-${idx}-${i}` })));
+    if (regionsAtPos.length > 0) {
+      // Find the end position (minimum end among all regions at this position)
+      const minEnd = Math.min(...regionsAtPos.map(r => r.end));
+      const highlighted = sentence.sentence.substring(pos, minEnd);
+      const vocabHere = getVocabAtPosition(pos, minEnd);
+      
+      // Create tooltip with all regions that cover this span
+      const allExplanations = regionsAtPos
+        .map(r => `[${r.level}] ${r.type.toUpperCase()}: ${r.explanation}`)
+        .join('\n');
+      
+      // Use the first region's color (primary highlight)
+      const primaryRegion = regionsAtPos[0];
+      
+      parts.push(
+        <span
+          key={`point-${pos}-${minEnd}`}
+          className={`${colorMap[primaryRegion.type as GrammarPoint['type']] || colorMap.special} px-1 rounded transition-colors cursor-pointer relative group ${
+            vocabHere ? 'underline decoration-dashed decoration-2 decoration-green-500' : ''
+          }`}
+          onClick={() => onGrammarPointClick?.(sentenceIndex, primaryRegion.pointIndex)}
+          title={allExplanations}
+        >
+          {highlighted}
+          {regionsAtPos.length > 1 && (
+            <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/2 -translate-y-1/2 bg-gray-800 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+              {regionsAtPos.length}
+            </span>
+          )}
+        </span>
+      );
+      
+      pos = minEnd;
+    } else {
+      // Find the next position where a region starts
+      const nextStart = Math.min(...highlightRegions.filter(r => r.start > pos).map(r => r.start));
+      
+      if (!isFinite(nextStart)) {
+        // No more regions, add remaining text
+        const remaining = sentence.sentence.substring(pos);
+        const remainingParts = renderTextWithVocabulary(remaining, pos, vocabPoints);
+        parts.push(...remainingParts.map((p, i) => React.cloneElement(p, { key: `remaining-${pos}-${i}` })));
+        break;
+      }
+      
+      // Add text before next region
+      const textBefore = sentence.sentence.substring(pos, nextStart);
+      const beforeParts = renderTextWithVocabulary(textBefore, pos, vocabPoints);
+      parts.push(...beforeParts.map((p, i) => React.cloneElement(p, { key: `text-${pos}-${i}` })));
+      
+      pos = nextStart;
     }
-
-    // Add highlighted region (grammar point)
-    const highlighted = sentence.sentence.substring(start, end);
-    const vocabHere = getVocabAtPosition(start, end);
-    
-    parts.push(
-      <span
-        key={`point-${idx}`}
-        className={`${colorMap[type as GrammarPoint['type']] || colorMap.special} px-1 rounded transition-colors cursor-pointer ${vocabHere ? 'underline decoration-dashed decoration-2 decoration-green-500' : ''}`}
-        onClick={() => onGrammarPointClick?.(sentenceIndex, idx)}
-        title={`Click to view explanation: ${explanation}`}
-      >
-        {highlighted}
-      </span>
-    );
-
-    lastIndex = end;
-  });
-
-  // Add remaining text (checking for vocabulary)
-  if (lastIndex < sentence.sentence.length) {
-    const textAfter = sentence.sentence.substring(lastIndex);
-    const afterParts = renderTextWithVocabulary(textAfter, lastIndex, vocabPoints);
-    parts.push(...afterParts.map((p, i) => React.cloneElement(p, { key: `after-${i}` })));
   }
 
   return (
