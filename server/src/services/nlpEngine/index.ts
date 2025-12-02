@@ -7,9 +7,8 @@ import Database from 'better-sqlite3';
 import path from 'path';
 import { GermanLemmatizer } from './lemmatizer';
 import { POSTagger } from './posTagger';
-import { MorphAnalyzer } from './morphAnalyzer';
 import { SpacyService, getSpacyService } from './spacyService';
-import { Token, ParsedSentence, MorphFeature } from './types';
+import { Token, ParsedSentence } from './types';
 import { grammarDetectionEngine, GrammarAnalysisResult } from '../grammarEngine/detectionEngine';
 import { SentenceData } from '../grammarEngine/detectors/baseDetector';
 
@@ -17,7 +16,6 @@ export class NLPEngine {
   private db: Database.Database;
   private lemmatizer: GermanLemmatizer;
   private posTagger: POSTagger;
-  private morphAnalyzer: MorphAnalyzer;
   private spacyService: SpacyService;
 
   constructor(dbPath?: string) {
@@ -26,7 +24,6 @@ export class NLPEngine {
     this.db = new Database(defaultPath);
     this.lemmatizer = new GermanLemmatizer(dbPath);
     this.posTagger = new POSTagger(dbPath);
-    this.morphAnalyzer = new MorphAnalyzer(dbPath);
     this.spacyService = getSpacyService();
   }
 
@@ -51,22 +48,9 @@ export class NLPEngine {
       // Normalize spaCy POS to our format
       const normalizedPos = this.normalizeSpacyPOS(spacyToken.pos);
 
-      // Get morphological features from spaCy morph dict
-      const morph: MorphFeature = {};
-      if (spacyToken.tag) {
-        // Extract morphological info from spaCy tag if available
-        // This is a simplified mapping - spaCy provides detailed morph features
-      }
-
-      // Try to get additional morphology from our analyzer
-      const additionalMorph = this.analyzeMorphology(
-        spacyToken.text,
-        spacyToken.lemma,
-        normalizedPos
-      );
-
-      // Merge morphological features
-      Object.assign(morph, additionalMorph);
+      // Use spaCy's morphological features directly
+      // spaCy provides complete morphological analysis
+      const morph = spacyToken.morph || {};
 
       return {
         id: i,
@@ -133,23 +117,7 @@ export class NLPEngine {
       }
 
       // Convert ParsedSentence tokens to SentenceData tokens for grammar engine
-      // Filter out "n/a" values from morph object
-      const cleanMorph = (morph: Record<string, any>): Record<string, string> => {
-        const cleaned: Record<string, string> = {};
-        for (const [key, value] of Object.entries(morph)) {
-          if (value && value !== 'n/a') {
-            // Convert key to spaCy format (e.g., case -> Case, person -> Person)
-            const spacyKey = key.charAt(0).toUpperCase() + key.slice(1);
-            // Convert value to spaCy abbreviations (e.g., nominative -> Nom)
-            const abbreviatedValue = this.abbreviateMorphValue(key, value as string);
-            if (abbreviatedValue) {
-              cleaned[spacyKey] = abbreviatedValue;
-            }
-          }
-        }
-        return cleaned;
-      };
-
+      // spaCy morph is already in the correct format, pass it through directly
       const sentenceData: SentenceData = {
         text,
         tokens: parsed.tokens.map((token, idx) => {
@@ -163,7 +131,7 @@ export class NLPEngine {
             pos: token.pos,
             tag: token.pos, // Use POS as tag for now
             dep,
-            morph: cleanMorph(token.morph),
+            morph: token.morph,
             index: token.id,
             characterStart: token.position.start,
             characterEnd: token.position.end,
@@ -208,64 +176,6 @@ export class NLPEngine {
   }
 
   /**
-   * Abbreviate morphological values to spaCy format
-   */
-  private abbreviateMorphValue(key: string, value: string): string | null {
-    const abbreviations: Record<string, Record<string, string>> = {
-      case: {
-        nominative: 'Nom',
-        accusative: 'Acc',
-        dative: 'Dat',
-        genitive: 'Gen',
-      },
-      tense: {
-        present: 'Pres',
-        past: 'Past',
-        future: 'Fut',
-        perfect: 'Perf',
-      },
-      mood: {
-        indicative: 'Ind',
-        subjunctive: 'Subj',
-        conditional: 'Cond',
-        imperative: 'Imp',
-      },
-      gender: {
-        masculine: 'Masc',
-        feminine: 'Fem',
-        neuter: 'Neut',
-      },
-      number: {
-        singular: 'Sing',
-        plural: 'Plur',
-      },
-      person: {
-        '1sg': '1',
-        '2sg': '2',
-        '3sg': '3',
-        '1pl': '1',
-        '2pl': '2',
-        '3pl': '3',
-      },
-      voice: {
-        active: 'Act',
-        passive: 'Pass',
-      },
-      verbForm: {
-        finite: 'Fin',
-        infinitive: 'Inf',
-        participle: 'Part',
-      },
-    };
-    const table = abbreviations[key];
-    if (!table) return null;
-    const normalized = value.toLowerCase();
-    return table[normalized] || null;
-  };
-
-  
-
-  /**
    * Fallback word-by-word parsing if sentence analysis fails
    */
   private async parseSentenceFallback(text: string): Promise<ParsedSentence> {
@@ -299,8 +209,8 @@ export class NLPEngine {
         }
       }
       
-      // 形态学分析
-      let morph = this.analyzeMorphology(cleanWord, lemmaResult.lemma, posResult.pos);
+      // 形态学分析 - removed, use empty morph as fallback
+      const morph = {};
 
       tokens.push({
         id: i,
@@ -356,51 +266,7 @@ export class NLPEngine {
   }
 
   /**
-   * 形态学分析（简化版）
-   */
-  private analyzeMorphology(word: string, lemma: string, pos: string): MorphFeature {
-    const morph: MorphFeature = {};
-
-    try {
-      // 根据词性调用相应的分析方法
-      switch (pos) {
-        case 'NOUN':
-          const nounAnalysis = this.morphAnalyzer.analyzeNoun(word, lemma);
-          Object.assign(morph, nounAnalysis);
-          break;
-
-        case 'VERB':
-          const verbAnalysis = this.morphAnalyzer.analyzeVerb(word, lemma);
-          Object.assign(morph, verbAnalysis);
-          break;
-
-        case 'ADJ':
-        case 'ADJD':
-        case 'ADJA':
-          const adjAnalysis = this.morphAnalyzer.analyzeAdjective(word, lemma);
-          Object.assign(morph, adjAnalysis);
-          break;
-
-        case 'PRON':
-          const pronAnalysis = this.morphAnalyzer.analyzePronoun(word);
-          Object.assign(morph, pronAnalysis);
-          break;
-
-        // 其他词性可能没有复杂的形态特征
-        default:
-          // 不需要分析
-          break;
-      }
-    } catch (error) {
-      // 如果分析失败，继续使用空的MorphFeature
-      console.warn(`Warning: Failed to analyze morphology for "${word}":`, error);
-    }
-
-    return morph;
-  }
-
-  /**
-   * 获取名词数据（性别）
+   * 检测代词的人称
    */
   private getNounData(lemma: string): {gender: string} | null {
     try {
@@ -419,71 +285,6 @@ export class NLPEngine {
       console.error('Error getting noun data:', error);
     }
     return null;
-  }
-
-
-
-  /**
-   * 检测代词的人称
-   */
-  private detectPronounPerson(word: string): string {
-    const personMap: Record<string, string> = {
-      'ich': '1sg',
-      'du': '2sg',
-      'er': '3sg',
-      'sie': '3sg',
-      'es': '3sg',
-      'wir': '1pl',
-      'ihr': '2pl',
-      'Sie': '2sg',  // formal
-    };
-    return personMap[word.toLowerCase()] || 'n/a';
-  }
-
-  /**
-   * 检测格（简化版）
-   */
-  private detectCase(word: string, pos: string): string {
-    // 这里是简化版，完整版会考虑上下文
-    const nominativePronouns = ['ich', 'du', 'er', 'wir', 'ihr'];
-    const accusativePronouns = ['mich', 'dich', 'ihn', 'uns', 'euch'];
-    const dativePronouns = ['mir', 'dir', 'ihm', 'uns', 'euch'];
-    const genitivePronouns = ['meiner', 'deiner', 'seiner'];
-
-    const lowerWord = word.toLowerCase();
-    if (nominativePronouns.includes(lowerWord)) return 'nominative';
-    if (accusativePronouns.includes(lowerWord)) return 'accusative';
-    if (dativePronouns.includes(lowerWord)) return 'dative';
-    if (genitivePronouns.includes(lowerWord)) return 'genitive';
-
-    return 'n/a';
-  }
-
-  /**
-   * 检测时态（简化版）
-   */
-  private detectTense(word: string, lemma: string): string {
-    // 完全分词: ge...t / ge...en
-    if (word.startsWith('ge') && (word.endsWith('t') || word.endsWith('en'))) {
-      return 'perfect';
-    }
-    // 简单过去式: ...te / ...ten
-    if (word.endsWith('te') || word.endsWith('ten')) {
-      return 'past';
-    }
-    // 默认: 现在时
-    return 'present';
-  }
-
-  /**
-   * 检测语态（简化版）
-   */
-  private detectMood(word: string): string {
-    // 虚拟语气通常有变音
-    if (/[öüä]/.test(word)) {
-      return 'subjunctive';
-    }
-    return 'indicative';
   }
 
   /**
