@@ -71,13 +71,21 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
   
   const highlightRegions: HighlightRegion[] = [];
   
+  // Validation function: ensure position actually points to valid text
+  const isValidPosition = (start: number, end: number): boolean => {
+    if (start < 0 || end > sentence.sentence.length || start >= end) return false;
+    // Ensure the position points to a non-whitespace token boundary or word
+    const highlighted = sentence.sentence.substring(start, end).trim();
+    return highlighted.length > 0; // Must have actual content
+  };
+  
   // Add all points as regions, using their position data and original index
   sentence.grammarPoints.forEach((point, originalIndex) => {
     const start = point.position.start;
     const end = point.position.end;
     
-    // Validate positions are within sentence bounds
-    if (start >= 0 && end <= sentence.sentence.length && start < end) {
+    // Validate positions are within sentence bounds and actually point to text
+    if (isValidPosition(start, end)) {
       // Only add to regions if this point's CEFR level is selected
       if (selectedCEFRLevels.includes(point.level)) {
         highlightRegions.push({

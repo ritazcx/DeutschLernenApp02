@@ -74,14 +74,20 @@ export class GrammarDetectionEngine {
       allResults.push(...results);
     }
 
+    // Filter by confidence threshold (70%) - removes low-confidence detections
+    const filtered = this.filterByConfidence(allResults, 0.70);
+
     // Deduplicate overlapping results (keep highest confidence)
-    const deduplicated = this.deduplicateResults(allResults);
+    const deduplicated = this.deduplicateResults(filtered);
+
+    // Remove redundant detections (e.g., multiple case detections on same noun)
+    const deduplicatedByFeature = this.deduplicateByFeature(deduplicated, sentenceData);
 
     // Sort by position in text
-    deduplicated.sort((a, b) => a.position.start - b.position.start);
+    deduplicatedByFeature.sort((a, b) => a.position.start - b.position.start);
 
     // Merge adjacent results with same grammar point (e.g., dates, passive constructions)
-    const merged = this.mergeAdjacentResults(deduplicated, sentenceData);
+    const merged = this.mergeAdjacentResults(deduplicatedByFeature, sentenceData);
 
     // Enhance explanations with context-aware variants
     const enhanced = this.enhanceExplanations(merged, sentenceData);
@@ -377,6 +383,51 @@ export class GrammarDetectionEngine {
 
       return result;
     });
+  }
+
+  /**
+   * Filter results by minimum confidence threshold
+   * Removes low-confidence detections that are likely noise
+   */
+  private filterByConfidence(results: DetectionResult[], minConfidence: number): DetectionResult[] {
+    return results.filter(result => result.confidence >= minConfidence);
+  }
+
+  /**
+   * Remove redundant detections on the same token
+   * E.g., don't show both "nominative case" and "definite article" on the same word
+   * Keep the most specific/highest confidence detection per token position
+   */
+  private deduplicateByFeature(results: DetectionResult[], sentenceData: SentenceData): DetectionResult[] {
+    if (results.length === 0) return [];
+
+    // Map from position to best detection at that position
+    const bestByPosition = new Map<string, DetectionResult>();
+
+    for (const result of results) {
+      const posKey = `${result.position.start}-${result.position.end}`;
+      const existing = bestByPosition.get(posKey);
+
+      if (!existing) {
+        bestByPosition.set(posKey, result);
+      } else {
+        // Keep the one with higher confidence, or if same confidence, prefer more specific categories
+        const specificity: Record<string, number> = {
+          'tense': 10, 'voice': 10, 'mood': 10,  // High value
+          'case': 8, 'agreement': 8,              // Medium-high
+          'article': 5,                           // Lower (generic)
+        };
+        
+        const currentSpec = specificity[result.grammarPoint?.category as string] || 5;
+        const existingSpec = specificity[existing.grammarPoint?.category as string] || 5;
+
+        if (result.confidence > existing.confidence || (result.confidence === existing.confidence && currentSpec > existingSpec)) {
+          bestByPosition.set(posKey, result);
+        }
+      }
+    }
+
+    return Array.from(bestByPosition.values());
   }
 
   /**
