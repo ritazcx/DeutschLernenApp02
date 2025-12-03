@@ -356,33 +356,141 @@ export class GrammarDetectionEngine {
    */
   private enhanceExplanations(results: DetectionResult[], sentenceData: SentenceData): DetectionResult[] {
     return results.map(result => {
-      // Check if this grammar point has context variants
-      if (result.grammarPoint.contextVariants) {
-        let selectedContext: string | null = null;
+      const word = sentenceData.text.substring(result.position.start, result.position.end);
+      let contextualExplanation = result.grammarPoint.explanation;
 
-        // Determine which context applies
-        if (result.grammarPoint.id === 'a2-dative-case') {
-          // Dative case - check for dative context in details
-          const dativeContext = result.details?.dativeContext;
-          if (dativeContext && result.grammarPoint.contextVariants[dativeContext]) {
-            selectedContext = dativeContext;
-          }
-        }
+      // Add context-aware explanation based on grammar point category
+      switch (result.grammarPoint.category) {
+        case 'case':
+          const caseValue = result.details?.case || 'unknown';
+          contextualExplanation = this.generateCaseExplanation(word, caseValue, sentenceData, result.position);
+          break;
+        case 'tense':
+          const tenseValue = result.details?.tense || 'unknown';
+          contextualExplanation = this.generateTenseExplanation(word, tenseValue, sentenceData);
+          break;
+        case 'mood':
+          const moodValue = result.details?.mood || 'unknown';
+          contextualExplanation = this.generateMoodExplanation(word, moodValue);
+          break;
+        case 'voice':
+          const voiceValue = result.details?.voice || 'unknown';
+          contextualExplanation = this.generateVoiceExplanation(word, voiceValue, sentenceData);
+          break;
+      }
 
-        // If we found a matching context, update the explanation
-        if (selectedContext && result.grammarPoint.contextVariants[selectedContext]) {
-          return {
-            ...result,
-            grammarPoint: {
-              ...result.grammarPoint,
-              explanation: result.grammarPoint.contextVariants[selectedContext],
-            },
-          };
+      // Check if this grammar point has context variants (fallback)
+      if (result.grammarPoint.contextVariants && result.grammarPoint.id === 'a2-dative-case') {
+        const dativeContext = result.details?.dativeContext;
+        if (dativeContext && result.grammarPoint.contextVariants[dativeContext]) {
+          contextualExplanation = result.grammarPoint.contextVariants[dativeContext];
         }
       }
 
-      return result;
+      return {
+        ...result,
+        grammarPoint: {
+          ...result.grammarPoint,
+          explanation: contextualExplanation,
+        },
+      };
     });
+  }
+
+  /**
+   * Generate context-aware explanation for case
+   */
+  private generateCaseExplanation(word: string, caseValue: string, sentenceData: SentenceData, position: any): string {
+    const baseExplanation = this.getCaseBaseExplanation(caseValue);
+    
+    // Find surrounding context (verb, preposition, etc.)
+    const contextInfo = this.findCaseContext(sentenceData, position);
+    
+    if (contextInfo.preposition) {
+      return `${baseExplanation} Used with the preposition "${contextInfo.preposition}" which takes ${caseValue}.`;
+    }
+    
+    if (contextInfo.verb) {
+      return `${baseExplanation} "${word}" is the ${caseValue.toLowerCase()} object of the verb "${contextInfo.verb}".`;
+    }
+
+    return baseExplanation;
+  }
+
+  /**
+   * Generate context-aware explanation for tense
+   */
+  private generateTenseExplanation(word: string, tenseValue: string, sentenceData: SentenceData): string {
+    const descriptions: Record<string, string> = {
+      'present': `"${word}" is in present tense, indicating an action happening now or a general fact.`,
+      'past': `"${word}" is in simple past (Präteritum), used for narrating past events, especially in written German.`,
+      'perfect': `"${word}" is in present perfect (Perfekt), used for completed actions, especially in spoken German.`,
+      'pluperfect': `"${word}" is in pluperfect (Plusquamperfekt), indicating an action completed before another past event.`,
+      'subjunctive': `"${word}" is in subjunctive mood, expressing hypothetical, conditional, or reported speech.`,
+    };
+    
+    return descriptions[tenseValue] || `"${word}" uses ${tenseValue} tense.`;
+  }
+
+  /**
+   * Generate context-aware explanation for mood
+   */
+  private generateMoodExplanation(word: string, moodValue: string): string {
+    const descriptions: Record<string, string> = {
+      'indicative': `"${word}" is in indicative mood, stating a fact or reality.`,
+      'subjunctive': `"${word}" is in subjunctive mood (Konjunktiv), expressing wishes, hypotheticals, or reported speech.`,
+      'conditional': `"${word}" is in conditional mood, expressing what would happen under certain conditions.`,
+      'imperative': `"${word}" is an imperative command form.`,
+    };
+    
+    return descriptions[moodValue] || `"${word}" uses ${moodValue} mood.`;
+  }
+
+  /**
+   * Generate context-aware explanation for voice
+   */
+  private generateVoiceExplanation(word: string, voiceValue: string, sentenceData: SentenceData): string {
+    if (voiceValue === 'passive') {
+      return `"${word}" is in passive voice, focusing on the action rather than who performs it. The agent (who does the action) is either omitted or introduced with "von".`;
+    }
+    return `"${word}" is in active voice, with the subject performing the action.`;
+  }
+
+  /**
+   * Get base explanation for case
+   */
+  private getCaseBaseExplanation(caseValue: string): string {
+    const explanations: Record<string, string> = {
+      'Nom': 'Nominative case - used for the subject (who/what performs the action).',
+      'Acc': 'Accusative case - used for the direct object (who/what receives the action).',
+      'Dat': 'Dative case - used for the indirect object (to/for whom the action is done).',
+      'Gen': 'Genitive case - used to show possession or relationships (of/s).',
+    };
+    return explanations[caseValue] || 'Case marking in German.';
+  }
+
+  /**
+   * Find context information for a case (preposition, verb, etc.)
+   */
+  private findCaseContext(sentenceData: SentenceData, position: any): { preposition?: string; verb?: string } {
+    // Look for prepositions before this word
+    for (let i = 0; i < sentenceData.tokens.length; i++) {
+      const token = sentenceData.tokens[i];
+      if (token.characterStart <= position.start && token.characterEnd >= position.start) {
+        // Found token, look backwards for preposition
+        for (let j = i - 1; j >= Math.max(0, i - 3); j--) {
+          const prevToken = sentenceData.tokens[j];
+          if (prevToken.pos === 'ADP') {
+            return { preposition: prevToken.text };
+          }
+          if (prevToken.pos === 'VERB' || prevToken.pos === 'AUX') {
+            return { verb: prevToken.text };
+          }
+        }
+        break;
+      }
+    }
+    return {};
   }
 
   /**
