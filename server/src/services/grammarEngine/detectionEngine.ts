@@ -519,8 +519,23 @@ export class GrammarDetectionEngine {
       if (!existing) {
         bestByPosition.set(posKey, result);
       } else {
+        // Special handling: always keep separable verbs (they span multiple tokens and are high value)
+        if (result.grammarPoint?.category === 'separable-verb') {
+          // Keep both - separable verbs are important learning points
+          // Use a modified key to allow multiple results at same position
+          const sepKey = `${posKey}-sep-${result.grammarPoint.name}`;
+          bestByPosition.set(sepKey, result);
+          continue;
+        }
+        
+        if (existing.grammarPoint?.category === 'separable-verb') {
+          // Don't replace separable verb with something else
+          continue;
+        }
+
         // Keep the one with higher confidence, or if same confidence, prefer more specific categories
         const specificity: Record<string, number> = {
+          'separable-verb': 12,                   // Highest - important learning point
           'tense': 10, 'voice': 10, 'mood': 10,  // High value
           'case': 8, 'agreement': 8,              // Medium-high
           'article': 5,                           // Lower (generic)
