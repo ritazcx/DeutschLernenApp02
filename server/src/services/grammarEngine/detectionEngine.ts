@@ -17,7 +17,7 @@ import { MorphologicalDetector } from './detectors/morphologicalDetector';
 import { AdvancedPassiveDetector } from './detectors/advancedPassiveDetector';
 import { ConditionalDetector } from './detectors/conditionalDetector';
 import { InfinitiveClauseDetector } from './detectors/infinitiveClauseDetector';
-import { ExtendedAdjectiveDetector } from './detectors/extendedAdjectiveDetector';
+import { ParticipialAttributeDetector } from './detectors/participialAttributeDetector';
 import { RelativeClauseDetector } from './detectors/relativeClauseDetector';
 import { ReflexiveVerbDetector } from './detectors/reflexiveVerbDetector';
 import { PrepositionDetector } from './detectors/prepositionDetector';
@@ -55,7 +55,7 @@ export class GrammarDetectionEngine {
     new AdvancedPassiveDetector(),
     new ConditionalDetector(),
     new InfinitiveClauseDetector(),
-    new ExtendedAdjectiveDetector(),
+    new ParticipialAttributeDetector(),
     new RelativeClauseDetector(),
     new ReflexiveVerbDetector(),
     new PrepositionDetector(),
@@ -76,27 +76,17 @@ export class GrammarDetectionEngine {
       allResults.push(...results);
     }
 
-    const funcVerbCount = (results: DetectionResult[]) => results.filter(r => r.grammarPoint?.category === 'functional-verb').length;
-    console.log(`[Pipeline] After detection: ${funcVerbCount(allResults)} functional verbs`);
-
     // Filter by confidence threshold (70%) - removes low-confidence detections
     const filtered = this.filterByConfidence(allResults, 0.70);
-    console.log(`[Pipeline] After confidence filter: ${funcVerbCount(filtered)} functional verbs`);
 
-    // Deduplicate overlapping results (keep highest confidence)
-    const deduplicated = this.deduplicateResults(filtered);
-    console.log(`[Pipeline] After deduplicateResults: ${funcVerbCount(deduplicated)} functional verbs`);
-
-    // Remove redundant detections (e.g., multiple case detections on same noun)
-    const deduplicatedByFeature = this.deduplicateByFeature(deduplicated, sentenceData);
-    console.log(`[Pipeline] After deduplicateByFeature: ${funcVerbCount(deduplicatedByFeature)} functional verbs`);
+    // Deduplicate overlapping and identical results
+    const deduplicated = this.deduplicate(filtered);
 
     // Sort by position in text
-    deduplicatedByFeature.sort((a, b) => a.position.start - b.position.start);
+    deduplicated.sort((a, b) => a.position.start - b.position.start);
 
     // Merge adjacent results with same grammar point (e.g., dates, passive constructions)
-    const merged = this.mergeAdjacentResults(deduplicatedByFeature, sentenceData);
-    console.log(`[Pipeline] After mergeAdjacentResults: ${funcVerbCount(merged)} functional verbs`);
+    const merged = this.mergeAdjacentResults(deduplicated, sentenceData);
 
     // Enhance explanations with context-aware variants
     const enhanced = this.enhanceExplanations(merged, sentenceData);
@@ -142,7 +132,7 @@ export class GrammarDetectionEngine {
         const combinedResults = [...ruleBasedResult.grammarPoints, ...aiResults];
 
         // Deduplicate again
-        const deduplicated = this.deduplicateResults(combinedResults);
+        const deduplicated = this.deduplicate(combinedResults);
 
         // Sort by position in text
         deduplicated.sort((a, b) => a.position.start - b.position.start);
@@ -168,22 +158,39 @@ export class GrammarDetectionEngine {
   }
 
   /**
-   * Deduplicate results that overlap (keep highest confidence)
+   * Deduplicate results - handles both overlapping and exact position matches
+   * Keeps high-value constructions and the best detection per position
    */
-  private deduplicateResults(results: DetectionResult[]): DetectionResult[] {
+  private deduplicate(results: DetectionResult[]): DetectionResult[] {
     if (results.length === 0) return [];
+
+    // Sort by position for grouping
+    const sorted = [...results].sort((a, b) => a.position.start - b.position.start || a.position.end - b.position.end);
+
+    // Special categories that always get preserved (important multi-token learning points)
+    const specialCategories = ['functional-verb', 'separable-verb', 'participial-attribute'];
+    
+    // Specificity ranking for choosing between competing detections
+    const specificity: Record<string, number> = {
+      'functional-verb': 12,           // Highest - important B2 learning point
+      'separable-verb': 12,            // Highest - important learning point
+      'participial-attribute': 11,     // Very high - important B2 learning point
+      'tense': 10, 'voice': 10, 'mood': 10,  // High value
+      'case': 8, 'agreement': 8,       // Medium-high
+      'article': 5,                    // Lower (generic)
+    };
 
     // Group by overlapping positions
     const groups: DetectionResult[][] = [];
     let currentGroup: DetectionResult[] = [];
 
-    for (const result of results) {
+    for (const result of sorted) {
       if (currentGroup.length === 0) {
         currentGroup.push(result);
       } else {
-        const lastResult = currentGroup[currentGroup.length - 1];
-        // Check if overlaps with any in current group
-        if (this.overlaps(result, lastResult)) {
+        // Check if overlaps with any result in current group
+        const overlapsWithGroup = currentGroup.some(r => this.overlaps(result, r));
+        if (overlapsWithGroup) {
           currentGroup.push(result);
         } else {
           groups.push(currentGroup);
@@ -195,25 +202,38 @@ export class GrammarDetectionEngine {
       groups.push(currentGroup);
     }
 
-    // From each group, keep high-value multi-token constructions AND the highest confidence single detection
+    // Process each group: keep special constructions + best of the rest
     return groups.flatMap((group) => {
-      // Always preserve functional verbs and separable verbs (important learning points that span multiple tokens)
-      const specialConstructions = group.filter(r => 
-        r.grammarPoint?.category === 'functional-verb' || 
-        r.grammarPoint?.category === 'separable-verb'
-      );
+      if (group.length === 1) return group;
+
+      // Always keep special constructions (they provide unique learning value)
+      const special = group.filter(r => specialCategories.includes(r.grammarPoint?.category || ''));
       
-      // Also keep the highest confidence from remaining detections
-      const regularDetections = group.filter(r => 
-        r.grammarPoint?.category !== 'functional-verb' && 
-        r.grammarPoint?.category !== 'separable-verb'
-      );
+      // For regular detections, group by exact position and keep only the best per position
+      const regularDetections = group.filter(r => !specialCategories.includes(r.grammarPoint?.category || ''));
       
-      const bestRegular = regularDetections.length > 0
-        ? [regularDetections.reduce((best, current) => (current.confidence > best.confidence ? current : best))]
-        : [];
+      // Map: position key -> best result at that position
+      const bestByPosition = new Map<string, DetectionResult>();
       
-      return [...specialConstructions, ...bestRegular];
+      for (const result of regularDetections) {
+        const posKey = `${result.position.start}-${result.position.end}`;
+        const existing = bestByPosition.get(posKey);
+        
+        if (!existing) {
+          bestByPosition.set(posKey, result);
+        } else {
+          // Choose based on confidence first, then specificity
+          const currentSpec = specificity[result.grammarPoint?.category as string] || 5;
+          const existingSpec = specificity[existing.grammarPoint?.category as string] || 5;
+          
+          if (result.confidence > existing.confidence || 
+              (result.confidence === existing.confidence && currentSpec > existingSpec)) {
+            bestByPosition.set(posKey, result);
+          }
+        }
+      }
+      
+      return [...special, ...Array.from(bestByPosition.values())];
     });
   }
 
@@ -270,6 +290,7 @@ export class GrammarDetectionEngine {
       'reflexive-verb': [],
       passive: [],
       'functional-verb': [],
+      'participial-attribute': [],
     };
 
     for (const result of results) {
@@ -316,6 +337,7 @@ export class GrammarDetectionEngine {
       'modal-verb': byCategory['modal-verb'].length,
       'reflexive-verb': byCategory['reflexive-verb'].length,
       passive: byCategory.passive.length,
+      'participial-attribute': byCategory['participial-attribute'].length,
     };
 
     return {
@@ -528,58 +550,7 @@ export class GrammarDetectionEngine {
     return results.filter(result => result.confidence >= minConfidence);
   }
 
-  /**
-   * Remove redundant detections on the same token
-   * E.g., don't show both "nominative case" and "definite article" on the same word
-   * Keep the most specific/highest confidence detection per token position
-   */
-  private deduplicateByFeature(results: DetectionResult[], sentenceData: SentenceData): DetectionResult[] {
-    if (results.length === 0) return [];
 
-    // Map from position to best detection at that position
-    const bestByPosition = new Map<string, DetectionResult>();
-
-    for (const result of results) {
-      const posKey = `${result.position.start}-${result.position.end}`;
-      const existing = bestByPosition.get(posKey);
-
-      if (!existing) {
-        bestByPosition.set(posKey, result);
-      } else {
-        // Special handling: always keep separable verbs and functional verbs (they span multiple tokens and are high value)
-        if (result.grammarPoint?.category === 'separable-verb' || result.grammarPoint?.category === 'functional-verb') {
-          // Keep both - these are important learning points
-          // Use a modified key to allow multiple results at same position
-          const specialKey = `${posKey}-special-${result.grammarPoint.name}`;
-          bestByPosition.set(specialKey, result);
-          continue;
-        }
-        
-        if (existing.grammarPoint?.category === 'separable-verb' || existing.grammarPoint?.category === 'functional-verb') {
-          // Don't replace separable verb or functional verb with something else
-          continue;
-        }
-
-        // Keep the one with higher confidence, or if same confidence, prefer more specific categories
-        const specificity: Record<string, number> = {
-          'functional-verb': 12,                  // Highest - important B2 learning point
-          'separable-verb': 12,                   // Highest - important learning point
-          'tense': 10, 'voice': 10, 'mood': 10,  // High value
-          'case': 8, 'agreement': 8,              // Medium-high
-          'article': 5,                           // Lower (generic)
-        };
-        
-        const currentSpec = specificity[result.grammarPoint?.category as string] || 5;
-        const existingSpec = specificity[existing.grammarPoint?.category as string] || 5;
-
-        if (result.confidence > existing.confidence || (result.confidence === existing.confidence && currentSpec > existingSpec)) {
-          bestByPosition.set(posKey, result);
-        }
-      }
-    }
-
-    return Array.from(bestByPosition.values());
-  }
 
   /**
    * Get all registered detectors

@@ -22,7 +22,8 @@ export type GrammarCategory =
   | 'modal-verb'
   | 'reflexive-verb'
   | 'passive'
-  | 'functional-verb';
+  | 'functional-verb'
+  | 'participial-attribute';
 
 export interface GrammarPoint {
   id: string;
@@ -469,18 +470,22 @@ export const B2_GRAMMAR: Record<string, GrammarPoint> = {
     ],
     explanation: 'Real conditions: present indicative. Unreal: Konjunktiv II. Past unreality: Konjunktiv II perfect.',
   },
-  'extended-adjective-attribution': {
-    id: 'b2-extended-adjectives',
-    category: 'adjective',
+  'participial-attributes': {
+    id: 'b2-participial-attributes',
+    category: 'participial-attribute',
     level: 'B2',
-    name: 'Extended Adjective Attribution (Erweiterte Nominalggruppe)',
-    description: 'Adjectives with additional modifiers: der lange, elegante, dunkelblau gefärbte Mantel',
+    name: 'Extended Participial Attributes (Erweiterte Partizipialattribute)',
+    description: 'Participles (Partizip I & II) with modifiers used as adjectives before nouns',
     examples: [
-      'Der von dem Künstler handgemalte Tisch',
-      'Die in Deutschland hergestellten Autos',
-      'Das auf hohem Niveau unterrichtete Fach',
+      'Der lesende Student (Partizip I: present participle)',
+      'Das geschriebene Buch (Partizip II: past participle)',
+      'Der von dem Künstler handgemalte Tisch (with preposition)',
+      'Die in Deutschland hergestellten Autos (with preposition)',
+      'Das sehr gut geschriebene Buch (with adverb)',
+      'Die sich entwickelnde Wirtschaft (with reflexive pronoun)',
+      'Der vor zwei Jahren erschienene Roman (complex)',
     ],
-    explanation: 'Extended adjective phrases can precede nouns. Contains participles, prepositional phrases.',
+    explanation: 'Partizip I (present: -end) shows ongoing action. Partizip II (past: ge-...-t/en) shows completed/passive action. Extended forms include prepositions, adverbs, and objects.',
   },
   'noun-clause-with-infinitive': {
     id: 'b2-infinitive-clauses',
