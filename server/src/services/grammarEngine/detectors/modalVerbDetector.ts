@@ -5,24 +5,11 @@
 
 import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
 import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import { SEPARABLE_PREFIXES } from './sharedConstants';
+import { SEPARABLE_PREFIXES, MODAL_VERBS } from './sharedConstants';
 
 export class ModalVerbDetector extends BaseGrammarDetector {
   name = 'ModalVerbDetector';
   category: GrammarCategory = 'modal-verb';
-
-  // German modal verbs
-  private modalVerbs = [
-    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
-    'kann', 'muss', 'will', 'soll', 'darf', 'mag',  // conjugated forms
-    'kannst', 'musst', 'willst', 'sollst', 'darfst', 'magst',
-    'kann', 'muss', 'will', 'soll', 'darf', 'mag',
-    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
-    'könnt', 'müsst', 'wollt', 'sollt', 'dürft', 'mögt',
-    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
-    // Also check for lemmas that might be returned as conjugated forms
-    'muss', 'kann', 'will', 'soll', 'darf', 'mag'
-  ];
 
   /**
    * Detect modal verb constructions
@@ -80,7 +67,7 @@ export class ModalVerbDetector extends BaseGrammarDetector {
    * Check if a lemma is a modal verb
    */
   private isModalVerb(lemma: string): boolean {
-    return this.modalVerbs.includes(lemma.toLowerCase());
+    return MODAL_VERBS.includes(lemma.toLowerCase());
   }
 
   /**
