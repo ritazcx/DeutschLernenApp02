@@ -45,8 +45,8 @@ export class ConditionalDetector extends BaseGrammarDetector {
       }
 
       const verb = sentence.tokens[verbIndex];
-      const mood = MorphAnalyzer.extractMood(verb.morph || {});
-      const tense = MorphAnalyzer.extractTense(verb.morph || {});
+      const mood = MorphAnalyzer.extractMood(verb.morph);
+      const tense = MorphAnalyzer.extractTense(verb.morph);
 
       // Determine conditional type
       let conditionalType = 'real'; // default
@@ -83,8 +83,8 @@ export class ConditionalDetector extends BaseGrammarDetector {
 
     sentence.tokens.forEach((token) => {
       if (this.isVerbOrAux(token)) {
-        const mood = MorphAnalyzer.extractMood(token.morph || {});
-        const tense = MorphAnalyzer.extractTense(token.morph || {});
+        const mood = MorphAnalyzer.extractMood(token.morph);
+        const tense = MorphAnalyzer.extractTense(token.morph);
 
         if (mood === 'Subj') {
           if (tense === 'Pres') {
@@ -121,7 +121,7 @@ export class ConditionalDetector extends BaseGrammarDetector {
     for (let i = conjunctionIndex + 1; i < tokens.length; i++) {
       const token = tokens[i];
       if (this.isVerbOrAux(token) &&
-          MorphAnalyzer.extractVerbForm(token.morph || {}) === 'Fin') {
+          MorphAnalyzer.extractVerbForm(token.morph) === 'Fin') {
         return i;
       }
     }

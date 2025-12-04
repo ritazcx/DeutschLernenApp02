@@ -28,7 +28,7 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
         tense = 'Pres';
       } else {
         // Fallback to morphology for other forms
-        tense = MorphAnalyzer.extractTense(token.morph || {});
+        tense = MorphAnalyzer.extractTense(token.morph);
       }
 
       // Look for past participle after werden (may be separated by prepositional phrases)
@@ -51,8 +51,8 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
 
       const participleToken = sentence.tokens[participleIndex];
 
-      const participleTense = MorphAnalyzer.extractTense(participleToken.morph || {});
-      const verbForm = MorphAnalyzer.extractVerbForm(participleToken.morph || {});
+      const participleTense = MorphAnalyzer.extractTense(participleToken.morph);
+      const verbForm = MorphAnalyzer.extractVerbForm(participleToken.morph);
 
       // Check if it's a past participle (VerbForm="Part" or Tense="Perf" for German)
       const isParticiple = verbForm === 'Part' || participleTense === 'Perf';

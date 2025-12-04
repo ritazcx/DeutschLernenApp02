@@ -27,8 +27,8 @@ export class TenseDetector extends BaseGrammarDetector {
         return;
       }
 
-      const tense = MorphAnalyzer.extractTense(token.morph || {});
-      const verbForm = MorphAnalyzer.extractVerbForm(token.morph || {});
+      const tense = MorphAnalyzer.extractTense(token.morph);
+      const verbForm = MorphAnalyzer.extractVerbForm(token.morph);
 
       // Present tense (A1)
       if (tense === 'Pres' && verbForm === 'Fin') {
@@ -69,7 +69,7 @@ export class TenseDetector extends BaseGrammarDetector {
         if (auxIndex !== null) {
           const auxToken = sentence.tokens[auxIndex];
           if (auxToken.lemma === 'haben' || auxToken.lemma === 'sein') {
-            const auxTense = MorphAnalyzer.extractTense(auxToken.morph || {});
+            const auxTense = MorphAnalyzer.extractTense(auxToken.morph);
 
             // Present Perfect (A2): Present haben/sein + past participle
             if (auxTense === 'Pres') {

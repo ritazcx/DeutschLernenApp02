@@ -82,7 +82,7 @@ export class CaseDetector extends BaseGrammarDetector {
         return;
       }
 
-      const caseValue = MorphAnalyzer.extractCase(token.morph || {});
+      const caseValue = MorphAnalyzer.extractCase(token.morph);
 
       // Nominative (A1)
       if (caseValue === 'Nom') {

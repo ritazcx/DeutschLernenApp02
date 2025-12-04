@@ -23,7 +23,6 @@ import { ReflexiveVerbDetector } from './detectors/reflexiveVerbDetector';
 import { PrepositionDetector } from './detectors/prepositionDetector';
 import { CausativeDetector } from './detectors/causativeDetector';
 import { FunctionalVerbDetector } from './detectors/functionalVerbDetector';
-import { AIGrammarDetector } from './detectors/aiGrammarDetector';
 import { BaseGrammarDetector, DetectionResult, SentenceData } from './detectors/baseDetector';
 import { GrammarCategory, CEFRLevel } from './cefr-taxonomy';
 
@@ -62,8 +61,6 @@ export class GrammarDetectionEngine {
     new CausativeDetector(),
     new FunctionalVerbDetector(),
   ];
-
-  private aiDetector = new AIGrammarDetector();
 
   /**
    * Analyze a sentence for grammar points

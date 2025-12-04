@@ -33,7 +33,7 @@ export class AdvancedPassiveDetector extends BaseGrammarDetector {
         return;
       }
 
-      const tense = MorphAnalyzer.extractTense(token.morph || {});
+      const tense = MorphAnalyzer.extractTense(token.morph);
 
       // Look for past participle after werden
       const nextToken = sentence.tokens[index + 1];
@@ -81,7 +81,7 @@ export class AdvancedPassiveDetector extends BaseGrammarDetector {
         return;
       }
 
-      const tense = MorphAnalyzer.extractTense(token.morph || {});
+      const tense = MorphAnalyzer.extractTense(token.morph);
 
       // Look for past participle after sein
       const nextToken = sentence.tokens[index + 1];
@@ -89,8 +89,8 @@ export class AdvancedPassiveDetector extends BaseGrammarDetector {
         return;
       }
 
-      const participleTense = MorphAnalyzer.extractTense(nextToken.morph || {});
-      const verbForm = MorphAnalyzer.extractVerbForm(nextToken.morph || {});
+      const participleTense = MorphAnalyzer.extractTense(nextToken.morph);
+      const verbForm = MorphAnalyzer.extractVerbForm(nextToken.morph);
 
       if (verbForm !== 'Part') {
         return;

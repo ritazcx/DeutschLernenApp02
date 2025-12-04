@@ -20,7 +20,7 @@ export interface TokenData {
   pos: string;
   tag: string;
   dep: string;
-  morph?: Record<string, string>;
+  morph: Record<string, string>;
   index: number;
   characterStart: number;
   characterEnd: number;

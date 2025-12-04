@@ -32,7 +32,7 @@ export class SubjunctiveDetector extends BaseGrammarDetector {
         return;
       }
 
-      const mood = MorphAnalyzer.extractMood(token.morph || {});
+      const mood = MorphAnalyzer.extractMood(token.morph);
 
       // Konjunktiv II - Conditional (würde) (B1)
       if (token.lemma === 'werden' && mood === 'Cond') {
@@ -89,7 +89,7 @@ export class SubjunctiveDetector extends BaseGrammarDetector {
       }
 
       // Imperative Mood (A1)
-      const verbForm = MorphAnalyzer.extractVerbForm(token.morph || {});
+      const verbForm = MorphAnalyzer.extractVerbForm(token.morph);
       if (mood === 'Imp' && verbForm === 'Fin') {
         results.push(
           this.createResult(

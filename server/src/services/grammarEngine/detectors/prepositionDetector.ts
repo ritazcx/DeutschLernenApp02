@@ -56,7 +56,7 @@ export class PrepositionDetector extends BaseGrammarDetector {
       }
 
       const objectToken = sentence.tokens[objectIndex];
-      const caseValue = MorphAnalyzer.extractCase(objectToken.morph || {});
+      const caseValue = MorphAnalyzer.extractCase(objectToken.morph);
 
       // Check if object is in dative case
       if (caseValue === 'Dat') {
@@ -95,7 +95,7 @@ export class PrepositionDetector extends BaseGrammarDetector {
       }
 
       const objectToken = sentence.tokens[objectIndex];
-      const caseValue = MorphAnalyzer.extractCase(objectToken.morph || {});
+      const caseValue = MorphAnalyzer.extractCase(objectToken.morph);
 
       // Check if object is in accusative case
       if (caseValue === 'Acc') {
