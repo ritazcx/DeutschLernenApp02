@@ -270,10 +270,37 @@ export abstract class BaseGrammarDetector {
   }
 
   /**
-   * Check if a token is an infinitive verb
+   * Check if a token is an infinitive verb (comprehensive check with fallbacks)
+   * 
+   * Checks in order:
+   * 1. Morphological features (VerbForm=Inf)
+   * 2. POS tag (INF, VVINF)
+   * 3. Text pattern matching (German infinitive endings: -en, -eln, -ern)
    */
   protected isInfinitive(token: TokenData): boolean {
-    return this.isVerbOrAux(token) && this.hasMorphFeature(token, 'VerbForm', 'Inf');
+    // Must be a verb
+    if (!this.isVerbOrAux(token)) return false;
+
+    // Check morphological features (most reliable)
+    if (token.morph.VerbForm === 'Inf' || token.morph.VerbForm === 'Inf,Part') {
+      return true;
+    }
+
+    // Check POS tag
+    if (token.tag?.includes('INF') || token.tag === 'VVINF') {
+      return true;
+    }
+
+    // Fallback: pattern matching for German infinitive endings
+    return this.hasInfinitiveEnding(token.text);
+  }
+
+  /**
+   * Check if a text has typical German infinitive endings
+   */
+  protected hasInfinitiveEnding(text: string): boolean {
+    // German infinitives typically end with -en, -eln, -ern
+    return /[a-zäöü]+(en|eln|ern)$/i.test(text);
   }
 
   /**

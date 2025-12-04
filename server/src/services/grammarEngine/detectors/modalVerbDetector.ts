@@ -105,11 +105,11 @@ export class ModalVerbDetector extends BaseGrammarDetector {
   private findInfinitiveAfter(tokens: TokenData[], modalIndex: number): number {
     for (let i = modalIndex + 1; i < tokens.length; i++) {
       const token = tokens[i];
-      if (token.pos === 'VERB' && (token.tag === 'INF' || token.tag === 'VVINF' || this.isInfinitiveForm(token) || this.isLikelyInfinitive(token))) {
+      if (this.isInfinitive(token)) {
         return i;
       }
       // Stop if we hit another finite verb (end of clause)
-      if (token.pos === 'VERB' && token.tag !== 'INF' && token.tag !== 'VVINF' && !this.isInfinitiveForm(token) && !this.isLikelyInfinitive(token)) {
+      if (this.isVerbOrAux(token) && !this.isInfinitive(token)) {
         break;
       }
     }
@@ -122,34 +122,18 @@ export class ModalVerbDetector extends BaseGrammarDetector {
   private findInfinitiveBefore(tokens: TokenData[], modalIndex: number): number {
     for (let i = modalIndex - 1; i >= 0; i--) {
       const token = tokens[i];
-      if (token.pos === 'VERB' && (token.tag === 'INF' || token.tag === 'VVINF' || this.isInfinitiveForm(token) || this.isLikelyInfinitive(token))) {
+      if (this.isInfinitive(token)) {
         return i;
       }
       // Stop if we hit another finite verb
-      if (token.pos === 'VERB' && token.tag !== 'INF' && token.tag !== 'VVINF' && !this.isInfinitiveForm(token) && !this.isLikelyInfinitive(token)) {
+      if (this.isVerbOrAux(token) && !this.isInfinitive(token)) {
         break;
       }
     }
     return -1;
   }
 
-  /**
-   * Check if a verb token is in infinitive form
-   */
-  private isInfinitiveForm(token: TokenData): boolean {
-    // Check morphological features
-    return token.morph?.VerbForm === 'Inf' || 
-           token.morph?.VerbForm === 'Inf,Part' ||
-           token.tag?.includes('INF');
-  }
 
-  /**
-   * Check if a verb token is likely an infinitive (fallback check)
-   */
-  private isLikelyInfinitive(token: TokenData): boolean {
-    // For German, infinitives often end with -en, -eln, -ern
-    return token.text.match(/[a-zäöü]+(en|eln|ern)$/) !== null;
-  }
 
   /**
    * Get the full infinitive text, including separable prefixes
