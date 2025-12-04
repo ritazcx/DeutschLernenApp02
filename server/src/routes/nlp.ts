@@ -4,13 +4,13 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { NLPEngine } from '../services/nlpEngine';
+import { getNLPEngine } from '../services/nlpEngine/singleton';
 import { VocabularyExtractor } from '../services/vocabularyExtractor';
 
 const router = Router();
 
-// 初始化NLP引擎
-const nlpEngine = new NLPEngine();
+// Get singleton NLP engine instance (shared with grammar routes)
+const nlpEngine = getNLPEngine();
 const vocabExtractor = new VocabularyExtractor();
 
 /**

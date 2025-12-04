@@ -1,17 +1,11 @@
 import express from 'express';
-import { NLPEngine } from '../services/nlpEngine';
+import { getNLPEngine } from '../services/nlpEngine/singleton';
 import { splitIntoSentences } from '../utils/sentenceSplitter';
 
 const router = express.Router();
 
-// Initialize NLP engine
-let nlpEngine: NLPEngine;
-try {
-  nlpEngine = new NLPEngine();
-} catch (error) {
-  console.error('Failed to initialize NLP Engine:', error);
-  throw error;
-}
+// Get singleton NLP engine instance
+const nlpEngine = getNLPEngine();
 
 /**
  * GET /categories
