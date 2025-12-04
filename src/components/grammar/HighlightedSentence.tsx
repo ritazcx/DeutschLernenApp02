@@ -38,6 +38,7 @@ const colorMap: Record<GrammarPoint['type'], string> = {
   collocation: 'bg-fuchsia-200 hover:bg-fuchsia-300',
   'special-construction': 'bg-slate-200 hover:bg-slate-300',
   'functional-verb': 'bg-lime-200 hover:bg-lime-300',
+  'participial-attribute': 'bg-sky-200 hover:bg-sky-300',
   // Legacy types (backward compatibility)
   verb: 'bg-blue-200 hover:bg-blue-300',
   clause: 'bg-purple-200 hover:bg-purple-300',
