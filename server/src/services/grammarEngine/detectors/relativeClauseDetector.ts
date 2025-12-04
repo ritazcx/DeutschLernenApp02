@@ -99,7 +99,7 @@ export class RelativeClauseDetector extends BaseGrammarDetector {
         return token;
       }
       // Stop at punctuation or verbs (sentence/clause boundary)
-      if (token.pos === 'PUNCT' || token.pos === 'VERB' || token.pos === 'AUX') {
+      if (token.pos === 'PUNCT' || this.isVerbOrAux(token)) {
         break;
       }
     }

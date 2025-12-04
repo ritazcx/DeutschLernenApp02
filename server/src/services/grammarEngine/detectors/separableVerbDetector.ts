@@ -5,16 +5,11 @@
 
 import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
 import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { SEPARABLE_PREFIXES } from './sharedConstants';
 
 export class SeparableVerbDetector extends BaseGrammarDetector {
   name = 'SeparableVerbDetector';
   category: GrammarCategory = 'separable-verb';
-
-  // Common separable prefixes
-  private separablePrefixes = [
-    'ab', 'an', 'auf', 'aus', 'bei', 'durch', 'ein', 'fort', 'her',
-    'hin', 'los', 'mit', 'nach', 'vor', 'weg', 'weiter', 'zu', 'zurück'
-  ];
 
   /**
    * Detect separable verbs in a sentence
@@ -38,7 +33,7 @@ export class SeparableVerbDetector extends BaseGrammarDetector {
    */
   private detectSeparatedVerbs(sentence: SentenceData, results: DetectionResult[]): void {
     // Find all verbs in the sentence
-    const verbs = sentence.tokens.filter(token => token.pos === 'VERB' || token.pos === 'AUX');
+    const verbs = sentence.tokens.filter(token => this.isVerbOrAux(token));
     
     for (const verb of verbs) {
       // Look for a separable preposition after this verb (within reasonable distance - usually at sentence end)
@@ -76,7 +71,7 @@ export class SeparableVerbDetector extends BaseGrammarDetector {
    */
   private detectCombinedVerbs(sentence: SentenceData, results: DetectionResult[]): void {
     sentence.tokens.forEach((token, index) => {
-      if (token.pos === 'VERB') {
+      if (this.isVerbOrAux(token)) {
         const prefix = this.getSeparablePrefix(token.lemma);
         if (prefix) {
           results.push(
@@ -104,7 +99,7 @@ export class SeparableVerbDetector extends BaseGrammarDetector {
    */
   private isSeparableParticle(token: TokenData): boolean {
     const tokenText = token.text.toLowerCase();
-    return this.separablePrefixes.includes(tokenText);
+    return SEPARABLE_PREFIXES.includes(tokenText);
   }
 
   /**
@@ -195,7 +190,7 @@ export class SeparableVerbDetector extends BaseGrammarDetector {
    * Check if a word ends with a separable prefix
    */
   private getSeparablePrefix(word: string): string | null {
-    for (const prefix of this.separablePrefixes) {
+    for (const prefix of SEPARABLE_PREFIXES) {
       if (word.startsWith(prefix) && word.length > prefix.length) {
         return prefix;
       }

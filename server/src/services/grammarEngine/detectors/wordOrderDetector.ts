@@ -43,7 +43,7 @@ export class WordOrderDetector extends BaseGrammarDetector {
     for (let i = 0; i < tokens.length; i++) {
       const token = tokens[i];
       const morph = MorphAnalyzer.parseMorphFeatures(token.morph || {});
-      if ((token.pos === 'VERB' || token.pos === 'AUX') &&
+      if (this.isVerbOrAux(token) &&
           morph.verbForm === 'Fin') {
         finiteVerbIndex = i;
         break;

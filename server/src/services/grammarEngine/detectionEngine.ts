@@ -110,49 +110,13 @@ export class GrammarDetectionEngine {
   /**
    * Analyze a sentence for grammar points with minimal AI fallback
    * AI only used when rule-based detection finds very few results
+   * 
+   * Note: Currently always returns rule-based results.
+   * AI fallback logic removed as it was never executed.
    */
   async analyzeWithMinimalAIFallback(sentenceData: SentenceData): Promise<GrammarAnalysisResult> {
     // First run rule-based detectors
     const ruleBasedResult = this.analyze(sentenceData);
-
-    return ruleBasedResult;
-
-    // Only use AI fallback if we have very few grammar points (less than 2)
-    // This ensures AI is used sparingly and only for edge cases
-    if (ruleBasedResult.summary.totalPoints >= 2) {
-      return ruleBasedResult;
-    }
-
-    // Run AI detector for additional insights only when rule-based is sparse
-    try {
-      const aiResults = await this.aiDetector.detectAsync(sentenceData);
-
-      if (aiResults.length > 0) {
-        // Combine rule-based and AI results
-        const combinedResults = [...ruleBasedResult.grammarPoints, ...aiResults];
-
-        // Deduplicate again
-        const deduplicated = this.deduplicate(combinedResults);
-
-        // Sort by position in text
-        deduplicated.sort((a, b) => a.position.start - b.position.start);
-
-        // Re-organize by level and category
-        const byLevel = this.organizeByLevel(deduplicated);
-        const byCategory = this.organizeByCategory(deduplicated);
-        const summary = this.createSummary(deduplicated, byLevel, byCategory);
-
-        return {
-          sentence: sentenceData.text,
-          grammarPoints: deduplicated,
-          byLevel,
-          byCategory,
-          summary,
-        };
-      }
-    } catch (error) {
-      console.warn('AI fallback failed, using rule-based results only:', error);
-    }
 
     return ruleBasedResult;
   }

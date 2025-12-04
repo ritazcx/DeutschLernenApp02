@@ -82,7 +82,7 @@ export class ConditionalDetector extends BaseGrammarDetector {
     let hasPastSubjunctive = false;
 
     sentence.tokens.forEach((token) => {
-      if (token.pos === 'VERB' || token.pos === 'AUX') {
+      if (this.isVerbOrAux(token)) {
         const mood = MorphAnalyzer.extractMood(token.morph || {});
         const tense = MorphAnalyzer.extractTense(token.morph || {});
 
@@ -120,7 +120,7 @@ export class ConditionalDetector extends BaseGrammarDetector {
     // Look for finite verb after conjunction
     for (let i = conjunctionIndex + 1; i < tokens.length; i++) {
       const token = tokens[i];
-      if ((token.pos === 'VERB' || token.pos === 'AUX') &&
+      if (this.isVerbOrAux(token) &&
           MorphAnalyzer.extractVerbForm(token.morph || {}) === 'Fin') {
         return i;
       }

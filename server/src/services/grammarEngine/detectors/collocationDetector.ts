@@ -108,7 +108,7 @@ export class CollocationDetector extends BaseGrammarDetector {
         if (token.lemma !== 'sich') {
           return false;
         }
-      } else if (token.pos === 'VERB' || token.pos === 'AUX') {
+      } else if (this.isVerbOrAux(token)) {
         // For verbs, check lemma (to handle inflected forms)
         if (token.lemma.toLowerCase() !== patternWord.toLowerCase()) {
           return false;

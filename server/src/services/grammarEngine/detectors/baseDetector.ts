@@ -253,4 +253,36 @@ export abstract class BaseGrammarDetector {
       details,
     };
   }
+
+  /**
+   * Check if a token is a verb or auxiliary verb (VERB or AUX)
+   * 
+   * Note: AUX includes sein, haben, werden - auxiliary verbs used for
+   * perfect tenses, passive, and future. This helper is for structural
+   * checks where both VERB and AUX behave similarly (e.g., clause boundaries,
+   * verb position detection).
+   * 
+   * For semantic distinction (e.g., detecting auxiliary patterns),
+   * check token.pos === 'AUX' or token.lemma === 'haben'/'sein'/'werden' explicitly.
+   */
+  protected isVerbOrAux(token: TokenData): boolean {
+    return token.pos === 'VERB' || token.pos === 'AUX';
+  }
+
+  /**
+   * Check if a token is an infinitive verb
+   */
+  protected isInfinitive(token: TokenData): boolean {
+    return this.isVerbOrAux(token) && this.hasMorphFeature(token, 'VerbForm', 'Inf');
+  }
+
+  /**
+   * Get character position for a single token
+   */
+  protected getSingleTokenPosition(token: TokenData): { start: number; end: number } {
+    return {
+      start: token.characterStart,
+      end: token.characterEnd,
+    };
+  }
 }

@@ -79,7 +79,7 @@ export class SubordinateClauseDetector extends BaseGrammarDetector {
     for (let i = conjunctionIndex + 1; i < tokens.length; i++) {
       const token = tokens[i];
       // Look for finite verbs or auxiliaries
-      if ((token.pos === 'VERB' || token.pos === 'AUX') && token.dep !== 'acl') {
+      if (this.isVerbOrAux(token) && token.dep !== 'acl') {
         return i;
       }
     }

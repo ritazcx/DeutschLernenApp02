@@ -70,7 +70,7 @@ export class ParticipialAttributeDetector extends BaseGrammarDetector {
       const token = tokens[currentIndex];
 
       // Stop at finite verbs (but not participles)
-      if ((token.pos === 'VERB' || token.pos === 'AUX') && 
+      if (this.isVerbOrAux(token) && 
           !this.isPartizipI(token) && 
           !this.isPartizipII(token)) {
         break;

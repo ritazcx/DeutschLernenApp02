@@ -4,7 +4,8 @@
  */
 
 import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { SEPARABLE_PREFIXES } from './sharedConstants';
 
 export class ModalVerbDetector extends BaseGrammarDetector {
   name = 'ModalVerbDetector';
@@ -171,9 +172,7 @@ export class ModalVerbDetector extends BaseGrammarDetector {
    * Check if a token is a separable verb prefix
    */
   private isSeparablePrefix(token: TokenData): boolean {
-    // Common separable prefixes in German
-    const separablePrefixes = ['ab', 'an', 'auf', 'aus', 'bei', 'ein', 'her', 'hin', 'mit', 'nach', 'vor', 'weg', 'zu', 'zurück'];
-    return separablePrefixes.includes(token.lemma.toLowerCase());
+    return SEPARABLE_PREFIXES.includes(token.lemma.toLowerCase());
   }
 
   /**
