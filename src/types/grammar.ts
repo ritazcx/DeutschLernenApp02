@@ -3,7 +3,7 @@ export type GrammarType =
   | 'tense' | 'case' | 'mood' | 'voice' | 'verb-form' | 'preposition'
   | 'conjunction' | 'agreement' | 'word-order' | 'article' | 'pronoun'
   | 'adjective' | 'noun' | 'separable-verb' | 'modal-verb' | 'collocation'
-  | 'special-construction' | 'functional-verb'
+  | 'special-construction' | 'functional-verb' | 'participial-attribute'
   // Legacy types (backward compatibility)
   | 'verb' | 'clause' | 'special'
   | 'special_construction' | 'subjunctive' | 'modal'

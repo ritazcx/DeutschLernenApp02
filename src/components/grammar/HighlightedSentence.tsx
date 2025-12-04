@@ -1,5 +1,6 @@
 import React from 'react';
 import { SentenceAnalysis, GrammarPoint, VocabularyPoint, CEFRLevel } from '../../types/grammar';
+import { GRAMMAR_COLOR_MAP, VOCAB_LEVEL_COLORS, DEFAULT_GRAMMAR_COLOR } from './constants';
 
 interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
@@ -7,50 +8,6 @@ interface HighlightedSentenceProps {
   sentenceIndex: number;
   selectedCEFRLevels?: CEFRLevel[];
 }
-
-// CEFR level color mapping for vocabulary
-const vocabLevelColors: Record<string, string> = {
-  'A1': 'decoration-red-500',
-  'A2': 'decoration-orange-500',
-  'B1': 'decoration-green-500',
-  'B2': 'decoration-blue-500',
-  'C1': 'decoration-purple-500',
-  'C2': 'decoration-pink-500',
-};
-
-const colorMap: Record<GrammarPoint['type'], string> = {
-  // Backend categories with distinct colors
-  tense: 'bg-blue-200 hover:bg-blue-300',
-  case: 'bg-green-200 hover:bg-green-300',
-  mood: 'bg-purple-200 hover:bg-purple-300',
-  voice: 'bg-red-200 hover:bg-red-300',
-  'verb-form': 'bg-indigo-200 hover:bg-indigo-300',
-  preposition: 'bg-yellow-200 hover:bg-yellow-300',
-  conjunction: 'bg-orange-200 hover:bg-orange-300',
-  agreement: 'bg-pink-200 hover:bg-pink-300',
-  'word-order': 'bg-cyan-200 hover:bg-cyan-300',
-  article: 'bg-lime-200 hover:bg-lime-300',
-  pronoun: 'bg-emerald-200 hover:bg-emerald-300',
-  adjective: 'bg-teal-200 hover:bg-teal-300',
-  noun: 'bg-violet-200 hover:bg-violet-300',
-  'separable-verb': 'bg-rose-200 hover:bg-rose-300',
-  'modal-verb': 'bg-amber-200 hover:bg-amber-300',
-  collocation: 'bg-fuchsia-200 hover:bg-fuchsia-300',
-  'special-construction': 'bg-slate-200 hover:bg-slate-300',
-  'functional-verb': 'bg-lime-200 hover:bg-lime-300',
-  'participial-attribute': 'bg-sky-200 hover:bg-sky-300',
-  // Legacy types (backward compatibility)
-  verb: 'bg-blue-200 hover:bg-blue-300',
-  clause: 'bg-purple-200 hover:bg-purple-300',
-  special: 'bg-pink-200 hover:bg-pink-300',
-  special_construction: 'bg-slate-200 hover:bg-slate-300',
-  subjunctive: 'bg-rose-200 hover:bg-rose-300',
-  modal: 'bg-amber-200 hover:bg-amber-300',
-  functional_verb: 'bg-lime-200 hover:bg-lime-300',
-  advanced_conjunction: 'bg-fuchsia-200 hover:bg-fuchsia-300',
-  nominalization: 'bg-teal-200 hover:bg-teal-300',
-  passive: 'bg-red-200 hover:bg-red-300',
-};
 
 const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onGrammarPointClick, sentenceIndex, selectedCEFRLevels = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'] }) => {
 
@@ -160,7 +117,7 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
       parts.push(
         <span
           key={`point-${pos}-${minEnd}`}
-          className={`${colorMap[primaryRegion.type as GrammarPoint['type']] || colorMap.special} px-1 rounded transition-colors cursor-pointer relative group ${
+          className={`${GRAMMAR_COLOR_MAP[primaryRegion.type as GrammarPoint['type']] || DEFAULT_GRAMMAR_COLOR} px-1 rounded transition-colors cursor-pointer relative group ${
             vocabHere ? 'underline decoration-dashed decoration-2 decoration-green-500' : ''
           }`}
           onClick={(e) => {
@@ -236,7 +193,7 @@ function renderTextWithVocabulary(
     }
     
     // Determine decoration color based on vocabulary level
-    const decorationColor = vocabLevelColors[vocab.level] || 'decoration-gray-500';
+    const decorationColor = VOCAB_LEVEL_COLORS[vocab.level] || 'decoration-gray-500';
     
     // Vocabulary word with underline
     parts.push(
