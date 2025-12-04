@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { SentenceAnalysis, GrammarPoint, GrammarType, CEFRLevel, ALL_GRAMMAR_TYPES, GRAMMAR_CATEGORIES } from '../../types/grammar';
-import { analyzeArticle, analyzeTextWithDetection } from '../../services/grammarService';
-import { saveAnalysis } from '../../services/analysisService';
+import { analyzeTextWithDetection } from '../../services/grammarService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 import CEFRLevelFilter from './CEFRLevelFilter';
