@@ -12,7 +12,7 @@ interface FunctionalVerbConstruction {
   pattern: string; // Full pattern (e.g., "in Frage stellen")
   prep?: string; // Preposition (if any)
   article?: string; // Article (if any) - "zur" = "zu" + "der"
-  noun: string; // Required noun
+  noun: string | string[]; // Required noun(s) - can be single noun or array of synonyms
   simpleVerb: string; // Simple equivalent verb
   caseRequired?: string; // Some constructions require specific case
 }
@@ -45,24 +45,26 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
     
     // Chapter 4 - mit Präpositionalphrase (with prepositional phrase)
     // Note: Use base preposition lemmas (zu, not zur/zum) for matching
-    { verb: 'stellen', prep: 'zu', noun: 'Verfügung', simpleVerb: 'verfügbar machen', pattern: 'zur Verfügung stellen' },
-    { verb: 'stehen', prep: 'zu', noun: 'Verfügung', simpleVerb: 'verfügbar sein', pattern: 'zur Verfügung stehen' },
-    { verb: 'stellen', prep: 'in', noun: 'Frage', simpleVerb: 'bezweifeln', pattern: 'in Frage stellen' },
-    { verb: 'kommen', prep: 'in', noun: 'Frage', simpleVerb: 'möglich sein', pattern: 'in Frage kommen' },
+    // Note: noun can be string or array for synonym groups
+    { verb: 'stellen', prep: 'zu', noun: ['Verfügung', 'Disposition'], simpleVerb: 'verfügbar machen', pattern: 'zur Verfügung stellen' },
+    { verb: 'stehen', prep: 'zu', noun: ['Verfügung', 'Disposition'], simpleVerb: 'verfügbar sein', pattern: 'zur Verfügung stehen' },
+    { verb: 'stellen', prep: 'in', noun: ['Frage', 'Zweifel'], simpleVerb: 'bezweifeln', pattern: 'in Frage stellen' },
+    { verb: 'kommen', prep: 'in', noun: ['Frage', 'Betracht'], simpleVerb: 'möglich sein', pattern: 'in Frage kommen' },
     { verb: 'nehmen', prep: 'in', noun: 'Anspruch', simpleVerb: 'beanspruchen', pattern: 'in Anspruch nehmen' },
     { verb: 'nehmen', prep: 'in', noun: 'Kauf', simpleVerb: 'akzeptieren', pattern: 'in Kauf nehmen' },
     { verb: 'bringen', prep: 'zu', noun: 'Ausdruck', simpleVerb: 'ausdrücken', pattern: 'zum Ausdruck bringen' },
     { verb: 'kommen', prep: 'zu', noun: 'Ausdruck', simpleVerb: 'ausgedrückt werden', pattern: 'zum Ausdruck kommen' },
     { verb: 'bringen', prep: 'in', noun: 'Ordnung', simpleVerb: 'ordnen', pattern: 'in Ordnung bringen' },
     { verb: 'sein', prep: 'in', noun: 'Ordnung', simpleVerb: 'geordnet sein', pattern: 'in Ordnung sein' },
+    { verb: 'halten', prep: 'in', noun: 'Ordnung', simpleVerb: 'ordentlich halten', pattern: 'in Ordnung halten' },
     { verb: 'kommen', prep: 'in', noun: 'Gang', simpleVerb: 'anfangen', pattern: 'in Gang kommen' },
     { verb: 'bringen', prep: 'in', noun: 'Gang', simpleVerb: 'starten', pattern: 'in Gang bringen' },
+    { verb: 'halten', prep: 'in', noun: 'Gang', simpleVerb: 'weiterlaufen lassen', pattern: 'in Gang halten' },
     { verb: 'nehmen', prep: 'in', noun: 'Betrieb', simpleVerb: 'starten', pattern: 'in Betrieb nehmen' },
     { verb: 'sein', prep: 'in', noun: 'Betrieb', simpleVerb: 'laufen', pattern: 'in Betrieb sein' },
-    { verb: 'stellen', prep: 'zu', noun: 'Diskussion', simpleVerb: 'diskutieren', pattern: 'zur Diskussion stellen' },
-    { verb: 'stehen', prep: 'zu', noun: 'Diskussion', simpleVerb: 'diskutiert werden', pattern: 'zur Diskussion stehen' },
-    { verb: 'ziehen', prep: 'in', noun: 'Betracht', simpleVerb: 'berücksichtigen', pattern: 'in Betracht ziehen' },
-    { verb: 'kommen', prep: 'in', noun: 'Betracht', simpleVerb: 'berücksichtigt werden', pattern: 'in Betracht kommen' },
+    { verb: 'stellen', prep: 'zu', noun: ['Diskussion', 'Debatte', 'Disposition'], simpleVerb: 'diskutieren', pattern: 'zur Diskussion stellen' },
+    { verb: 'stehen', prep: 'zu', noun: ['Diskussion', 'Debatte', 'Wahl', 'Disposition'], simpleVerb: 'diskutiert werden', pattern: 'zur Diskussion stehen' },
+    { verb: 'ziehen', prep: 'in', noun: ['Betracht', 'Erwägung'], simpleVerb: 'berücksichtigen', pattern: 'in Betracht ziehen' },
     { verb: 'setzen', prep: 'in', noun: 'Bewegung', simpleVerb: 'bewegen', pattern: 'in Bewegung setzen' },
     { verb: 'nehmen', prep: 'auf', noun: 'Rücksicht', simpleVerb: 'berücksichtigen', pattern: 'auf Rücksicht nehmen' },
     { verb: 'legen', prep: 'auf', noun: 'Wert', simpleVerb: 'wichtig finden', pattern: 'auf Wert legen' },
@@ -72,13 +74,10 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
     { verb: 'bringen', prep: 'zu', noun: 'Einsatz', simpleVerb: 'einsetzen', pattern: 'zum Einsatz bringen' },
     { verb: 'treten', prep: 'in', noun: 'Kraft', simpleVerb: 'wirksam werden', pattern: 'in Kraft treten' },
     { verb: 'setzen', prep: 'in', noun: 'Kraft', simpleVerb: 'wirksam machen', pattern: 'in Kraft setzen' },
-    { verb: 'kommen', prep: 'zu', noun: 'Abschluss', simpleVerb: 'abgeschlossen werden', pattern: 'zum Abschluss kommen' },
-    { verb: 'bringen', prep: 'zu', noun: 'Abschluss', simpleVerb: 'abschließen', pattern: 'zum Abschluss bringen' },
-    { verb: 'kommen', prep: 'zu', noun: 'Schluss', simpleVerb: 'enden', pattern: 'zum Schluss kommen' },
-    { verb: 'ziehen', prep: 'in', noun: 'Erwägung', simpleVerb: 'erwägen', pattern: 'in Erwägung ziehen' },
-    { verb: 'nehmen', prep: 'in', noun: 'Empfang', simpleVerb: 'empfangen', pattern: 'in Empfang nehmen' },
-    { verb: 'halten', prep: 'in', noun: 'Gang', simpleVerb: 'weiterlaufen lassen', pattern: 'in Gang halten' },
     { verb: 'setzen', prep: 'außer', noun: 'Kraft', simpleVerb: 'unwirksam machen', pattern: 'außer Kraft setzen' },
+    { verb: 'kommen', prep: 'zu', noun: ['Abschluss', 'Ende', 'Schluss'], simpleVerb: 'abgeschlossen werden', pattern: 'zum Abschluss kommen' },
+    { verb: 'bringen', prep: 'zu', noun: ['Abschluss', 'Ende'], simpleVerb: 'abschließen', pattern: 'zum Abschluss bringen' },
+    { verb: 'nehmen', prep: 'in', noun: 'Empfang', simpleVerb: 'empfangen', pattern: 'in Empfang nehmen' },
     { verb: 'stellen', prep: 'unter', noun: 'Beweis', simpleVerb: 'beweisen', pattern: 'unter Beweis stellen' },
     { verb: 'kommen', prep: 'zu', noun: 'Wort', simpleVerb: 'sprechen dürfen', pattern: 'zu Wort kommen' },
     { verb: 'lassen', prep: 'zu', noun: 'Wort', simpleVerb: 'sprechen lassen', pattern: 'zu Wort kommen lassen' },
@@ -86,11 +85,9 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
     { verb: 'stellen', prep: 'in', noun: 'Aussicht', simpleVerb: 'versprechen', pattern: 'in Aussicht stellen' },
     { verb: 'bringen', prep: 'in', noun: 'Gefahr', simpleVerb: 'gefährden', pattern: 'in Gefahr bringen' },
     { verb: 'geraten', prep: 'in', noun: 'Gefahr', simpleVerb: 'gefährdet werden', pattern: 'in Gefahr geraten' },
-    { verb: 'bringen', prep: 'in', noun: 'Verbindung', simpleVerb: 'verbinden', pattern: 'in Verbindung bringen' },
-    { verb: 'stehen', prep: 'in', noun: 'Verbindung', simpleVerb: 'verbunden sein', pattern: 'in Verbindung stehen' },
-    { verb: 'halten', prep: 'in', noun: 'Ordnung', simpleVerb: 'ordentlich halten', pattern: 'in Ordnung halten' },
+    { verb: 'bringen', prep: 'in', noun: ['Verbindung', 'Zusammenhang'], simpleVerb: 'verbinden', pattern: 'in Verbindung bringen' },
+    { verb: 'stehen', prep: 'in', noun: ['Verbindung', 'Zusammenhang', 'Kontakt'], simpleVerb: 'verbunden sein', pattern: 'in Verbindung stehen' },
     { verb: 'stellen', prep: 'in', noun: 'Abrede', simpleVerb: 'bestreiten', pattern: 'in Abrede stellen' },
-    { verb: 'üben', prep: 'auf', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss ausüben' },
     { verb: 'ausüben', prep: 'auf', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss ausüben' },
     { verb: 'nehmen', prep: 'auf', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss nehmen' },
     { verb: 'führen', noun: 'Krieg', simpleVerb: 'kämpfen', pattern: 'Krieg führen' },
@@ -180,11 +177,12 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
 
       const token = tokens[i];
 
-      // Check if this is the required noun
-      if (
-        token.pos === 'NOUN' &&
-        token.lemma.toLowerCase() === construction.noun.toLowerCase()
-      ) {
+      // Check if this is the required noun (handle both single noun and noun array)
+      const nounMatches = Array.isArray(construction.noun)
+        ? construction.noun.some(n => token.lemma.toLowerCase() === n.toLowerCase())
+        : token.lemma.toLowerCase() === construction.noun.toLowerCase();
+      
+      if (token.pos === 'NOUN' && nounMatches) {
         // Found the noun - now check for preposition if required
         if (construction.prep) {
           const prepMatch = this.findPrepositionBeforeNoun(
