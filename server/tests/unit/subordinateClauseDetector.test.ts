@@ -2,7 +2,7 @@
  * Unit Tests for Subordinate Clause Detector
  */
 
-import { SubordinateClauseDetector } from '../../src/services/grammarEngine/detectors/subordinateClauseDetector';
+import { SubordinateClauseDetector } from '../../src/services/grammarEngine/detectors/B1/subordinateClauseDetector';
 import { createMockSentence, createMockToken, testSentences } from '../testUtils';
 
 describe('SubordinateClauseDetector', () => {

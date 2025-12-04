@@ -84,7 +84,12 @@ router.get('/api/dictionary/:word', async (req, res) => {
 
 // Legacy POST endpoint removed - vocabulary is now read-only from database
 
-// Search vocabulary with filters
+/**
+ * Search vocabulary with filters
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Candidate for removal unless admin panel is planned.
+ */
 router.get('/api/vocabulary/search', (req, res) => {
   try {
     const { q, level, pos, limit = '50' } = req.query;
@@ -131,7 +136,12 @@ router.get('/api/vocabulary/search', (req, res) => {
   }
 });
 
-// Get vocabulary statistics
+/**
+ * Get vocabulary statistics
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Candidate for removal unless admin panel is planned.
+ */
 router.get('/api/vocabulary/stats', (req, res) => {
   try {
     const db = require('../db').default;

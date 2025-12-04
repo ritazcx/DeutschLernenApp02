@@ -3,8 +3,8 @@
  * Tests for relative clause detection (der, die, das, welcher, etc.)
  */
 
-import { RelativeClauseDetector } from '../../src/services/grammarEngine/detectors/relativeClauseDetector';
-import { SentenceData } from '../../src/services/grammarEngine/detectors/baseDetector';
+import { RelativeClauseDetector } from '../../src/services/grammarEngine/detectors/B1/relativeClauseDetector';
+import { SentenceData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
 
 describe('RelativeClauseDetector', () => {
   const detector = new RelativeClauseDetector();

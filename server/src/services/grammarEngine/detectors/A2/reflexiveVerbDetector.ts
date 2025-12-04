@@ -3,8 +3,8 @@
  * Identifies A2-level reflexive verb constructions
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { A2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { A2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class ReflexiveVerbDetector extends BaseGrammarDetector {
   name = 'ReflexiveVerbDetector';

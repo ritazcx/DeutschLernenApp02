@@ -3,9 +3,9 @@
  * Identifies verb tenses using spaCy morphology
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { A1_GRAMMAR, A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { A1_GRAMMAR, A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class TenseDetector extends BaseGrammarDetector {
   name = 'TenseDetector';
@@ -27,8 +27,8 @@ export class TenseDetector extends BaseGrammarDetector {
         return;
       }
 
-      const tense = MorphAnalyzer.extractTense(token.morph || {});
-      const verbForm = MorphAnalyzer.extractVerbForm(token.morph || {});
+      const tense = MorphAnalyzer.extractTense(token.morph);
+      const verbForm = MorphAnalyzer.extractVerbForm(token.morph);
 
       // Present tense (A1)
       if (tense === 'Pres' && verbForm === 'Fin') {
@@ -69,7 +69,7 @@ export class TenseDetector extends BaseGrammarDetector {
         if (auxIndex !== null) {
           const auxToken = sentence.tokens[auxIndex];
           if (auxToken.lemma === 'haben' || auxToken.lemma === 'sein') {
-            const auxTense = MorphAnalyzer.extractTense(auxToken.morph || {});
+            const auxTense = MorphAnalyzer.extractTense(auxToken.morph);
 
             // Present Perfect (A2): Present haben/sein + past participle
             if (auxTense === 'Pres') {

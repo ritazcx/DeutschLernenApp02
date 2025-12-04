@@ -3,8 +3,8 @@
  * Identifies important word collocations and fixed phrases at B1 level
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class CollocationDetector extends BaseGrammarDetector {
   name = 'CollocationDetector';
@@ -108,7 +108,7 @@ export class CollocationDetector extends BaseGrammarDetector {
         if (token.lemma !== 'sich') {
           return false;
         }
-      } else if (token.pos === 'VERB' || token.pos === 'AUX') {
+      } else if (this.isVerbOrAux(token)) {
         // For verbs, check lemma (to handle inflected forms)
         if (token.lemma.toLowerCase() !== patternWord.toLowerCase()) {
           return false;

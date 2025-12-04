@@ -4,18 +4,21 @@
  */
 
 import { Router, Request, Response } from 'express';
-import { NLPEngine } from '../services/nlpEngine';
+import { getNLPEngine } from '../services/nlpEngine/singleton';
 import { VocabularyExtractor } from '../services/vocabularyExtractor';
 
 const router = Router();
 
-// 初始化NLP引擎
-const nlpEngine = new NLPEngine();
+// Get singleton NLP engine instance (shared with grammar routes)
+const nlpEngine = getNLPEngine();
 const vocabExtractor = new VocabularyExtractor();
 
 /**
  * POST /api/nlp/parse
  * 解析句子或文章
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Candidate for removal in future cleanup.
  */
 router.post('/parse', async (req: Request, res: Response) => {
   try {
@@ -42,6 +45,9 @@ router.post('/parse', async (req: Request, res: Response) => {
 /**
  * POST /api/nlp/vocabulary
  * 提取生词本
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Candidate for removal in future cleanup.
  */
 router.post('/vocabulary', async (req: Request, res: Response) => {
   try {
@@ -67,6 +73,9 @@ router.post('/vocabulary', async (req: Request, res: Response) => {
 /**
  * POST /api/nlp/vocabulary-by-level
  * 按难度等级提取生词本
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Candidate for removal in future cleanup.
  */
 router.post('/vocabulary-by-level', async (req: Request, res: Response) => {
   try {
@@ -93,6 +102,9 @@ router.post('/vocabulary-by-level', async (req: Request, res: Response) => {
 /**
  * POST /api/nlp/vocabulary-csv
  * 导出生词本为CSV
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Candidate for removal in future cleanup.
  */
 router.post('/vocabulary-csv', async (req: Request, res: Response) => {
   try {
@@ -117,6 +129,10 @@ router.post('/vocabulary-csv', async (req: Request, res: Response) => {
 /**
  * POST /api/nlp/analyze-grammar
  * Analyze grammar points in a sentence
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Use /api/grammar/analyze-detection instead.
+ * Candidate for removal in future cleanup.
  */
 router.post('/analyze-grammar', async (req: Request, res: Response) => {
   try {
@@ -141,6 +157,9 @@ router.post('/analyze-grammar', async (req: Request, res: Response) => {
 /**
  * GET /api/nlp/health
  * 健康检查
+ * 
+ * @deprecated This endpoint is not used by the frontend.
+ * Use /health (root) instead.
  */
 router.get('/health', (req: Request, res: Response) => {
   res.json({

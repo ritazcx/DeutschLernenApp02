@@ -2,7 +2,7 @@
  * Unit Tests for Passive Voice Detector
  */
 
-import { PassiveVoiceDetector } from '../../src/services/grammarEngine/detectors/passiveVoiceDetector';
+import { PassiveVoiceDetector } from '../../src/services/grammarEngine/detectors/B1/passiveVoiceDetector';
 import { createMockSentence, createMockToken, testSentences } from '../testUtils';
 
 describe('PassiveVoiceDetector', () => {

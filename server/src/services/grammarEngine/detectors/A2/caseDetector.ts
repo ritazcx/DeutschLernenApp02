@@ -3,9 +3,9 @@
  * Identifies grammatical cases using spaCy morphology
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { A1_GRAMMAR, A2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { A1_GRAMMAR, A2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class CaseDetector extends BaseGrammarDetector {
   name = 'CaseDetector';
@@ -60,10 +60,10 @@ export class CaseDetector extends BaseGrammarDetector {
     // Check if there's a verb before this token (likely indirect object)
     for (let i = tokenIndex - 1; i >= Math.max(0, tokenIndex - 3); i--) {
       const prevToken = sentence.tokens[i];
-      if ((prevToken.pos === 'VERB' || prevToken.pos === 'AUX') && this.dativeVerbsIndirectObject.has(prevToken.lemma.toLowerCase())) {
+      if (this.isVerbOrAux(prevToken) && this.dativeVerbsIndirectObject.has(prevToken.lemma.toLowerCase())) {
         return 'indirect-object'; // After a dative verb
       }
-      if (prevToken.pos === 'VERB' || prevToken.pos === 'AUX') {
+      if (this.isVerbOrAux(prevToken)) {
         // Found a verb but not a typical dative verb - could still be indirect object but less certain
         return 'indirect-object';
       }
@@ -82,7 +82,7 @@ export class CaseDetector extends BaseGrammarDetector {
         return;
       }
 
-      const caseValue = MorphAnalyzer.extractCase(token.morph || {});
+      const caseValue = MorphAnalyzer.extractCase(token.morph);
 
       // Nominative (A1)
       if (caseValue === 'Nom') {

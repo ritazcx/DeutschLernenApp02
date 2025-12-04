@@ -3,8 +3,8 @@
  * Tests for article-adjective-noun agreement detection
  */
 
-import { AgreementDetector } from '../../src/services/grammarEngine/detectors/agreementDetector';
-import { SentenceData } from '../../src/services/grammarEngine/detectors/baseDetector';
+import { AgreementDetector } from '../../src/services/grammarEngine/detectors/B1/agreementDetector';
+import { SentenceData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
 
 describe('AgreementDetector', () => {
   const detector = new AgreementDetector();

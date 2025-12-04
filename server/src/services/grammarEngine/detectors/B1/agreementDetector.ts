@@ -3,9 +3,9 @@
  * Identifies agreement errors and correct agreement patterns
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class AgreementDetector extends BaseGrammarDetector {
   name = 'AgreementDetector';
@@ -81,17 +81,17 @@ export class AgreementDetector extends BaseGrammarDetector {
     number?: string;
   } {
     // Extract morphological features
-    const articleCase = MorphAnalyzer.extractCase(article.morph || {});
-    const articleGender = MorphAnalyzer.extractGender(article.morph || {});
-    const articleNumber = MorphAnalyzer.extractNumber(article.morph || {});
+    const articleCase = MorphAnalyzer.extractCase(article.morph);
+    const articleGender = MorphAnalyzer.extractGender(article.morph);
+    const articleNumber = MorphAnalyzer.extractNumber(article.morph);
 
-    const adjectiveCase = MorphAnalyzer.extractCase(adjective.morph || {});
-    const adjectiveGender = MorphAnalyzer.extractGender(adjective.morph || {});
-    const adjectiveNumber = MorphAnalyzer.extractNumber(adjective.morph || {});
+    const adjectiveCase = MorphAnalyzer.extractCase(adjective.morph);
+    const adjectiveGender = MorphAnalyzer.extractGender(adjective.morph);
+    const adjectiveNumber = MorphAnalyzer.extractNumber(adjective.morph);
 
-    const nounCase = MorphAnalyzer.extractCase(noun.morph || {});
-    const nounGender = MorphAnalyzer.extractGender(noun.morph || {});
-    const nounNumber = MorphAnalyzer.extractNumber(noun.morph || {});
+    const nounCase = MorphAnalyzer.extractCase(noun.morph);
+    const nounGender = MorphAnalyzer.extractGender(noun.morph);
+    const nounNumber = MorphAnalyzer.extractNumber(noun.morph);
 
     // Must have morphological features to detect agreement
     // 'unknown' means the feature is missing

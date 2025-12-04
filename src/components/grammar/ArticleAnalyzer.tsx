@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { SentenceAnalysis, GrammarPoint, GrammarType, CEFRLevel, ALL_GRAMMAR_TYPES, GRAMMAR_CATEGORIES } from '../../types/grammar';
-import { analyzeArticle, analyzeTextWithDetection } from '../../services/grammarService';
-import { saveAnalysis } from '../../services/analysisService';
+import { analyzeTextWithDetection } from '../../services/grammarService';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 import CEFRLevelFilter from './CEFRLevelFilter';
+import { useLocalStorage } from './hooks';
+import { CEFR_LEVELS } from './cefrConfig';
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -24,37 +25,11 @@ const ArticleAnalyzer: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [savedId, setSavedId] = useState<string | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
-  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
-  const [useNLPAnalyzer, setUseNLPAnalyzer] = useState(true);
 
-  // Grammar filter state - load from localStorage or default to all selected
-  const [selectedGrammarTypes, setSelectedGrammarTypes] = useState<GrammarType[]>(() => {
-    const saved = localStorage.getItem('grammar_filters');
-    return saved ? JSON.parse(saved) : ALL_GRAMMAR_TYPES;
-  });
-
-  // Vocabulary annotation state - load from localStorage or default to B1 and B2
-  const [selectedVocabularyLevels, setSelectedVocabularyLevels] = useState<string[]>(() => {
-    const saved = localStorage.getItem('vocabulary_levels');
-    return saved ? JSON.parse(saved) : ['B1', 'B2'];
-  });
-
-  // CEFR level filter state - load from localStorage or default to all levels selected
-  const [selectedCEFRLevels, setSelectedCEFRLevels] = useState<CEFRLevel[]>(() => {
-    const saved = localStorage.getItem('cefr_levels');
-    return saved ? JSON.parse(saved) : ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-  });
-
-  useEffect(() => {
-    localStorage.setItem('grammar_filters', JSON.stringify(selectedGrammarTypes));
-  }, [selectedGrammarTypes]);
-
-  useEffect(() => {
-    localStorage.setItem('vocabulary_levels', JSON.stringify(selectedVocabularyLevels));
-  }, [selectedVocabularyLevels]);
+  // Persistent settings using custom localStorage hook
+  const [selectedGrammarTypes] = useLocalStorage<GrammarType[]>('grammar_filters', ALL_GRAMMAR_TYPES);
+  const [selectedVocabularyLevels] = useLocalStorage<string[]>('vocabulary_levels', ['B1', 'B2']);
+  const [selectedCEFRLevels, setSelectedCEFRLevels] = useLocalStorage<CEFRLevel[]>('cefr_levels', CEFR_LEVELS);
 
 
   const handleCEFRLevelToggle = (level: CEFRLevel) => {
@@ -72,21 +47,10 @@ const ArticleAnalyzer: React.FC = () => {
     setError(null);
     setSentences([]);
     setSelectedSentence(null);
-    setSavedId(null);
-    setIsSaved(false);
-    setShowSuccessMessage(false);
 
     try {
-      let result;
-      
-      if (useNLPAnalyzer) {
-        // Use rule-based detection analysis
-        result = await analyzeTextWithDetection(inputText);
-      } else {
-        // Use traditional DeepSeek analysis
-        result = await analyzeArticle(inputText, selectedGrammarTypes, selectedVocabularyLevels);
-      }
-
+      // Use rule-based detection analysis
+      const result = await analyzeTextWithDetection(inputText);
       setSentences(result.sentences);
       
       // Save to localStorage
@@ -110,9 +74,6 @@ const ArticleAnalyzer: React.FC = () => {
     setSentences([]);
     setSelectedSentence(null);
     setError(null);
-    setSavedId(null);
-    setIsSaved(false);
-    setShowSuccessMessage(false);
   };
 
   return (

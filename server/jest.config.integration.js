@@ -36,9 +36,8 @@ module.exports = {
   },
   setupFilesAfterEnv: ['<rootDir>/tests/setup.ts'],
   // Global setup/teardown for spaCy service management
-  // Use compiled JS files for globalSetup/globalTeardown to avoid dynamic import issues
-  globalSetup: '<rootDir>/dist/tests/globalSetup.js',
-  globalTeardown: '<rootDir>/dist/tests/globalTeardown.js',
+  globalSetup: '<rootDir>/tests/globalSetup.ts',
+  globalTeardown: '<rootDir>/tests/globalTeardown.ts',
   // Increase timeouts for spaCy integration tests
   testTimeout: 30000,
   // Ensure tests run serially to avoid spaCy service conflicts

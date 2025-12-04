@@ -3,9 +3,9 @@
  * Identifies passive voice constructions using spaCy dependencies
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class PassiveVoiceDetector extends BaseGrammarDetector {
   name = 'PassiveVoiceDetector';
@@ -15,8 +15,8 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
     const results: DetectionResult[] = [];
 
     sentence.tokens.forEach((token, index) => {
-      // Check for "werden" (passive auxiliary) - can be tagged as AUX or VERB
-      if (token.lemma !== 'werden' || (token.pos !== 'AUX' && token.pos !== 'VERB')) {
+      // Check for "werden" (passive auxiliary)
+      if (!this.isPassiveAuxiliary(token, 'werden')) {
         return;
       }
 
@@ -28,22 +28,11 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
         tense = 'Pres';
       } else {
         // Fallback to morphology for other forms
-        tense = MorphAnalyzer.extractTense(token.morph || {});
+        tense = MorphAnalyzer.extractTense(token.morph);
       }
 
       // Look for past participle after werden (may be separated by prepositional phrases)
-      let participleIndex = -1;
-      for (let i = index + 1; i < sentence.tokens.length; i++) {
-        const candidate = sentence.tokens[i];
-        if (candidate.pos === 'VERB') {
-          participleIndex = i;
-          break;
-        }
-        // Skip over determiners, nouns, adjectives, adpositions, pronouns, prepositions, articles that might be part of agent phrase
-        if (!['DET', 'NOUN', 'ADJ', 'ADP', 'PRON', 'PREP', 'ART'].includes(candidate.pos)) {
-          break; // Stop if we hit something unexpected
-        }
-      }
+      const participleIndex = this.findNextParticiple(sentence.tokens, index);
 
       if (participleIndex === -1) {
         return;
@@ -51,13 +40,8 @@ export class PassiveVoiceDetector extends BaseGrammarDetector {
 
       const participleToken = sentence.tokens[participleIndex];
 
-      const participleTense = MorphAnalyzer.extractTense(participleToken.morph || {});
-      const verbForm = MorphAnalyzer.extractVerbForm(participleToken.morph || {});
-
-      // Check if it's a past participle (VerbForm="Part" or Tense="Perf" for German)
-      const isParticiple = verbForm === 'Part' || participleTense === 'Perf';
-
-      if (!isParticiple) {
+      // Verify it's a past participle (already checked in findNextParticiple, but double-check)
+      if (!this.isPastParticiple(participleToken)) {
         return;
       }
 

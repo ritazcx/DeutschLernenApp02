@@ -3,9 +3,9 @@
  * Identifies A2-level dative and accusative preposition usage
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { A2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { A2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class PrepositionDetector extends BaseGrammarDetector {
   name = 'PrepositionDetector';
@@ -56,7 +56,7 @@ export class PrepositionDetector extends BaseGrammarDetector {
       }
 
       const objectToken = sentence.tokens[objectIndex];
-      const caseValue = MorphAnalyzer.extractCase(objectToken.morph || {});
+      const caseValue = MorphAnalyzer.extractCase(objectToken.morph);
 
       // Check if object is in dative case
       if (caseValue === 'Dat') {
@@ -95,7 +95,7 @@ export class PrepositionDetector extends BaseGrammarDetector {
       }
 
       const objectToken = sentence.tokens[objectIndex];
-      const caseValue = MorphAnalyzer.extractCase(objectToken.morph || {});
+      const caseValue = MorphAnalyzer.extractCase(objectToken.morph);
 
       // Check if object is in accusative case
       if (caseValue === 'Acc') {

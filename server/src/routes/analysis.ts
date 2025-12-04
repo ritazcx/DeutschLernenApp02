@@ -4,6 +4,19 @@ import { saveAnalysis, listAnalyses, getAnalysisById, deleteAnalysis } from '../
 
 const router = express.Router();
 
+/**
+ * @deprecated These analysis persistence endpoints are not currently used by the frontend.
+ * Frontend uses localStorage for article persistence instead of backend database.
+ * 
+ * Consider removing if backend persistence is not needed:
+ * - POST /api/analyses
+ * - GET /api/analyses
+ * - GET /api/analyses/:id
+ * - DELETE /api/analyses/:id
+ * 
+ * Database tables affected: analyses, sentences, grammar_points
+ */
+
 // Save an analysis
 router.post('/api/analyses', (req, res) => {
   try {

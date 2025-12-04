@@ -3,9 +3,9 @@
  * Identifies B2-level conditional sentence structures
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class ConditionalDetector extends BaseGrammarDetector {
   name = 'ConditionalDetector';
@@ -45,8 +45,8 @@ export class ConditionalDetector extends BaseGrammarDetector {
       }
 
       const verb = sentence.tokens[verbIndex];
-      const mood = MorphAnalyzer.extractMood(verb.morph || {});
-      const tense = MorphAnalyzer.extractTense(verb.morph || {});
+      const mood = MorphAnalyzer.extractMood(verb.morph);
+      const tense = MorphAnalyzer.extractTense(verb.morph);
 
       // Determine conditional type
       let conditionalType = 'real'; // default
@@ -82,9 +82,9 @@ export class ConditionalDetector extends BaseGrammarDetector {
     let hasPastSubjunctive = false;
 
     sentence.tokens.forEach((token) => {
-      if (token.pos === 'VERB' || token.pos === 'AUX') {
-        const mood = MorphAnalyzer.extractMood(token.morph || {});
-        const tense = MorphAnalyzer.extractTense(token.morph || {});
+      if (this.isVerbOrAux(token)) {
+        const mood = MorphAnalyzer.extractMood(token.morph);
+        const tense = MorphAnalyzer.extractTense(token.morph);
 
         if (mood === 'Subj') {
           if (tense === 'Pres') {
@@ -120,8 +120,8 @@ export class ConditionalDetector extends BaseGrammarDetector {
     // Look for finite verb after conjunction
     for (let i = conjunctionIndex + 1; i < tokens.length; i++) {
       const token = tokens[i];
-      if ((token.pos === 'VERB' || token.pos === 'AUX') &&
-          MorphAnalyzer.extractVerbForm(token.morph || {}) === 'Fin') {
+      if (this.isVerbOrAux(token) &&
+          MorphAnalyzer.extractVerbForm(token.morph) === 'Fin') {
         return i;
       }
     }

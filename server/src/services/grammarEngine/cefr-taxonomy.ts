@@ -21,7 +21,9 @@ export type GrammarCategory =
   | 'separable-verb'
   | 'modal-verb'
   | 'reflexive-verb'
-  | 'passive';
+  | 'passive'
+  | 'functional-verb'
+  | 'participial-attribute';
 
 export interface GrammarPoint {
   id: string;
@@ -468,18 +470,22 @@ export const B2_GRAMMAR: Record<string, GrammarPoint> = {
     ],
     explanation: 'Real conditions: present indicative. Unreal: Konjunktiv II. Past unreality: Konjunktiv II perfect.',
   },
-  'extended-adjective-attribution': {
-    id: 'b2-extended-adjectives',
-    category: 'adjective',
+  'participial-attributes': {
+    id: 'b2-participial-attributes',
+    category: 'participial-attribute',
     level: 'B2',
-    name: 'Extended Adjective Attribution (Erweiterte Nominalggruppe)',
-    description: 'Adjectives with additional modifiers: der lange, elegante, dunkelblau gefärbte Mantel',
+    name: 'Extended Participial Attributes (Erweiterte Partizipialattribute)',
+    description: 'Participles (Partizip I & II) with modifiers used as adjectives before nouns',
     examples: [
-      'Der von dem Künstler handgemalte Tisch',
-      'Die in Deutschland hergestellten Autos',
-      'Das auf hohem Niveau unterrichtete Fach',
+      'Der lesende Student (Partizip I: present participle)',
+      'Das geschriebene Buch (Partizip II: past participle)',
+      'Der von dem Künstler handgemalte Tisch (with preposition)',
+      'Die in Deutschland hergestellten Autos (with preposition)',
+      'Das sehr gut geschriebene Buch (with adverb)',
+      'Die sich entwickelnde Wirtschaft (with reflexive pronoun)',
+      'Der vor zwei Jahren erschienene Roman (complex)',
     ],
-    explanation: 'Extended adjective phrases can precede nouns. Contains participles, prepositional phrases.',
+    explanation: 'Partizip I (present: -end) shows ongoing action. Partizip II (past: ge-...-t/en) shows completed/passive action. Extended forms include prepositions, adverbs, and objects.',
   },
   'noun-clause-with-infinitive': {
     id: 'b2-infinitive-clauses',
@@ -506,6 +512,26 @@ export const B2_GRAMMAR: Record<string, GrammarPoint> = {
       'Er ließ das Haus renovieren',
     ],
     explanation: 'Causative construction with lassen + infinitive. Subject causes someone else to perform the action.',
+  },
+  'functional-verb-construction': {
+    id: 'b2-functional-verb',
+    category: 'functional-verb',
+    level: 'B2',
+    name: 'Functional Verb Construction (Funktionsverbgefüge)',
+    description: 'Fixed verb-noun combinations common in formal German: zur Verfügung stellen, in Frage stellen',
+    examples: [
+      'Das stellt die Theorie in Frage',
+      'Er nimmt das Angebot in Anspruch',
+      'Diese Technik findet Anwendung',
+      'Sie bringt das Problem zum Ausdruck',
+      'Das Auto kommt in Gang',
+    ],
+    explanation: 'Functional verb constructions combine a "light" verb (geben, nehmen, stellen, bringen, kommen) with a noun or prepositional phrase to express an action. These are fixed expressions common in academic and business German. Treat as a unit, not literal translation.',
+    commonMistakes: [
+      'Translating literally ("place to question" instead of "question")',
+      'Adding articles where not allowed ("in die Frage stellen")',
+      'Modifying the noun with adjectives',
+    ],
   },
 };
 

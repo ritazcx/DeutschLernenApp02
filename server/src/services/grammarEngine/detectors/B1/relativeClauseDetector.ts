@@ -3,8 +3,8 @@
  * Identifies B1-level relative clause constructions
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class RelativeClauseDetector extends BaseGrammarDetector {
   name = 'RelativeClauseDetector';
@@ -99,7 +99,7 @@ export class RelativeClauseDetector extends BaseGrammarDetector {
         return token;
       }
       // Stop at punctuation or verbs (sentence/clause boundary)
-      if (token.pos === 'PUNCT' || token.pos === 'VERB' || token.pos === 'AUX') {
+      if (token.pos === 'PUNCT' || this.isVerbOrAux(token)) {
         break;
       }
     }

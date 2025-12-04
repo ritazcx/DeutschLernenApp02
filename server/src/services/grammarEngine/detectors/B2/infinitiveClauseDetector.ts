@@ -3,8 +3,8 @@
  * Identifies B2-level infinitive clauses with zu
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class InfinitiveClauseDetector extends BaseGrammarDetector {
   name = 'InfinitiveClauseDetector';
@@ -127,7 +127,7 @@ export class InfinitiveClauseDetector extends BaseGrammarDetector {
   private findInfinitiveAfterZu(tokens: SentenceData['tokens'], startIndex: number): number {
     for (let i = startIndex; i < Math.min(tokens.length, startIndex + 3); i++) {
       const token = tokens[i];
-      if (token.pos === 'VERB' && token.tag === 'VVINF') {
+      if (this.isInfinitive(token)) {
         return i;
       }
     }

@@ -3,25 +3,13 @@
  * Identifies modal verb constructions (können, müssen, wollen, sollen, dürfen, mögen)
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import { SEPARABLE_PREFIXES, MODAL_VERBS } from '../shared/sharedConstants';
 
 export class ModalVerbDetector extends BaseGrammarDetector {
   name = 'ModalVerbDetector';
   category: GrammarCategory = 'modal-verb';
-
-  // German modal verbs
-  private modalVerbs = [
-    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
-    'kann', 'muss', 'will', 'soll', 'darf', 'mag',  // conjugated forms
-    'kannst', 'musst', 'willst', 'sollst', 'darfst', 'magst',
-    'kann', 'muss', 'will', 'soll', 'darf', 'mag',
-    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
-    'könnt', 'müsst', 'wollt', 'sollt', 'dürft', 'mögt',
-    'können', 'müssen', 'wollen', 'sollen', 'dürfen', 'mögen',
-    // Also check for lemmas that might be returned as conjugated forms
-    'muss', 'kann', 'will', 'soll', 'darf', 'mag'
-  ];
 
   /**
    * Detect modal verb constructions
@@ -79,7 +67,7 @@ export class ModalVerbDetector extends BaseGrammarDetector {
    * Check if a lemma is a modal verb
    */
   private isModalVerb(lemma: string): boolean {
-    return this.modalVerbs.includes(lemma.toLowerCase());
+    return MODAL_VERBS.includes(lemma.toLowerCase());
   }
 
   /**
@@ -104,11 +92,11 @@ export class ModalVerbDetector extends BaseGrammarDetector {
   private findInfinitiveAfter(tokens: TokenData[], modalIndex: number): number {
     for (let i = modalIndex + 1; i < tokens.length; i++) {
       const token = tokens[i];
-      if (token.pos === 'VERB' && (token.tag === 'INF' || token.tag === 'VVINF' || this.isInfinitiveForm(token) || this.isLikelyInfinitive(token))) {
+      if (this.isInfinitive(token)) {
         return i;
       }
       // Stop if we hit another finite verb (end of clause)
-      if (token.pos === 'VERB' && token.tag !== 'INF' && token.tag !== 'VVINF' && !this.isInfinitiveForm(token) && !this.isLikelyInfinitive(token)) {
+      if (this.isVerbOrAux(token) && !this.isInfinitive(token)) {
         break;
       }
     }
@@ -121,34 +109,18 @@ export class ModalVerbDetector extends BaseGrammarDetector {
   private findInfinitiveBefore(tokens: TokenData[], modalIndex: number): number {
     for (let i = modalIndex - 1; i >= 0; i--) {
       const token = tokens[i];
-      if (token.pos === 'VERB' && (token.tag === 'INF' || token.tag === 'VVINF' || this.isInfinitiveForm(token) || this.isLikelyInfinitive(token))) {
+      if (this.isInfinitive(token)) {
         return i;
       }
       // Stop if we hit another finite verb
-      if (token.pos === 'VERB' && token.tag !== 'INF' && token.tag !== 'VVINF' && !this.isInfinitiveForm(token) && !this.isLikelyInfinitive(token)) {
+      if (this.isVerbOrAux(token) && !this.isInfinitive(token)) {
         break;
       }
     }
     return -1;
   }
 
-  /**
-   * Check if a verb token is in infinitive form
-   */
-  private isInfinitiveForm(token: TokenData): boolean {
-    // Check morphological features
-    return token.morph?.VerbForm === 'Inf' || 
-           token.morph?.VerbForm === 'Inf,Part' ||
-           token.tag?.includes('INF');
-  }
 
-  /**
-   * Check if a verb token is likely an infinitive (fallback check)
-   */
-  private isLikelyInfinitive(token: TokenData): boolean {
-    // For German, infinitives often end with -en, -eln, -ern
-    return token.text.match(/[a-zäöü]+(en|eln|ern)$/) !== null;
-  }
 
   /**
    * Get the full infinitive text, including separable prefixes
@@ -171,9 +143,7 @@ export class ModalVerbDetector extends BaseGrammarDetector {
    * Check if a token is a separable verb prefix
    */
   private isSeparablePrefix(token: TokenData): boolean {
-    // Common separable prefixes in German
-    const separablePrefixes = ['ab', 'an', 'auf', 'aus', 'bei', 'ein', 'her', 'hin', 'mit', 'nach', 'vor', 'weg', 'zu', 'zurück'];
-    return separablePrefixes.includes(token.lemma.toLowerCase());
+    return SEPARABLE_PREFIXES.includes(token.lemma.toLowerCase());
   }
 
   /**
