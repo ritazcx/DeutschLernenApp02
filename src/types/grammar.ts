@@ -3,7 +3,7 @@ export type GrammarType =
   | 'tense' | 'case' | 'mood' | 'voice' | 'verb-form' | 'preposition'
   | 'conjunction' | 'agreement' | 'word-order' | 'article' | 'pronoun'
   | 'adjective' | 'noun' | 'separable-verb' | 'modal-verb' | 'collocation'
-  | 'special-construction'
+  | 'special-construction' | 'functional-verb'
   // Legacy types (backward compatibility)
   | 'verb' | 'clause' | 'special'
   | 'special_construction' | 'subjunctive' | 'modal'
@@ -14,7 +14,13 @@ export interface GrammarPoint {
   level: CEFRLevel;
   text: string;
   explanation: string;
-  position: { start: number; end: number };
+  position: { start: number; end: number }; // Legacy single range
+  positions?: Array<{ start: number; end: number }>; // Multi-range support
+  
+  // Optional metadata for functional verbs and other constructions
+  compactForm?: string;
+  fullConstruction?: string;
+  simpleVerb?: string;
 }
 
 export interface VocabularyPoint {

@@ -22,6 +22,7 @@ import { RelativeClauseDetector } from './detectors/relativeClauseDetector';
 import { ReflexiveVerbDetector } from './detectors/reflexiveVerbDetector';
 import { PrepositionDetector } from './detectors/prepositionDetector';
 import { CausativeDetector } from './detectors/causativeDetector';
+import { FunctionalVerbDetector } from './detectors/functionalVerbDetector';
 import { AIGrammarDetector } from './detectors/aiGrammarDetector';
 import { BaseGrammarDetector, DetectionResult, SentenceData } from './detectors/baseDetector';
 import { GrammarCategory, CEFRLevel } from './cefr-taxonomy';
@@ -59,6 +60,7 @@ export class GrammarDetectionEngine {
     new ReflexiveVerbDetector(),
     new PrepositionDetector(),
     new CausativeDetector(),
+    new FunctionalVerbDetector(),
   ];
 
   private aiDetector = new AIGrammarDetector();
@@ -74,20 +76,27 @@ export class GrammarDetectionEngine {
       allResults.push(...results);
     }
 
+    const funcVerbCount = (results: DetectionResult[]) => results.filter(r => r.grammarPoint?.category === 'functional-verb').length;
+    console.log(`[Pipeline] After detection: ${funcVerbCount(allResults)} functional verbs`);
+
     // Filter by confidence threshold (70%) - removes low-confidence detections
     const filtered = this.filterByConfidence(allResults, 0.70);
+    console.log(`[Pipeline] After confidence filter: ${funcVerbCount(filtered)} functional verbs`);
 
     // Deduplicate overlapping results (keep highest confidence)
     const deduplicated = this.deduplicateResults(filtered);
+    console.log(`[Pipeline] After deduplicateResults: ${funcVerbCount(deduplicated)} functional verbs`);
 
     // Remove redundant detections (e.g., multiple case detections on same noun)
     const deduplicatedByFeature = this.deduplicateByFeature(deduplicated, sentenceData);
+    console.log(`[Pipeline] After deduplicateByFeature: ${funcVerbCount(deduplicatedByFeature)} functional verbs`);
 
     // Sort by position in text
     deduplicatedByFeature.sort((a, b) => a.position.start - b.position.start);
 
     // Merge adjacent results with same grammar point (e.g., dates, passive constructions)
     const merged = this.mergeAdjacentResults(deduplicatedByFeature, sentenceData);
+    console.log(`[Pipeline] After mergeAdjacentResults: ${funcVerbCount(merged)} functional verbs`);
 
     // Enhance explanations with context-aware variants
     const enhanced = this.enhanceExplanations(merged, sentenceData);
@@ -186,9 +195,25 @@ export class GrammarDetectionEngine {
       groups.push(currentGroup);
     }
 
-    // From each group, keep the one with highest confidence
-    return groups.map((group) => {
-      return group.reduce((best, current) => (current.confidence > best.confidence ? current : best));
+    // From each group, keep high-value multi-token constructions AND the highest confidence single detection
+    return groups.flatMap((group) => {
+      // Always preserve functional verbs and separable verbs (important learning points that span multiple tokens)
+      const specialConstructions = group.filter(r => 
+        r.grammarPoint?.category === 'functional-verb' || 
+        r.grammarPoint?.category === 'separable-verb'
+      );
+      
+      // Also keep the highest confidence from remaining detections
+      const regularDetections = group.filter(r => 
+        r.grammarPoint?.category !== 'functional-verb' && 
+        r.grammarPoint?.category !== 'separable-verb'
+      );
+      
+      const bestRegular = regularDetections.length > 0
+        ? [regularDetections.reduce((best, current) => (current.confidence > best.confidence ? current : best))]
+        : [];
+      
+      return [...specialConstructions, ...bestRegular];
     });
   }
 
@@ -244,6 +269,7 @@ export class GrammarDetectionEngine {
       'modal-verb': [],
       'reflexive-verb': [],
       passive: [],
+      'functional-verb': [],
     };
 
     for (const result of results) {
@@ -276,6 +302,7 @@ export class GrammarDetectionEngine {
       tense: byCategory.tense.length,
       case: byCategory.case.length,
       voice: byCategory.voice.length,
+      'functional-verb': byCategory['functional-verb'].length,
       mood: byCategory.mood.length,
       agreement: byCategory.agreement.length,
       article: byCategory.article.length,
@@ -519,22 +546,23 @@ export class GrammarDetectionEngine {
       if (!existing) {
         bestByPosition.set(posKey, result);
       } else {
-        // Special handling: always keep separable verbs (they span multiple tokens and are high value)
-        if (result.grammarPoint?.category === 'separable-verb') {
-          // Keep both - separable verbs are important learning points
+        // Special handling: always keep separable verbs and functional verbs (they span multiple tokens and are high value)
+        if (result.grammarPoint?.category === 'separable-verb' || result.grammarPoint?.category === 'functional-verb') {
+          // Keep both - these are important learning points
           // Use a modified key to allow multiple results at same position
-          const sepKey = `${posKey}-sep-${result.grammarPoint.name}`;
-          bestByPosition.set(sepKey, result);
+          const specialKey = `${posKey}-special-${result.grammarPoint.name}`;
+          bestByPosition.set(specialKey, result);
           continue;
         }
         
-        if (existing.grammarPoint?.category === 'separable-verb') {
-          // Don't replace separable verb with something else
+        if (existing.grammarPoint?.category === 'separable-verb' || existing.grammarPoint?.category === 'functional-verb') {
+          // Don't replace separable verb or functional verb with something else
           continue;
         }
 
         // Keep the one with higher confidence, or if same confidence, prefer more specific categories
         const specificity: Record<string, number> = {
+          'functional-verb': 12,                  // Highest - important B2 learning point
           'separable-verb': 12,                   // Highest - important learning point
           'tense': 10, 'voice': 10, 'mood': 10,  // High value
           'case': 8, 'agreement': 8,              // Medium-high

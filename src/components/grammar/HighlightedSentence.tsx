@@ -37,6 +37,7 @@ const colorMap: Record<GrammarPoint['type'], string> = {
   'modal-verb': 'bg-amber-200 hover:bg-amber-300',
   collocation: 'bg-fuchsia-200 hover:bg-fuchsia-300',
   'special-construction': 'bg-slate-200 hover:bg-slate-300',
+  'functional-verb': 'bg-lime-200 hover:bg-lime-300',
   // Legacy types (backward compatibility)
   verb: 'bg-blue-200 hover:bg-blue-300',
   clause: 'bg-purple-200 hover:bg-purple-300',
@@ -67,6 +68,8 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
     explanation: string;
     originalIndex: number; // Index in sentence.grammarPoints
     level: string;
+    rangeIndex: number; // Which range in multi-range group
+    groupId: string; // Group related ranges together
   }
   
   const highlightRegions: HighlightRegion[] = [];
@@ -81,23 +84,33 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
   
   // Add all points as regions, using their position data and original index
   sentence.grammarPoints.forEach((point, originalIndex) => {
-    const start = point.position.start;
-    const end = point.position.end;
+    // Handle multi-range positions (new) or single position (legacy)
+    const positionsArray = point.positions 
+      ? point.positions 
+      : (point.position ? [point.position] : []);
     
-    // Validate positions are within sentence bounds and actually point to text
-    if (isValidPosition(start, end)) {
-      // Only add to regions if this point's CEFR level is selected
-      if (selectedCEFRLevels.includes(point.level)) {
-        highlightRegions.push({
-          start,
-          end,
-          type: point.type,
-          explanation: point.explanation,
-          originalIndex, // Store the original index from sentence.grammarPoints
-          level: point.level
-        });
+    // Create unique group ID for this grammar point
+    const groupId = `point-${originalIndex}`;
+    
+    // Add each position range
+    positionsArray.forEach((pos, rangeIndex) => {
+      // Validate positions are within sentence bounds and actually point to text
+      if (isValidPosition(pos.start, pos.end)) {
+        // Only add to regions if this point's CEFR level is selected
+        if (selectedCEFRLevels.includes(point.level)) {
+          highlightRegions.push({
+            start: pos.start,
+            end: pos.end,
+            type: point.type,
+            explanation: point.explanation,
+            originalIndex, // Store the original index from sentence.grammarPoints
+            level: point.level,
+            rangeIndex,
+            groupId, // Same group ID for all ranges of this point
+          });
+        }
       }
-    }
+    });
   });
   
   // Sort regions by start position, then by length (longer first for better visibility)

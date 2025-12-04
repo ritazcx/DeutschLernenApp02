@@ -21,7 +21,8 @@ export type GrammarCategory =
   | 'separable-verb'
   | 'modal-verb'
   | 'reflexive-verb'
-  | 'passive';
+  | 'passive'
+  | 'functional-verb';
 
 export interface GrammarPoint {
   id: string;
@@ -506,6 +507,26 @@ export const B2_GRAMMAR: Record<string, GrammarPoint> = {
       'Er ließ das Haus renovieren',
     ],
     explanation: 'Causative construction with lassen + infinitive. Subject causes someone else to perform the action.',
+  },
+  'functional-verb-construction': {
+    id: 'b2-functional-verb',
+    category: 'functional-verb',
+    level: 'B2',
+    name: 'Functional Verb Construction (Funktionsverbgefüge)',
+    description: 'Fixed verb-noun combinations common in formal German: zur Verfügung stellen, in Frage stellen',
+    examples: [
+      'Das stellt die Theorie in Frage',
+      'Er nimmt das Angebot in Anspruch',
+      'Diese Technik findet Anwendung',
+      'Sie bringt das Problem zum Ausdruck',
+      'Das Auto kommt in Gang',
+    ],
+    explanation: 'Functional verb constructions combine a "light" verb (geben, nehmen, stellen, bringen, kommen) with a noun or prepositional phrase to express an action. These are fixed expressions common in academic and business German. Treat as a unit, not literal translation.',
+    commonMistakes: [
+      'Translating literally ("place to question" instead of "question")',
+      'Adding articles where not allowed ("in die Frage stellen")',
+      'Modifying the noun with adjectives',
+    ],
   },
 };
 
