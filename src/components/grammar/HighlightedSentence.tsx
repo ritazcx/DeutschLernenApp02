@@ -1,6 +1,8 @@
 import React from 'react';
 import { SentenceAnalysis, GrammarPoint, VocabularyPoint, CEFRLevel } from '../../types/grammar';
 import { GRAMMAR_COLOR_MAP, VOCAB_LEVEL_COLORS, DEFAULT_GRAMMAR_COLOR } from './constants';
+import { HighlightRegion } from './types';
+import { isValidPosition, getOverlappingRegions, getVocabAtPosition } from './utils';
 
 interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;
@@ -19,26 +21,7 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
   const vocabPoints = sentence.vocabularyPoints || [];
   
   // Build highlight regions - use positions directly, allow overlapping
-  interface HighlightRegion {
-    start: number;
-    end: number;
-    type: string;
-    explanation: string;
-    originalIndex: number; // Index in sentence.grammarPoints
-    level: string;
-    rangeIndex: number; // Which range in multi-range group
-    groupId: string; // Group related ranges together
-  }
-  
   const highlightRegions: HighlightRegion[] = [];
-  
-  // Validation function: ensure position actually points to valid text
-  const isValidPosition = (start: number, end: number): boolean => {
-    if (start < 0 || end > sentence.sentence.length || start >= end) return false;
-    // Ensure the position points to a non-whitespace token boundary or word
-    const highlighted = sentence.sentence.substring(start, end).trim();
-    return highlighted.length > 0; // Must have actual content
-  };
   
   // Add all points as regions, using their position data and original index
   sentence.grammarPoints.forEach((point, originalIndex) => {
@@ -53,7 +36,7 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
     // Add each position range
     positionsArray.forEach((pos, rangeIndex) => {
       // Validate positions are within sentence bounds and actually point to text
-      if (isValidPosition(pos.start, pos.end)) {
+      if (isValidPosition(pos.start, pos.end, sentence.sentence.length)) {
         // Only add to regions if this point's CEFR level is selected
         if (selectedCEFRLevels.includes(point.level)) {
           highlightRegions.push({
@@ -77,22 +60,6 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
     return (b.end - b.start) - (a.end - a.start);
   });
   
-  // Helper function to get all regions that overlap with a position
-  const getOverlappingRegions = (start: number, end: number): HighlightRegion[] => {
-    return highlightRegions.filter(region =>
-      !(region.end <= start || region.start >= end) // Overlaps if not completely separate
-    );
-  };
-  
-  // Helper function to check if a position overlaps with vocabulary
-  const getVocabAtPosition = (start: number, end: number): VocabularyPoint | null => {
-    return vocabPoints.find(v => 
-      (start >= v.startIndex && start < v.endIndex) ||
-      (end > v.startIndex && end <= v.endIndex) ||
-      (start <= v.startIndex && end >= v.endIndex)
-    ) || null;
-  };
-  
   const parts: React.ReactElement[] = [];
   let pos = 0;
 
@@ -104,7 +71,7 @@ const HighlightedSentence: React.FC<HighlightedSentenceProps> = ({ sentence, onG
       // Find the end position (minimum end among all regions at this position)
       const minEnd = Math.min(...regionsAtPos.map(r => r.end));
       const highlighted = sentence.sentence.substring(pos, minEnd);
-      const vocabHere = getVocabAtPosition(pos, minEnd);
+      const vocabHere = getVocabAtPosition(pos, minEnd, vocabPoints);
       
       // Create tooltip with all regions that cover this span
       const allExplanations = regionsAtPos
