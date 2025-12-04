@@ -90,6 +90,10 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
     { verb: 'stellen', prep: 'in', noun: 'Abrede', simpleVerb: 'bestreiten', pattern: 'in Abrede stellen' },
     { verb: 'ausüben', prep: 'auf', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss ausüben' },
     { verb: 'nehmen', prep: 'auf', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss nehmen' },
+    // Accusative versions (auf phrase is separate/optional)
+    { verb: 'ausüben', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss ausüben' },
+    { verb: 'nehmen', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss nehmen' },
+    { verb: 'legen', noun: 'Wert', simpleVerb: 'wichtig finden', pattern: 'Wert legen' },
     { verb: 'führen', noun: 'Krieg', simpleVerb: 'kämpfen', pattern: 'Krieg führen' },
     { verb: 'führen', noun: 'Gespräch', simpleVerb: 'sprechen', pattern: 'Gespräch führen' },
     { verb: 'erstatten', noun: 'Bericht', simpleVerb: 'berichten', pattern: 'Bericht erstatten' },
@@ -230,7 +234,7 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
 
   /**
    * Check if noun should be rejected based on article presence
-   * For functional verbs without prepositions, articles are not allowed
+   * For accusative functional verbs (no preposition), articles are allowed
    * For prepositional functional verbs, articles may be part of the construction
    */
   private shouldRejectDueToArticle(
@@ -239,16 +243,10 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
     hasPreposition: boolean,
     prepIndex?: number
   ): boolean {
-    // For constructions without prepositions (e.g., "Anwendung finden")
-    // reject if there's an article directly before the noun
+    // For accusative patterns (no preposition), allow articles
+    // Examples: "eine Entscheidung treffen", "ein Gespräch führen" are grammatically correct
     if (!hasPreposition) {
-      if (nounIndex === 0) return false;
-      const prevToken = tokens[nounIndex - 1];
-      // spaCy German uses 'ART' for articles, not 'DET'
-      return (
-        (prevToken.pos === 'DET' || prevToken.pos === 'ART') &&
-        ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einen', 'einem', 'eines'].includes(prevToken.text.toLowerCase())
-      );
+      return false;
     }
 
     // For prepositional constructions:
