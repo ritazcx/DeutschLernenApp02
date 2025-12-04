@@ -3,8 +3,8 @@
  * Identifies morphological patterns like compound nouns, adjective endings, etc.
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class MorphologicalDetector extends BaseGrammarDetector {
   name = 'MorphologicalDetector';

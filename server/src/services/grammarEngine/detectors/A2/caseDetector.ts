@@ -3,9 +3,9 @@
  * Identifies grammatical cases using spaCy morphology
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { A1_GRAMMAR, A2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { A1_GRAMMAR, A2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class CaseDetector extends BaseGrammarDetector {
   name = 'CaseDetector';

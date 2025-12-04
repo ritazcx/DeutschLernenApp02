@@ -3,8 +3,8 @@
  * Tests for reflexive verb construction detection (sich + verb)
  */
 
-import { ReflexiveVerbDetector } from '../../src/services/grammarEngine/detectors/reflexiveVerbDetector';
-import { SentenceData } from '../../src/services/grammarEngine/detectors/baseDetector';
+import { ReflexiveVerbDetector } from '../../src/services/grammarEngine/detectors/A2/reflexiveVerbDetector';
+import { SentenceData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
 
 describe('ReflexiveVerbDetector', () => {
   const detector = new ReflexiveVerbDetector();

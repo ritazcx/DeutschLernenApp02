@@ -3,8 +3,8 @@
  * Tests for Konjunktiv I and II detection
  */
 
-import { SubjunctiveDetector } from '../../src/services/grammarEngine/detectors/subjunctiveDetector';
-import { SentenceData } from '../../src/services/grammarEngine/detectors/baseDetector';
+import { SubjunctiveDetector } from '../../src/services/grammarEngine/detectors/B1/subjunctiveDetector';
+import { SentenceData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
 
 describe('SubjunctiveDetector', () => {
   const detector = new SubjunctiveDetector();

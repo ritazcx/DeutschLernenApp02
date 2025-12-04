@@ -3,8 +3,8 @@
  * Identifies B1-level relative clause constructions
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class RelativeClauseDetector extends BaseGrammarDetector {
   name = 'RelativeClauseDetector';

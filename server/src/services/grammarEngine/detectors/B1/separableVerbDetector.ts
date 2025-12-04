@@ -3,9 +3,9 @@
  * Identifies separable verbs where prefix separates from stem
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import { SEPARABLE_PREFIXES } from './sharedConstants';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import { SEPARABLE_PREFIXES } from '../shared/sharedConstants';
 
 export class SeparableVerbDetector extends BaseGrammarDetector {
   name = 'SeparableVerbDetector';

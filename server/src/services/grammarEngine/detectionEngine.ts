@@ -3,27 +3,36 @@
  * Orchestrates all grammar detectors and merges results
  */
 
-import { TenseDetector } from './detectors/tenseDetector';
-import { CaseDetector } from './detectors/caseDetector';
-import { PassiveVoiceDetector } from './detectors/passiveVoiceDetector';
-import { SubordinateClauseDetector } from './detectors/subordinateClauseDetector';
-import { SubjunctiveDetector } from './detectors/subjunctiveDetector';
-import { SeparableVerbDetector } from './detectors/separableVerbDetector';
-import { ModalVerbDetector } from './detectors/modalVerbDetector';
-import { AgreementDetector } from './detectors/agreementDetector';
-import { WordOrderDetector } from './detectors/wordOrderDetector';
-import { CollocationDetector } from './detectors/collocationDetector';
-import { MorphologicalDetector } from './detectors/morphologicalDetector';
-import { AdvancedPassiveDetector } from './detectors/advancedPassiveDetector';
-import { ConditionalDetector } from './detectors/conditionalDetector';
-import { InfinitiveClauseDetector } from './detectors/infinitiveClauseDetector';
-import { ParticipialAttributeDetector } from './detectors/participialAttributeDetector';
-import { RelativeClauseDetector } from './detectors/relativeClauseDetector';
-import { ReflexiveVerbDetector } from './detectors/reflexiveVerbDetector';
-import { PrepositionDetector } from './detectors/prepositionDetector';
-import { CausativeDetector } from './detectors/causativeDetector';
-import { FunctionalVerbDetector } from './detectors/functionalVerbDetector';
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './detectors/baseDetector';
+// A1 Level Detectors
+import { TenseDetector } from './detectors/A1/tenseDetector';
+
+// A2 Level Detectors
+import { CaseDetector } from './detectors/A2/caseDetector';
+import { PrepositionDetector } from './detectors/A2/prepositionDetector';
+import { ReflexiveVerbDetector } from './detectors/A2/reflexiveVerbDetector';
+import { WordOrderDetector } from './detectors/A2/wordOrderDetector';
+
+// B1 Level Detectors
+import { AgreementDetector } from './detectors/B1/agreementDetector';
+import { CollocationDetector } from './detectors/B1/collocationDetector';
+import { ModalVerbDetector } from './detectors/B1/modalVerbDetector';
+import { MorphologicalDetector } from './detectors/B1/morphologicalDetector';
+import { PassiveVoiceDetector } from './detectors/B1/passiveVoiceDetector';
+import { RelativeClauseDetector } from './detectors/B1/relativeClauseDetector';
+import { SeparableVerbDetector } from './detectors/B1/separableVerbDetector';
+import { SubjunctiveDetector } from './detectors/B1/subjunctiveDetector';
+import { SubordinateClauseDetector } from './detectors/B1/subordinateClauseDetector';
+
+// B2 Level Detectors
+import { AdvancedPassiveDetector } from './detectors/B2/advancedPassiveDetector';
+import { CausativeDetector } from './detectors/B2/causativeDetector';
+import { ConditionalDetector } from './detectors/B2/conditionalDetector';
+import { FunctionalVerbDetector } from './detectors/B2/functionalVerbDetector';
+import { InfinitiveClauseDetector } from './detectors/B2/infinitiveClauseDetector';
+import { ParticipialAttributeDetector } from './detectors/B2/participialAttributeDetector';
+
+// Shared
+import { BaseGrammarDetector, DetectionResult, SentenceData } from './detectors/shared/baseDetector';
 import { GrammarCategory, CEFRLevel } from './cefr-taxonomy';
 
 export interface GrammarAnalysisResult {

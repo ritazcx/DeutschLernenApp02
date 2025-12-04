@@ -4,8 +4,8 @@
  * Examples: in Frage stellen, zur Verfügung stellen, in Anspruch nehmen
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { B2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { B2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 interface FunctionalVerbConstruction {
   verb: string; // Lemma of functional verb

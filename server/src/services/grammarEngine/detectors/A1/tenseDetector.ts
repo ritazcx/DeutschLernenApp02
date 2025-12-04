@@ -3,9 +3,9 @@
  * Identifies verb tenses using spaCy morphology
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { A1_GRAMMAR, A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { A1_GRAMMAR, A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class TenseDetector extends BaseGrammarDetector {
   name = 'TenseDetector';

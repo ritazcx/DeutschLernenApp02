@@ -3,7 +3,7 @@
  * Tests B2-level Funktionsverbgefüge detection
  */
 
-import { FunctionalVerbDetector } from '../../src/services/grammarEngine/detectors/functionalVerbDetector';
+import { FunctionalVerbDetector } from '../../src/services/grammarEngine/detectors/B2/functionalVerbDetector';
 import { createMockSentence, createMockToken } from '../testUtils';
 
 describe('FunctionalVerbDetector', () => {

@@ -2,7 +2,7 @@
  * Unit Tests for Modal Verb Detector
  */
 
-import { ModalVerbDetector } from '../../src/services/grammarEngine/detectors/modalVerbDetector';
+import { ModalVerbDetector } from '../../src/services/grammarEngine/detectors/B1/modalVerbDetector';
 import { createMockSentence, createMockToken, testSentences } from '../testUtils';
 
 describe('ModalVerbDetector', () => {

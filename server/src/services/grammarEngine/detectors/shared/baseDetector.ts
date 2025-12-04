@@ -3,7 +3,7 @@
  * All grammar detectors extend this class
  */
 
-import { GrammarPoint, CEFRLevel, GrammarCategory } from '../cefr-taxonomy';
+import { GrammarPoint, CEFRLevel, GrammarCategory } from '../../cefr-taxonomy';
 
 export interface DetectionResult {
   grammarPointId: string;

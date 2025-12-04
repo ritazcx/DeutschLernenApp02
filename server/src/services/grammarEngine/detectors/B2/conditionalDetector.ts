@@ -3,9 +3,9 @@
  * Identifies B2-level conditional sentence structures
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class ConditionalDetector extends BaseGrammarDetector {
   name = 'ConditionalDetector';

@@ -5,7 +5,7 @@
  * All generated data follows the spaCy token format for accurate testing.
  */
 
-import { SentenceData, TokenData } from '../../src/services/grammarEngine/detectors/baseDetector';
+import { SentenceData, TokenData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
 
 /**
  * Options for creating mock tokens

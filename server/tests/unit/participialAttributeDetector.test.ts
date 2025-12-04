@@ -3,7 +3,7 @@
  * Tests B2-level Erweiterte Partizipialattribute detection
  */
 
-import { ParticipialAttributeDetector } from '../../src/services/grammarEngine/detectors/participialAttributeDetector';
+import { ParticipialAttributeDetector } from '../../src/services/grammarEngine/detectors/B2/participialAttributeDetector';
 import { createMockSentence, createMockToken } from '../testUtils';
 
 describe('ParticipialAttributeDetector', () => {

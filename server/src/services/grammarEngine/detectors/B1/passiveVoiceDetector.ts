@@ -3,9 +3,9 @@
  * Identifies passive voice constructions using spaCy dependencies
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class PassiveVoiceDetector extends BaseGrammarDetector {
   name = 'PassiveVoiceDetector';

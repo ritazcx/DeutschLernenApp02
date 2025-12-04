@@ -3,7 +3,7 @@
  * Using B2-level article sentences for comprehensive testing
  */
 
-import { PrepositionDetector } from '../../src/services/grammarEngine/detectors/prepositionDetector';
+import { PrepositionDetector } from '../../src/services/grammarEngine/detectors/A2/prepositionDetector';
 import { createMockSentence, createMockToken } from '../testUtils';
 
 // B2 Article Sentences (parsed using backend sentence splitting logic)

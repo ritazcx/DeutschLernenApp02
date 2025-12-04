@@ -3,9 +3,9 @@
  * Identifies subjunctive mood (Konjunktiv I and II) using morphology
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B1_GRAMMAR, B2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B1_GRAMMAR, B2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class SubjunctiveDetector extends BaseGrammarDetector {
   name = 'SubjunctiveDetector';

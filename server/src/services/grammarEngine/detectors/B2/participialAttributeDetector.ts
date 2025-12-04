@@ -4,8 +4,8 @@
  * Supports both Partizip I (present participle) and Partizip II (past participle)
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class ParticipialAttributeDetector extends BaseGrammarDetector {
   name = 'ParticipialAttributeDetector';

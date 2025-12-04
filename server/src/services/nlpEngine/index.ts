@@ -10,7 +10,7 @@ import { POSTagger } from './posTagger';
 import { SpacyService, getSpacyService } from './spacyService';
 import { Token, ParsedSentence } from './types';
 import { grammarDetectionEngine, GrammarAnalysisResult } from '../grammarEngine/detectionEngine';
-import { SentenceData } from '../grammarEngine/detectors/baseDetector';
+import { SentenceData } from '../grammarEngine/detectors/shared/baseDetector';
 
 export class NLPEngine {
   private db: Database.Database;

@@ -3,8 +3,8 @@
  * Identifies B2-level infinitive clauses with zu
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData } from './baseDetector';
-import { B2_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
+import { BaseGrammarDetector, DetectionResult, SentenceData } from '../shared/baseDetector';
+import { B2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 
 export class InfinitiveClauseDetector extends BaseGrammarDetector {
   name = 'InfinitiveClauseDetector';

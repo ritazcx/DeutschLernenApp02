@@ -3,9 +3,9 @@
  * Identifies German word order patterns (V2, verb-final in subordinates)
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import * as MorphAnalyzer from '../morphologyAnalyzer';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class WordOrderDetector extends BaseGrammarDetector {
   name = 'WordOrderDetector';

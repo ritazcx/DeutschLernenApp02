@@ -3,9 +3,9 @@
  * Identifies modal verb constructions (können, müssen, wollen, sollen, dürfen, mögen)
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from './baseDetector';
-import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../cefr-taxonomy';
-import { SEPARABLE_PREFIXES, MODAL_VERBS } from './sharedConstants';
+import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
+import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import { SEPARABLE_PREFIXES, MODAL_VERBS } from '../shared/sharedConstants';
 
 export class ModalVerbDetector extends BaseGrammarDetector {
   name = 'ModalVerbDetector';

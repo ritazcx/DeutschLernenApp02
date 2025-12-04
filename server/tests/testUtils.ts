@@ -2,7 +2,7 @@
  * Test Utilities and Helpers
  */
 
-import { SentenceData, TokenData } from '../src/services/grammarEngine/detectors/baseDetector';
+import { SentenceData, TokenData } from '../src/services/grammarEngine/detectors/shared/baseDetector';
 
 /**
  * Create realistic morphological features based on POS and other parameters

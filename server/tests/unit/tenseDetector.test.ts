@@ -9,8 +9,8 @@
  * - Edge cases and error handling
  */
 
-import { TenseDetector } from '../../src/services/grammarEngine/detectors/tenseDetector';
-import { SentenceData } from '../../src/services/grammarEngine/detectors/baseDetector';
+import { TenseDetector } from '../../src/services/grammarEngine/detectors/A1/tenseDetector';
+import { SentenceData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
 import {
   createSimplePresentSentence,
   createSimplePastSentence,
