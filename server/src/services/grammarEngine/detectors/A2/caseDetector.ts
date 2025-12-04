@@ -29,6 +29,24 @@ export class CaseDetector extends BaseGrammarDetector {
   private detectDativeContext(sentence: SentenceData, tokenIndex: number): string {
     const token = sentence.tokens[tokenIndex];
     
+    // Check for preposition immediately before this token or before a determiner
+    // Pattern 1: "im Saal" (preposition directly before noun)
+    // Pattern 2: "mit der Verkündung" (preposition + determiner + noun)
+    for (let offset = 1; offset <= 2; offset++) {
+      const checkIndex = tokenIndex - offset;
+      if (checkIndex < 0) break;
+      
+      const prevToken = sentence.tokens[checkIndex];
+      if (this.isPreposition(prevToken)) {
+        return 'prepositional';  // Dative governed by preposition (mit, bei, von, zu, etc.)
+      }
+      
+      // Stop if we hit something that's not a determiner or adjective
+      if (offset === 1 && !['DET', 'ART', 'ADJ'].includes(prevToken.pos)) {
+        break;
+      }
+    }
+    
     // Check if this is a numeric/temporal token (dates, ordinals)
     if (token.pos === 'NUM' || token.pos === 'ADJ') {
       // Numbers and ordinals in dates: "5.", "21.", "4. Juni", "dem Sommer"
@@ -77,8 +95,25 @@ export class CaseDetector extends BaseGrammarDetector {
     const results: DetectionResult[] = [];
 
     sentence.tokens.forEach((token, index) => {
-      // Check nouns, articles, adjectives, pronouns
-      if (!['NOUN', 'DET', 'ADJ', 'PRON'].includes(token.pos)) {
+      // Skip proper nouns (PROPN) that are part of multi-word named entities
+      // Strategy: Only skip if BOTH previous AND next tokens are PROPN (middle of entity)
+      // OR if previous token is PROPN (end of entity)
+      // This allows "Schluss" before "Rio de Janeiro" to be analyzed
+      const isPropn = token.pos === 'PROPN' || token.tag === 'PROPN';
+      if (isPropn) {
+        const prevIsPropn = index > 0 && (sentence.tokens[index - 1].tag === 'PROPN' || sentence.tokens[index - 1].pos === 'PROPN');
+        const nextIsPropn = index < sentence.tokens.length - 1 && (sentence.tokens[index + 1].tag === 'PROPN' || sentence.tokens[index + 1].pos === 'PROPN');
+        
+        // Skip if in middle (prev AND next are PROPN) or at end (only prev is PROPN)
+        // But allow if only next is PROPN (could be coincidental adjacency like "Schluss Rio")
+        if (prevIsPropn || (prevIsPropn && nextIsPropn)) {
+          return;  // Skip tokens that are clearly part of multi-word entities
+        }
+        // Otherwise, treat as potentially mis-tagged and continue analysis
+      }
+
+      // Check nouns, articles, adjectives, pronouns (include PROPN for mis-tagged cases)
+      if (!['NOUN', 'DET', 'ADJ', 'PRON'].includes(token.pos) && !isPropn) {
         return;
       }
 

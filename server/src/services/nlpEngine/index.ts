@@ -57,6 +57,7 @@ export class NLPEngine {
         word: spacyToken.text,
         lemma: spacyToken.lemma,
         pos: normalizedPos,
+        tag: spacyToken.pos,  // Store original spaCy POS (PROPN, SCONJ, etc.) for accurate detection
         morph,
         position: {
           start: 0, // Will be calculated below
@@ -129,7 +130,7 @@ export class NLPEngine {
             text: token.word,
             lemma: token.lemma,
             pos: token.pos,
-            tag: token.pos, // Use POS as tag for now
+            tag: (token as any).tag || token.pos, // Use original spaCy tag if available
             dep,
             morph: token.morph,
             index: token.id,
@@ -245,7 +246,7 @@ export class NLPEngine {
       'DET': 'ART',
       'PRON': 'PRON',
       'CCONJ': 'CONJ',
-      'SCONJ': 'CONJ',
+      'SCONJ': 'SCONJ',  // Preserve subordinating conjunctions as distinct from coordinating
       'PROPN': 'NOUN',
       'NUM': 'NUM',
       'INTJ': 'INTJ',
