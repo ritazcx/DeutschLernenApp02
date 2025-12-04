@@ -97,14 +97,12 @@ export class ParticipialAttributeDetector extends BaseGrammarDetector {
    * Check if token is Partizip I (present participle)
    */
   private isPartizipI(token: SentenceData['tokens'][0]): boolean {
-    if (token.tag === 'VVPPR') {
+    // Use base class method for standard checks
+    if (this.isPresentParticiple(token)) {
       return true;
     }
 
-    if (token.morph?.VerbForm === 'Part' && token.morph?.Tense === 'Pres') {
-      return true;
-    }
-
+    // Additional check: adjective-tagged present participles with verb-based pattern
     if (token.pos === 'ADJ' && /end(e|er|es|en|em)?$/i.test(token.text)) {
       return this.isVerbBasedAdjective(token, 'partizip-i');
     }
@@ -116,15 +114,12 @@ export class ParticipialAttributeDetector extends BaseGrammarDetector {
    * Check if token is Partizip II (past participle)
    */
   private isPartizipII(token: SentenceData['tokens'][0]): boolean {
-    if (token.tag === 'VVPP') {
+    // Use base class method for standard checks
+    if (this.isPastParticiple(token)) {
       return true;
     }
 
-    if (token.morph?.VerbForm === 'Part' && 
-        (token.morph?.Tense === 'Past' || token.morph?.Aspect === 'Perf')) {
-      return true;
-    }
-
+    // Additional check: adjective-tagged past participles with verb-based pattern
     if (token.pos === 'ADJ') {
       return this.isVerbBasedAdjective(token, 'partizip-ii');
     }

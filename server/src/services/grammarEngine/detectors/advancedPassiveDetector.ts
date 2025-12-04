@@ -28,26 +28,20 @@ export class AdvancedPassiveDetector extends BaseGrammarDetector {
    */
   private detectPassiveWithAgent(sentence: SentenceData, results: DetectionResult[]): void {
     sentence.tokens.forEach((token, index) => {
-      // Look for "werden" (passive auxiliary) - can be tagged as AUX or VERB
-      if (token.lemma !== 'werden' || (token.pos !== 'AUX' && token.pos !== 'VERB')) {
+      // Look for "werden" (passive auxiliary)
+      if (!this.isPassiveAuxiliary(token, 'werden')) {
         return;
       }
 
       const tense = MorphAnalyzer.extractTense(token.morph);
 
-      // Look for past participle after werden
-      const nextToken = sentence.tokens[index + 1];
-      if (!nextToken || nextToken.pos !== 'VERB') {
+      // Look for past participle after werden (strict: must be immediate next token)
+      const participleIndex = this.findNextParticiple(sentence.tokens, index, 1, false);
+      if (participleIndex === -1) {
         return;
       }
 
-      const participleTense = nextToken.morph?.tense;
-      // Accept both "perfect" (our analyzer) and "Part" (spaCy standard)
-      const isParticiple = participleTense === 'perfect' || participleTense === 'Part';
-
-      if (!isParticiple) {
-        return;
-      }
+      const nextToken = sentence.tokens[participleIndex];
 
       // Look for agent phrase after the participle (von/durch + noun)
       const agentPhrase = this.findAgentPhrase(sentence.tokens, index + 2);
@@ -77,24 +71,19 @@ export class AdvancedPassiveDetector extends BaseGrammarDetector {
   private detectStatalPassive(sentence: SentenceData, results: DetectionResult[]): void {
     sentence.tokens.forEach((token, index) => {
       // Look for "sein" as auxiliary
-      if (token.lemma !== 'sein' || token.pos !== 'AUX') {
+      if (!this.isPassiveAuxiliary(token, 'sein')) {
         return;
       }
 
       const tense = MorphAnalyzer.extractTense(token.morph);
 
-      // Look for past participle after sein
-      const nextToken = sentence.tokens[index + 1];
-      if (!nextToken || nextToken.pos !== 'VERB') {
+      // Look for past participle after sein (strict: must be immediate next token)
+      const participleIndex = this.findNextParticiple(sentence.tokens, index, 1, false);
+      if (participleIndex === -1) {
         return;
       }
 
-      const participleTense = MorphAnalyzer.extractTense(nextToken.morph);
-      const verbForm = MorphAnalyzer.extractVerbForm(nextToken.morph);
-
-      if (verbForm !== 'Part') {
-        return;
-      }
+      const nextToken = sentence.tokens[participleIndex];
 
       // Statal passive: sein + past participle (describes state, not action)
       results.push(

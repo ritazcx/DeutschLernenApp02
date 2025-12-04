@@ -304,6 +304,193 @@ export abstract class BaseGrammarDetector {
   }
 
   /**
+   * Check if token is a past participle (Partizip II)
+   * Comprehensive check with multiple fallbacks for robustness
+   * 
+   * Past participles are used in:
+   * - Perfect tenses: haben/sein + participle (Ich habe gegessen)
+   * - Passive voice: werden + participle (Das Haus wird gebaut)
+   * - Attributive position: participle + noun (das gebaute Haus)
+   * 
+   * Checks in order:
+   * 1. POS tag VVPP (most reliable for past participles)
+   * 2. Morphological VerbForm=Part BUT NOT Tense=Pres (to exclude present participles)
+   * 3. Tense=Perf or Aspect=Perf (excluding finite verbs with VerbForm=Fin)
+   */
+  protected isPastParticiple(token: TokenData): boolean {
+    // Check POS tag first (most reliable)
+    if (token.tag === 'VVPP') {
+      return true;
+    }
+
+    // Exclude present participles (VVPPR tag or VerbForm=Part + Tense=Pres)
+    if (token.tag === 'VVPPR' || token.morph.Tense === 'Pres') {
+      return false;
+    }
+
+    // Exclude finite verbs (kaufte, ging, etc. have VerbForm=Fin, not participles)
+    if (token.morph.VerbForm === 'Fin') {
+      return false;
+    }
+
+    // Check morphological features (VerbForm=Part without Tense=Pres)
+    if (token.morph.VerbForm === 'Part') {
+      return true;
+    }
+
+    // Check tense/aspect markers that indicate past participle (but NOT finite past)
+    if (token.morph.Tense === 'Perf' || token.morph.Aspect === 'Perf') {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if token is a present participle (Partizip I)
+   * German present participles end in -end (laufend, lesend, kommend)
+   * 
+   * Present participles are used:
+   * - Attributively: der laufende Mann (the running man)
+   * - Adverbially: Sie singt tanzend (She sings while dancing)
+   * 
+   * Checks:
+   * 1. POS tag VVPPR (present participle tag)
+   * 2. VerbForm=Part && Tense=Pres
+   * 3. Pattern matching: -end + optional inflection
+   */
+  protected isPresentParticiple(token: TokenData): boolean {
+    // Check POS tag
+    if (token.tag === 'VVPPR') {
+      return true;
+    }
+
+    // Check morphological features
+    if (token.morph.VerbForm === 'Part' && token.morph.Tense === 'Pres') {
+      return true;
+    }
+
+    // Pattern matching: German present participles end with -end + inflection
+    // Examples: laufend, laufende, laufender, laufendes, laufenden, laufendem
+    if (/end(e|er|es|en|em)?$/i.test(token.text)) {
+      // Additional check: should be tagged as ADJ or VERB-related
+      if (token.pos === 'ADJ' || this.isVerbOrAux(token)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Check if token is a passive auxiliary verb
+   * 
+   * German has two passive constructions:
+   * - Dynamic passive: werden + past participle (Das Haus wird gebaut)
+   * - Statal passive: sein + past participle (Das Haus ist gebaut)
+   * 
+   * @param token Token to check
+   * @param type 'werden' for dynamic passive (action), 'sein' for statal passive (state)
+   * @returns true if token is the specified auxiliary and properly tagged
+   */
+  protected isPassiveAuxiliary(token: TokenData, type: 'werden' | 'sein' = 'werden'): boolean {
+    // Must be auxiliary or verb
+    if (token.pos !== 'AUX' && token.pos !== 'VERB') {
+      return false;
+    }
+    
+    // Check lemma matches expected auxiliary
+    return token.lemma === type;
+  }
+
+  /**
+   * Find next past participle after a given index
+   * Used for passive voice detection (werden/sein + participle)
+   * 
+   * @param tokens Token array to search
+   * @param startIndex Start searching from here (exclusive)
+   * @param maxDistance Maximum tokens to search ahead (default: 10)
+   * @param allowSkip If true, can skip over DET/NOUN/ADJ/ADP/PRON (default: true)
+   * @returns Index of past participle or -1 if not found
+   * 
+   * Examples:
+   * - Strict mode (allowSkip=false): "wird gebaut" → finds "gebaut" immediately
+   * - Flexible mode (allowSkip=true): "wird von meinem Vater gebaut" → finds "gebaut" after phrase
+   */
+  protected findNextParticiple(
+    tokens: TokenData[],
+    startIndex: number,
+    maxDistance: number = 10,
+    allowSkip: boolean = true
+  ): number {
+    const endIndex = Math.min(tokens.length, startIndex + 1 + maxDistance);
+    
+    for (let i = startIndex + 1; i < endIndex; i++) {
+      const token = tokens[i];
+      
+      // Check if this is a verb (potential participle)
+      if (token.pos === 'VERB') {
+        // Verify it's actually a past participle
+        if (this.isPastParticiple(token)) {
+          return i;
+        }
+      }
+      
+      // If not allowing skips, stop at first non-participle
+      if (!allowSkip) {
+        break;
+      }
+      
+      // In flexible mode, skip over common intervening elements
+      const skippablePOS = ['DET', 'NOUN', 'ADJ', 'ADP', 'PRON', 'PREP', 'ART'];
+      if (!skippablePOS.includes(token.pos)) {
+        // Hit something unexpected (e.g., another verb, conjunction), stop searching
+        break;
+      }
+    }
+    
+    return -1;
+  }
+
+  /**
+   * Find next token matching a custom condition
+   * Generic utility for flexible token searches
+   * 
+   * @param tokens Token array
+   * @param startIndex Start searching from here (exclusive)
+   * @param condition Predicate function to test each token
+   * @param maxDistance Maximum tokens to search (default: 10)
+   * @returns Index of matching token or -1 if not found
+   * 
+   * Example:
+   * ```typescript
+   * // Find next preposition "von" or "durch"
+   * const index = this.findTokenByCondition(
+   *   tokens, 
+   *   particleIndex,
+   *   (t) => t.pos === 'ADP' && (t.lemma === 'von' || t.lemma === 'durch'),
+   *   5
+   * );
+   * ```
+   */
+  protected findTokenByCondition(
+    tokens: TokenData[],
+    startIndex: number,
+    condition: (token: TokenData) => boolean,
+    maxDistance: number = 10
+  ): number {
+    const endIndex = Math.min(tokens.length, startIndex + 1 + maxDistance);
+    
+    for (let i = startIndex + 1; i < endIndex; i++) {
+      if (condition(tokens[i])) {
+        return i;
+      }
+    }
+    
+    return -1;
+  }
+
+  /**
    * Get character position for a single token
    */
   protected getSingleTokenPosition(token: TokenData): { start: number; end: number } {
