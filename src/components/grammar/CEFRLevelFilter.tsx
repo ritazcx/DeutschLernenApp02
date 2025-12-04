@@ -1,5 +1,6 @@
 import React from 'react';
 import { CEFRLevel } from '../../types/grammar';
+import { CEFR_LEVEL_PAIRS } from './cefrConfig';
 
 interface CEFRLevelFilterProps {
   selectedLevels: CEFRLevel[];
@@ -7,18 +8,10 @@ interface CEFRLevelFilterProps {
 }
 
 const CEFRLevelFilter: React.FC<CEFRLevelFilterProps> = ({ selectedLevels, onLevelChange }) => {
-  const levels: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
-  
-  // Group levels into pairs for visual organization
-  const levelPairs: Array<[CEFRLevel, CEFRLevel]> = [
-    ['A1', 'A2'],
-    ['B1', 'B2'],
-    ['C1', 'C2']
-  ];
 
   return (
     <div className="flex gap-6">
-      {levelPairs.map(([level1, level2]) => (
+      {CEFR_LEVEL_PAIRS.map(([level1, level2]) => (
         <div key={`${level1}-${level2}`} className="flex flex-col gap-2">
           {[level1, level2].map((level) => (
             <label key={level} className="flex items-center gap-2 cursor-pointer whitespace-nowrap">

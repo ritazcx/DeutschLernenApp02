@@ -6,6 +6,7 @@ import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 import CEFRLevelFilter from './CEFRLevelFilter';
 import { useLocalStorage } from './hooks';
+import { CEFR_LEVELS } from './cefrConfig';
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
@@ -29,7 +30,7 @@ const ArticleAnalyzer: React.FC = () => {
   // Persistent settings using custom localStorage hook
   const [selectedGrammarTypes] = useLocalStorage<GrammarType[]>('grammar_filters', ALL_GRAMMAR_TYPES);
   const [selectedVocabularyLevels] = useLocalStorage<string[]>('vocabulary_levels', ['B1', 'B2']);
-  const [selectedCEFRLevels, setSelectedCEFRLevels] = useLocalStorage<CEFRLevel[]>('cefr_levels', ['A1', 'A2', 'B1', 'B2', 'C1', 'C2']);
+  const [selectedCEFRLevels, setSelectedCEFRLevels] = useLocalStorage<CEFRLevel[]>('cefr_levels', CEFR_LEVELS);
 
 
   const handleCEFRLevelToggle = (level: CEFRLevel) => {
