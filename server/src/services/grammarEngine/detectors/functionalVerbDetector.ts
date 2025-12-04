@@ -104,6 +104,114 @@ export class FunctionalVerbDetector extends BaseGrammarDetector {
     { verb: 'stellen', noun: 'Antrag', simpleVerb: 'beantragen', pattern: 'Antrag stellen' },
     { verb: 'stellen', noun: 'Forderung', simpleVerb: 'fordern', pattern: 'Forderung stellen' },
     { verb: 'üben', noun: 'Kritik', simpleVerb: 'kritisieren', pattern: 'Kritik üben' },
+    
+    // High-frequency patterns - finden (find/receive)
+    { verb: 'finden', noun: 'Anerkennung', simpleVerb: 'anerkannt werden', pattern: 'Anerkennung finden' },
+    { verb: 'finden', noun: 'Zustimmung', simpleVerb: 'zugestimmt werden', pattern: 'Zustimmung finden' },
+    { verb: 'finden', noun: 'Unterstützung', simpleVerb: 'unterstützt werden', pattern: 'Unterstützung finden' },
+    { verb: 'finden', noun: 'Verwendung', simpleVerb: 'verwendet werden', pattern: 'Verwendung finden' },
+    { verb: 'finden', noun: 'Berücksichtigung', simpleVerb: 'berücksichtigt werden', pattern: 'Berücksichtigung finden' },
+    
+    // High-frequency patterns - nehmen (take)
+    { verb: 'nehmen', noun: 'Aufschwung', simpleVerb: 'florieren', pattern: 'Aufschwung nehmen' },
+    { verb: 'nehmen', noun: 'Bezug', simpleVerb: 'sich beziehen', pattern: 'Bezug nehmen' },
+    { verb: 'nehmen', noun: 'Stellung', simpleVerb: 'sich äußern', pattern: 'Stellung nehmen' },
+    { verb: 'nehmen', noun: 'Kontakt', simpleVerb: 'kontaktieren', pattern: 'Kontakt nehmen' },
+    { verb: 'nehmen', noun: 'Platz', simpleVerb: 'sich setzen', pattern: 'Platz nehmen' },
+    { verb: 'nehmen', noun: 'Teil', simpleVerb: 'teilnehmen', pattern: 'Teil nehmen' },
+    { verb: 'nehmen', noun: 'Notiz', simpleVerb: 'bemerken', pattern: 'Notiz nehmen' },
+    
+    // High-frequency patterns - geben (give)
+    { verb: 'geben', noun: 'Auskunft', simpleVerb: 'informieren', pattern: 'Auskunft geben' },
+    { verb: 'geben', noun: 'Unterricht', simpleVerb: 'unterrichten', pattern: 'Unterricht geben' },
+    { verb: 'geben', noun: 'Erlaubnis', simpleVerb: 'erlauben', pattern: 'Erlaubnis geben' },
+    { verb: 'geben', noun: 'Rat', simpleVerb: 'raten', pattern: 'Rat geben' },
+    { verb: 'geben', noun: 'Versprechen', simpleVerb: 'versprechen', pattern: 'Versprechen geben' },
+    
+    // High-frequency patterns - machen (make)
+    { verb: 'machen', noun: 'Fortschritt', simpleVerb: 'fortschreiten', pattern: 'Fortschritt machen' },
+    { verb: 'machen', noun: 'Schluss', simpleVerb: 'beenden', pattern: 'Schluss machen' },
+    { verb: 'machen', noun: 'Eindruck', simpleVerb: 'beeindrucken', pattern: 'Eindruck machen' },
+    { verb: 'machen', noun: 'Vorschlag', simpleVerb: 'vorschlagen', pattern: 'Vorschlag machen' },
+    { verb: 'machen', noun: 'Gebrauch', simpleVerb: 'gebrauchen', pattern: 'Gebrauch machen' },
+    { verb: 'machen', noun: 'Bemerkung', simpleVerb: 'bemerken', pattern: 'Bemerkung machen' },
+    
+    // High-frequency patterns - kommen with zu
+    { verb: 'kommen', prep: 'zu', noun: 'Wirkung', simpleVerb: 'wirken', pattern: 'zur Wirkung kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Anwendung', simpleVerb: 'angewendet werden', pattern: 'zur Anwendung kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Durchführung', simpleVerb: 'durchgeführt werden', pattern: 'zur Durchführung kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Aufführung', simpleVerb: 'aufgeführt werden', pattern: 'zur Aufführung kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Sprache', simpleVerb: 'erwähnt werden', pattern: 'zur Sprache kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Ruhe', simpleVerb: 'ruhig werden', pattern: 'zur Ruhe kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Stillstand', simpleVerb: 'stillstehen', pattern: 'zum Stillstand kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Ergebnis', simpleVerb: 'resultieren', pattern: 'zum Ergebnis kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Entschluss', simpleVerb: 'sich entschließen', pattern: 'zum Entschluss kommen' },
+    { verb: 'kommen', prep: 'zu', noun: 'Gründung', simpleVerb: 'gegründet werden', pattern: 'zur Gründung kommen' },
+    
+    // High-frequency patterns - bringen with zu
+    { verb: 'bringen', prep: 'zu', noun: 'Aufführung', simpleVerb: 'aufführen', pattern: 'zur Aufführung bringen' },
+    { verb: 'bringen', prep: 'zu', noun: 'Durchführung', simpleVerb: 'durchführen', pattern: 'zur Durchführung bringen' },
+    { verb: 'bringen', prep: 'zu', noun: 'Anwendung', simpleVerb: 'anwenden', pattern: 'zur Anwendung bringen' },
+    { verb: 'bringen', prep: 'zu', noun: 'Sprache', simpleVerb: 'erwähnen', pattern: 'zur Sprache bringen' },
+    { verb: 'bringen', prep: 'zu', noun: 'Ruhe', simpleVerb: 'beruhigen', pattern: 'zur Ruhe bringen' },
+    { verb: 'bringen', prep: 'zu', noun: 'Stillstand', simpleVerb: 'stoppen', pattern: 'zum Stillstand bringen' },
+    
+    // High-frequency patterns - stellen with zu
+    { verb: 'stellen', prep: 'zu', noun: 'Rede', simpleVerb: 'konfrontieren', pattern: 'zur Rede stellen' },
+    { verb: 'stellen', prep: 'zu', noun: 'Schau', simpleVerb: 'zeigen', pattern: 'zur Schau stellen' },
+    
+    // High-frequency patterns - with in
+    { verb: 'setzen', prep: 'in', noun: 'Kenntnis', simpleVerb: 'informieren', pattern: 'in Kenntnis setzen' },
+    { verb: 'nehmen', prep: 'in', noun: 'Besitz', simpleVerb: 'übernehmen', pattern: 'in Besitz nehmen' },
+    { verb: 'bringen', prep: 'in', noun: 'Erfahrung', simpleVerb: 'erfahren', pattern: 'in Erfahrung bringen' },
+    { verb: 'kommen', prep: 'in', noun: 'Konflikt', simpleVerb: 'konfligieren', pattern: 'in Konflikt kommen' },
+    { verb: 'geraten', prep: 'in', noun: 'Konflikt', simpleVerb: 'konfligieren', pattern: 'in Konflikt geraten' },
+    { verb: 'geraten', prep: 'in', noun: 'Not', simpleVerb: 'verarmen', pattern: 'in Not geraten' },
+    { verb: 'geraten', prep: 'in', noun: 'Vergessenheit', simpleVerb: 'vergessen werden', pattern: 'in Vergessenheit geraten' },
+    { verb: 'geraten', prep: 'in', noun: 'Panik', simpleVerb: 'panisch werden', pattern: 'in Panik geraten' },
+    { verb: 'halten', prep: 'in', noun: 'Schach', simpleVerb: 'kontrollieren', pattern: 'in Schach halten' },
+    
+    // High-frequency patterns - aufnehmen (take up)
+    { verb: 'aufnehmen', noun: 'Kontakt', simpleVerb: 'kontaktieren', pattern: 'Kontakt aufnehmen' },
+    { verb: 'aufnehmen', noun: 'Beziehung', simpleVerb: 'Beziehung beginnen', pattern: 'Beziehung aufnehmen' },
+    { verb: 'aufnehmen', noun: 'Verhandlung', simpleVerb: 'verhandeln', pattern: 'Verhandlung aufnehmen' },
+    { verb: 'aufnehmen', noun: 'Arbeit', simpleVerb: 'arbeiten beginnen', pattern: 'Arbeit aufnehmen' },
+    { verb: 'aufnehmen', noun: 'Tätigkeit', simpleVerb: 'tätig werden', pattern: 'Tätigkeit aufnehmen' },
+    
+    // High-frequency patterns - leisten (provide/perform)
+    { verb: 'leisten', noun: 'Widerstand', simpleVerb: 'widerstehen', pattern: 'Widerstand leisten' },
+    { verb: 'leisten', noun: 'Arbeit', simpleVerb: 'arbeiten', pattern: 'Arbeit leisten' },
+    { verb: 'leisten', noun: 'Dienst', simpleVerb: 'dienen', pattern: 'Dienst leisten' },
+    
+    // High-frequency patterns - haben (have)
+    { verb: 'haben', noun: 'Einfluss', simpleVerb: 'beeinflussen', pattern: 'Einfluss haben' },
+    { verb: 'haben', noun: 'Auswirkung', simpleVerb: 'auswirken', pattern: 'Auswirkung haben' },
+    { verb: 'haben', noun: 'Bedeutung', simpleVerb: 'bedeuten', pattern: 'Bedeutung haben' },
+    { verb: 'haben', noun: 'Gültigkeit', simpleVerb: 'gelten', pattern: 'Gültigkeit haben' },
+    
+    // High-frequency patterns - setzen (set/put)
+    { verb: 'setzen', noun: 'Vertrauen', simpleVerb: 'vertrauen', pattern: 'Vertrauen setzen' },
+    { verb: 'setzen', noun: 'Hoffnung', simpleVerb: 'hoffen', pattern: 'Hoffnung setzen' },
+    { verb: 'setzen', noun: 'Priorität', simpleVerb: 'priorisieren', pattern: 'Priorität setzen' },
+    
+    // High-frequency patterns - with auf
+    { verb: 'stoßen', prep: 'auf', noun: 'Widerstand', simpleVerb: 'behindert werden', pattern: 'auf Widerstand stoßen' },
+    { verb: 'stoßen', prep: 'auf', noun: 'Ablehnung', simpleVerb: 'abgelehnt werden', pattern: 'auf Ablehnung stoßen' },
+    { verb: 'stoßen', prep: 'auf', noun: 'Schwierigkeit', simpleVerb: 'Schwierigkeiten haben', pattern: 'auf Schwierigkeit stoßen' },
+    { verb: 'treffen', prep: 'auf', noun: 'Widerstand', simpleVerb: 'behindert werden', pattern: 'auf Widerstand treffen' },
+    
+    // High-frequency patterns - with unter
+    { verb: 'stehen', prep: 'unter', noun: 'Druck', simpleVerb: 'unter Druck sein', pattern: 'unter Druck stehen' },
+    { verb: 'stehen', prep: 'unter', noun: 'Einfluss', simpleVerb: 'beeinflusst werden', pattern: 'unter Einfluss stehen' },
+    { verb: 'stellen', prep: 'unter', noun: 'Druck', simpleVerb: 'bedrängen', pattern: 'unter Druck stellen' },
+    
+    // High-frequency patterns - with außer
+    { verb: 'stellen', prep: 'außer', noun: 'Frage', simpleVerb: 'ausschließen', pattern: 'außer Frage stellen' },
+    { verb: 'stehen', prep: 'außer', noun: 'Frage', simpleVerb: 'unbestritten sein', pattern: 'außer Frage stehen' },
+    
+    // High-frequency patterns - with von
+    { verb: 'nehmen', prep: 'von', noun: 'Kenntnis', simpleVerb: 'zur Kenntnis nehmen', pattern: 'Kenntnis nehmen' },
+    { verb: 'machen', prep: 'von', noun: 'Gebrauch', simpleVerb: 'gebrauchen', pattern: 'Gebrauch machen' },
   ];
 
   detect(sentence: SentenceData): DetectionResult[] {
