@@ -18,7 +18,6 @@ import { CollocationDetector } from './detectors/B1/collocationDetector';
 import { ModalVerbDetector } from './detectors/B1/modalVerbDetector';
 import { MorphologicalDetector } from './detectors/B1/morphologicalDetector';
 import { PassiveVoiceDetector } from './detectors/B1/passiveVoiceDetector';
-import { RelativeClauseDetector } from './detectors/B1/relativeClauseDetector';
 import { SeparableVerbDetector } from './detectors/B1/separableVerbDetector';
 import { SubjunctiveDetector } from './detectors/B1/subjunctiveDetector';
 import { SubordinateClauseDetector } from './detectors/B1/subordinateClauseDetector';
@@ -64,7 +63,6 @@ export class GrammarDetectionEngine {
     new ConditionalDetector(),
     new InfinitiveClauseDetector(),
     new ParticipialAttributeDetector(),
-    new RelativeClauseDetector(),
     new ReflexiveVerbDetector(),
     new PrepositionDetector(),
     new CausativeDetector(),
