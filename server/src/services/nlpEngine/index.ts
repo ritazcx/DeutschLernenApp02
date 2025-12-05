@@ -174,7 +174,7 @@ export class NLPEngine {
       byCategory: {
         tense: [], case: [], voice: [], mood: [], agreement: [], article: [],
         adjective: [], pronoun: [], preposition: [], conjunction: [], 'verb-form': [],
-        'word-order': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
+        'word-order': [], 'clause': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
         passive: [], 'functional-verb': [], 'participial-attribute': []
       },
       summary: {
@@ -183,7 +183,7 @@ export class NLPEngine {
         categories: {
           tense: 0, case: 0, voice: 0, mood: 0, agreement: 0, article: 0,
           adjective: 0, pronoun: 0, preposition: 0, conjunction: 0, 'verb-form': 0,
-          'word-order': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
+          'word-order': 0, 'clause': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
           passive: 0, 'functional-verb': 0, 'participial-attribute': 0
         }
       }

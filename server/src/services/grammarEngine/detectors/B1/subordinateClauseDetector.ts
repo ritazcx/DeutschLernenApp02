@@ -10,7 +10,7 @@ import { ClauseMarker, ClauseVerb, ClauseBoundary, ClauseType } from '../../type
 
 export class SubordinateClauseDetector extends BaseGrammarDetector {
   name = 'SubordinateClauseDetector';
-  category: GrammarCategory = 'word-order';
+  category: GrammarCategory = 'clause';
 
   // SCONJ markers for dass and adverbial clauses
   private readonly sconjMarkers = new Set([
