@@ -50,20 +50,26 @@ export class SeparableVerbDetector extends BaseGrammarDetector {
           if (!detectedVerbs.has(verbKey)) {
             detectedVerbs.add(verbKey);
             
-            results.push(
-              this.createResult(
-                B1_GRAMMAR['separable-verbs'],
-                this.calculatePosition(sentence.tokens, verb.index, token.index),
-                0.95, // High confidence - spaCy tagged
-                {
-                  verb: verb.text,
-                  prefix: token.text,
-                  fullVerb: fullVerb,
-                  separablePrefix: token.text,
-                  pattern: 'separated',
-                },
-              ),
-            );
+            // Use multi-range positions to highlight only the verb and prefix (not the text in between)
+            // Sort positions by character order in sentence
+            const verbPos = this.getSingleTokenPosition(verb);
+            const prefixPos = this.getSingleTokenPosition(token);
+            const sortedPositions = [verbPos, prefixPos].sort((a, b) => a.start - b.start);
+            
+            results.push({
+              grammarPointId: B1_GRAMMAR['separable-verbs'].id,
+              grammarPoint: B1_GRAMMAR['separable-verbs'],
+              position: this.calculatePosition(sentence.tokens, verb.index, token.index), // Legacy compatibility
+              positions: sortedPositions,  // Sorted by character position
+              confidence: 0.95,
+              details: {
+                verb: verb.text,
+                prefix: token.text,
+                fullVerb: fullVerb,
+                separablePrefix: token.text,
+                pattern: 'separated',
+              },
+            });
           }
         }
       }
