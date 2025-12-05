@@ -27,7 +27,8 @@ export class WordOrderDetector extends BaseGrammarDetector {
     this.detectV2WordOrder(sentence, results);
 
     // Check for subordinate clause word order
-    this.detectSubordinateClauses(sentence, results);
+    // DISABLED: Now handled by SubordinateClauseDetector (B1) which uses spaCy POS tags
+    // this.detectSubordinateClauses(sentence, results);
 
     return results;
   }
