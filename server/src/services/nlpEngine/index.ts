@@ -57,7 +57,9 @@ export class NLPEngine {
         word: spacyToken.text,
         lemma: spacyToken.lemma,
         pos: normalizedPos,
-        tag: spacyToken.pos,  // Store original spaCy POS (PROPN, SCONJ, etc.) for accurate detection
+        tag: spacyToken.tag,  // Store original spaCy tag (PTKVZ, VVFIN, PROPN, etc.) for accurate detection
+        dep: spacyToken.dep,  // Store dependency relation (svp, ROOT, etc.)
+        head: spacyToken.head, // Store head token text for dependency parsing
         morph,
         position: {
           start: 0, // Will be calculated below
@@ -75,6 +77,12 @@ export class NLPEngine {
         token.position.end = start + token.word.length;
         currentPos = token.position.end;
       }
+    }
+
+    // Parse entities from spaCy and enrich tokens with complete entity metadata
+    if (result.entities && result.entities.length > 0) {
+      this.enrichEntityInformation(tokens, result.entities);
+      console.log(`[NLP Engine] ✓ Enriched ${result.entities.length} entities with full metadata`);
     }
 
     return {
@@ -122,22 +130,28 @@ export class NLPEngine {
       const sentenceData: SentenceData = {
         text,
         tokens: parsed.tokens.map((token, idx) => {
-          // Extract dep from spaCy tokens if available
-          const spacyToken = (parsed as any).spacyTokens?.[idx];
-          const dep = spacyToken?.dep || 'ROOT';
-          
           return {
             text: token.word,
             lemma: token.lemma,
             pos: token.pos,
-            tag: (token as any).tag || token.pos, // Use original spaCy tag if available
-            dep,
+            tag: token.tag || token.pos, // Use spaCy tag (PTKVZ, VVFIN, etc.) if available
+            dep: token.dep || 'ROOT',     // Dependency relation (svp, ROOT, etc.)
+            head: token.head,              // Head token text for dependency parsing
             morph: token.morph,
             index: token.id,
             characterStart: token.position.start,
             characterEnd: token.position.end,
+            
+            // === Entity-Aware Fields ===
+            entity_type: (token as any).entity_type,
+            entity_id: (token as any).entity_id,
+            is_entity_start: (token as any).is_entity_start,
+            is_entity_end: (token as any).is_entity_end,
+            entity_text: (token as any).entity_text,
           };
         }),
+        // Extract entities metadata for advanced analysis
+        entities: this.extractEntitiesMetadata(parsed.tokens),
       };
 
       // Analyze grammar with detection engine (minimal AI fallback for edge cases)
@@ -160,7 +174,7 @@ export class NLPEngine {
       byCategory: {
         tense: [], case: [], voice: [], mood: [], agreement: [], article: [],
         adjective: [], pronoun: [], preposition: [], conjunction: [], 'verb-form': [],
-        'word-order': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
+        'word-order': [], 'clause': [], 'separable-verb': [], 'modal-verb': [], 'reflexive-verb': [],
         passive: [], 'functional-verb': [], 'participial-attribute': []
       },
       summary: {
@@ -169,7 +183,7 @@ export class NLPEngine {
         categories: {
           tense: 0, case: 0, voice: 0, mood: 0, agreement: 0, article: 0,
           adjective: 0, pronoun: 0, preposition: 0, conjunction: 0, 'verb-form': 0,
-          'word-order': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
+          'word-order': 0, 'clause': 0, 'separable-verb': 0, 'modal-verb': 0, 'reflexive-verb': 0,
           passive: 0, 'functional-verb': 0, 'participial-attribute': 0
         }
       }
@@ -264,6 +278,63 @@ export class NLPEngine {
     // 简单的句子分割（可以改进）
     const sentences = text.split(/[.!?]+/).filter(s => s.trim());
     return Promise.all(sentences.map(s => this.parseSentence(s.trim())));
+  }
+
+  /**
+   * Extract entities metadata array from enriched tokens
+   * Creates Entity objects for the SentenceData.entities field
+   */
+  private extractEntitiesMetadata(tokens: Token[]): any[] {
+    const entityMap = new Map<number, any>();
+
+    tokens.forEach(token => {
+      const entityId = (token as any).entity_id;
+      if (entityId !== undefined && !entityMap.has(entityId)) {
+        // Find all tokens belonging to this entity
+        const entityTokens = tokens.filter(t => (t as any).entity_id === entityId);
+        
+        entityMap.set(entityId, {
+          id: entityId,
+          type: (token as any).entity_type,
+          text: (token as any).entity_text,
+          token_indices: entityTokens.map(t => t.id),
+          start: entityTokens[0].position.start,
+          end: entityTokens[entityTokens.length - 1].position.end
+        });
+      }
+    });
+
+    return Array.from(entityMap.values());
+  }
+
+  /**
+   * Enrich tokens with complete entity information (Entity-Aware Tokenization)
+   * Adds: entity_type, entity_id, is_entity_start, is_entity_end, entity_text
+   */
+  private enrichEntityInformation(tokens: Token[], spacyEntities: any[]): void {
+    if (!spacyEntities || spacyEntities.length === 0) return;
+
+    spacyEntities.forEach((entity, entityId) => {
+      // Find all tokens that belong to this entity
+      const entityTokens = tokens.filter(token => 
+        token.position.start >= entity.start && 
+        token.position.end <= entity.end
+      );
+
+      if (entityTokens.length === 0) return;
+
+      // Build complete entity text
+      const entityText = entity.text;
+
+      // Enrich each token with full entity metadata
+      entityTokens.forEach((token, idx) => {
+        token.entity_type = entity.label;
+        token.entity_id = entityId;
+        token.entity_text = entityText;
+        token.is_entity_start = (idx === 0);
+        token.is_entity_end = (idx === entityTokens.length - 1);
+      });
+    });
   }
 
   /**

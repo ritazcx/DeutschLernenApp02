@@ -9,6 +9,16 @@ export interface Token {
   pos: string;
   morph: Record<string, string>; // spaCy format: e.g., {Tense: 'Past', VerbForm: 'Fin', ...}
   position: {start: number, end: number};
+  tag?: string; // Original spaCy POS tag (PROPN, SCONJ, etc.)
+  dep?: string; // Dependency relation (ROOT, sb, oa, svp, etc.)
+  head?: string; // Head token text (for dependency parsing)
+  
+  // === Entity-Aware Fields ===
+  entity_type?: string;      // NER entity type: LOC, PER, ORG, MISC
+  entity_id?: number;        // Shared ID for multi-token entities
+  is_entity_start?: boolean; // True if first token of entity
+  is_entity_end?: boolean;   // True if last token of entity
+  entity_text?: string;      // Complete entity text (e.g., "Rio de Janeiro")
 }
 
 export interface ParsedSentence {

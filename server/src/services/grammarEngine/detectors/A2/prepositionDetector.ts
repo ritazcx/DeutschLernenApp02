@@ -56,6 +56,13 @@ export class PrepositionDetector extends BaseGrammarDetector {
       }
 
       const objectToken = sentence.tokens[objectIndex];
+      
+      // ✅ Entity-Aware: Check if preposition is part of a name (e.g., "von Beethoven")
+      let confidence = 0.9;
+      if (this.isNamedEntity(objectToken)) {
+        confidence = 0.5;  // Lower confidence for name prefixes
+      }
+      
       const caseValue = MorphAnalyzer.extractCase(objectToken.morph);
 
       // Check if object is in dative case
@@ -64,7 +71,7 @@ export class PrepositionDetector extends BaseGrammarDetector {
           this.createResult(
             A2_GRAMMAR['dative-prepositions'],
             this.calculatePosition(sentence.tokens, index, objectIndex),
-            0.9,
+            confidence,  // ✅ Use adjusted confidence (lower for entity names)
             {
               preposition: token.text,
               object: objectToken.text,
@@ -95,6 +102,13 @@ export class PrepositionDetector extends BaseGrammarDetector {
       }
 
       const objectToken = sentence.tokens[objectIndex];
+      
+      // ✅ Entity-Aware: Lower confidence for entity names
+      let confidence = 0.9;
+      if (this.isNamedEntity(objectToken)) {
+        confidence = 0.5;  // Lower confidence for name prefixes
+      }
+      
       const caseValue = MorphAnalyzer.extractCase(objectToken.morph);
 
       // Check if object is in accusative case
@@ -103,7 +117,7 @@ export class PrepositionDetector extends BaseGrammarDetector {
           this.createResult(
             A2_GRAMMAR['accusative-prepositions'],
             this.calculatePosition(sentence.tokens, index, objectIndex),
-            0.9,
+            confidence,  // ✅ Use adjusted confidence
             {
               preposition: token.text,
               object: objectToken.text,

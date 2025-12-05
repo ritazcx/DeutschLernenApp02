@@ -37,7 +37,10 @@ export const GRAMMAR_COLOR_MAP: Record<GrammarPoint['type'], string> = {
   'conjunction': 'bg-orange-200 hover:bg-orange-300',
   'agreement': 'bg-pink-200 hover:bg-pink-300',
   'word-order': 'bg-cyan-200 hover:bg-cyan-300',
+  'clause': 'bg-purple-200 hover:bg-purple-300',
   'article': 'bg-lime-200 hover:bg-lime-300',
+  'reflexive-verb': 'bg-rose-200 hover:bg-rose-300',
+  'passive': 'bg-red-200 hover:bg-red-300',
   'pronoun': 'bg-emerald-200 hover:bg-emerald-300',
   'adjective': 'bg-teal-200 hover:bg-teal-300',
   'noun': 'bg-violet-200 hover:bg-violet-300',
@@ -49,7 +52,6 @@ export const GRAMMAR_COLOR_MAP: Record<GrammarPoint['type'], string> = {
   'participial-attribute': 'bg-sky-200 hover:bg-sky-300',
   // Legacy types (backward compatibility)
   'verb': 'bg-blue-200 hover:bg-blue-300',
-  'clause': 'bg-purple-200 hover:bg-purple-300',
   'special': 'bg-pink-200 hover:bg-pink-300',
   'special_construction': 'bg-slate-200 hover:bg-slate-300',
   'subjunctive': 'bg-rose-200 hover:bg-rose-300',
@@ -57,7 +59,6 @@ export const GRAMMAR_COLOR_MAP: Record<GrammarPoint['type'], string> = {
   'functional_verb': 'bg-lime-200 hover:bg-lime-300',
   'advanced_conjunction': 'bg-fuchsia-200 hover:bg-fuchsia-300',
   'nominalization': 'bg-teal-200 hover:bg-teal-300',
-  'passive': 'bg-red-200 hover:bg-red-300',
 };
 
 // Grammar type labels and color indicators
@@ -72,7 +73,10 @@ export const GRAMMAR_TYPE_LABELS: Record<GrammarPoint['type'], { label: string; 
   'conjunction': { label: 'Conjunction', color: 'bg-orange-200' },
   'agreement': { label: 'Agreement', color: 'bg-pink-200' },
   'word-order': { label: 'Word Order', color: 'bg-cyan-200' },
+  'clause': { label: 'Subordinate Clause', color: 'bg-purple-200' },
   'article': { label: 'Article', color: 'bg-lime-200' },
+  'reflexive-verb': { label: 'Reflexive Verb', color: 'bg-rose-200' },
+  'passive': { label: 'Passive Voice', color: 'bg-red-200' },
   'pronoun': { label: 'Pronoun', color: 'bg-emerald-200' },
   'adjective': { label: 'Adjective', color: 'bg-teal-200' },
   'noun': { label: 'Noun', color: 'bg-violet-200' },
@@ -84,7 +88,6 @@ export const GRAMMAR_TYPE_LABELS: Record<GrammarPoint['type'], { label: string; 
   'participial-attribute': { label: 'Participial Attribute', color: 'bg-sky-200' },
   // Legacy types (backward compatibility)
   'verb': { label: 'Verb', color: 'bg-blue-200' },
-  'clause': { label: 'Clause', color: 'bg-purple-200' },
   'special': { label: 'Special', color: 'bg-pink-200' },
   'special_construction': { label: 'Special Construction', color: 'bg-slate-200' },
   'subjunctive': { label: 'Subjunctive', color: 'bg-rose-200' },
@@ -92,7 +95,6 @@ export const GRAMMAR_TYPE_LABELS: Record<GrammarPoint['type'], { label: string; 
   'functional_verb': { label: 'Functional Verb', color: 'bg-lime-200' },
   'advanced_conjunction': { label: 'Advanced Conjunction', color: 'bg-fuchsia-200' },
   'nominalization': { label: 'Nominalization', color: 'bg-teal-200' },
-  'passive': { label: 'Passive Voice', color: 'bg-red-200' },
 };
 
 // Default fallback colors

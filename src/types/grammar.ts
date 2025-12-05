@@ -4,8 +4,9 @@ export type GrammarType =
   | 'conjunction' | 'agreement' | 'word-order' | 'article' | 'pronoun'
   | 'adjective' | 'noun' | 'separable-verb' | 'modal-verb' | 'collocation'
   | 'special-construction' | 'functional-verb' | 'participial-attribute'
+  | 'clause' | 'reflexive-verb' | 'passive'
   // Legacy types (backward compatibility)
-  | 'verb' | 'clause' | 'special'
+  | 'verb' | 'special'
   | 'special_construction' | 'subjunctive' | 'modal'
   | 'functional_verb' | 'advanced_conjunction' | 'nominalization' | 'passive';
 

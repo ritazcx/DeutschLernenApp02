@@ -14,21 +14,48 @@ export interface DetectionResult {
   details: Record<string, any>;
 }
 
+/**
+ * Named Entity metadata
+ */
+export interface Entity {
+  id: number;
+  type: string;          // LOC, PER, ORG, MISC
+  text: string;          // Complete entity text (e.g., "Rio de Janeiro")
+  token_indices: number[]; // Indices of tokens that form this entity
+  start: number;         // Character start position
+  end: number;           // Character end position
+}
+
+/**
+ * Token with entity-aware fields
+ */
 export interface TokenData {
   text: string;
   lemma: string;
   pos: string;
-  tag: string;
-  dep: string;
+  tag: string;          // Original spaCy POS tag (PROPN, SCONJ, etc.)
+  dep: string;              // Dependency relation (ROOT, sb, oa, svp, etc.)
+  head?: string;            // Head token text (for dependency parsing)
   morph: Record<string, string>;
   index: number;
   characterStart: number;
   characterEnd: number;
+  
+  // === Entity-Aware Fields ===
+  entity_type?: string;      // NER entity type: LOC, PER, ORG, MISC
+  entity_id?: number;        // Shared ID for multi-token entities
+  is_entity_start?: boolean; // True if this is the first token of an entity
+  is_entity_end?: boolean;   // True if this is the last token of an entity
+  entity_text?: string;      // Complete entity text (stored in each token for convenience)
 }
 
+/**
+ * Sentence with tokens and optional entity metadata
+ */
 export interface SentenceData {
   text: string;
   tokens: TokenData[];
+  entities?: Entity[];  // Optional: entity metadata array for advanced analysis
 }
 
 export abstract class BaseGrammarDetector {
@@ -50,6 +77,69 @@ export abstract class BaseGrammarDetector {
       start: startToken.characterStart,
       end: endToken.characterEnd,
     };
+  }
+
+  // ==================== Entity-Aware Helper Methods ====================
+  
+  /**
+   * Check if a token is a named entity (LOC, PER, ORG)
+   * Use this to skip entity tokens in grammar detection
+   * 
+   * @example
+   * if (this.isNamedEntity(token)) return; // Skip "Rio de Janeiro"
+   */
+  protected isNamedEntity(token: TokenData): boolean {
+    return !!token.entity_type && ['LOC', 'PER', 'ORG'].includes(token.entity_type);
+  }
+
+  /**
+   * Check if a token is part of any entity (including MISC)
+   * More comprehensive than isNamedEntity()
+   */
+  protected isPartOfEntity(token: TokenData): boolean {
+    return token.entity_id !== undefined;
+  }
+
+  /**
+   * Get all tokens that belong to the same entity as the given token
+   * Returns single-element array if token is not part of an entity
+   * 
+   * @example
+   * const entityTokens = this.getEntityTokens(token, sentence);
+   * // For "Rio": returns [Rio, de, Janeiro]
+   */
+  protected getEntityTokens(token: TokenData, sentence: SentenceData): TokenData[] {
+    if (token.entity_id === undefined) {
+      return [token];
+    }
+    return sentence.tokens.filter(t => t.entity_id === token.entity_id);
+  }
+
+  /**
+   * Get the complete entity text for a token
+   * Returns token.text if not part of an entity
+   * 
+   * @example
+   * this.getEntityText(rioToken) // Returns "Rio de Janeiro"
+   */
+  protected getEntityText(token: TokenData): string {
+    return token.entity_text || token.text;
+  }
+
+  /**
+   * Check if a token is the start of an entity
+   * Useful for detecting entity boundaries
+   */
+  protected isEntityStart(token: TokenData): boolean {
+    return token.is_entity_start === true;
+  }
+
+  /**
+   * Check if a token is the end of an entity
+   * Useful for detecting entity boundaries
+   */
+  protected isEntityEnd(token: TokenData): boolean {
+    return token.is_entity_end === true;
   }
 
   /**

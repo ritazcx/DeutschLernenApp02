@@ -18,6 +18,7 @@ export type GrammarCategory =
   | 'conjunction'
   | 'verb-form'
   | 'word-order'
+  | 'clause'
   | 'separable-verb'
   | 'modal-verb'
   | 'reflexive-verb'
@@ -261,7 +262,7 @@ export const A2_GRAMMAR: Record<string, GrammarPoint> = {
 export const B1_GRAMMAR: Record<string, GrammarPoint> = {
   'subordinate-clauses': {
     id: 'b1-subordinate-clauses',
-    category: 'word-order',
+    category: 'clause',
     level: 'B1',
     name: 'Subordinate Clauses (Nebensätze)',
     description: 'Clauses with verb at end: dass, weil, wenn, obwohl, während',
