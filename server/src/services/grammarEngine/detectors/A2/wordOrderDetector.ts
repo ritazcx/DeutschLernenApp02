@@ -1,34 +1,35 @@
 /**
- * Word Order Detector
- * Identifies German word order patterns (V2, verb-final in subordinates)
+ * Word Order Detector (A2 Level)
+ * Detects V2 (Verb-Second) word order patterns in German main clauses.
+ * 
+ * In German main clauses, the finite verb must occupy the second position,
+ * regardless of what comes first (subject, adverb, object, etc.).
+ * 
+ * Examples:
+ * - "Ich gehe ins Kino." (Subject-Verb-Object)
+ * - "Heute gehe ich ins Kino." (Adverb-Verb-Subject-Object)
+ * - "Ins Kino gehe ich heute." (Object-Verb-Subject-Adverb)
+ * 
+ * Note: Subordinate clause word order (verb-final) is handled by 
+ * SubordinateClauseDetector (B1 level).
  */
 
 import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
-import { A2_GRAMMAR, B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import { A2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 import * as MorphAnalyzer from '../../morphologyAnalyzer';
 
 export class WordOrderDetector extends BaseGrammarDetector {
   name = 'WordOrderDetector';
   category: GrammarCategory = 'word-order';
 
-  // Subordinating conjunctions that trigger verb-final
-  private subordinatingConjunctions = [
-    'dass', 'weil', 'wenn', 'obwohl', 'ob', 'als', 'bevor', 'nachdem',
-    'während', 'seitdem', 'bis', 'damit', 'ohne', 'statt'
-  ];
-
   /**
-   * Detect word order patterns in the sentence
+   * Detect V2 word order patterns in main clauses
    */
   detect(sentence: SentenceData): DetectionResult[] {
     const results: DetectionResult[] = [];
 
     // Check for V2 word order in main clauses
     this.detectV2WordOrder(sentence, results);
-
-    // Check for subordinate clause word order
-    // DISABLED: Now handled by SubordinateClauseDetector (B1) which uses spaCy POS tags
-    // this.detectSubordinateClauses(sentence, results);
 
     return results;
   }
@@ -90,63 +91,5 @@ export class WordOrderDetector extends BaseGrammarDetector {
         );
       }
     }
-  }
-
-  /**
-   * Detect subordinate clauses with verb-final word order
-   */
-  private detectSubordinateClauses(sentence: SentenceData, results: DetectionResult[]): void {
-    for (let i = 0; i < sentence.tokens.length; i++) {
-      const token = sentence.tokens[i];
-
-      // Check if this is a subordinating conjunction
-      if (this.isSubordinatingConjunction(token.text.toLowerCase())) {
-        // Find the verb that should be at the end of this clause
-        const verbIndex = this.findClauseFinalVerb(sentence.tokens, i);
-
-        if (verbIndex !== -1 && verbIndex > i) {
-          // Found a subordinate clause with verb at end
-          const conjunction = token;
-          const verb = sentence.tokens[verbIndex];
-
-          results.push(
-            this.createResult(
-              B1_GRAMMAR['subordinate-clauses'],
-              this.calculatePosition(sentence.tokens, i, verbIndex),
-              0.9,
-              {
-                conjunction: conjunction.text,
-                verb: verb.text,
-                verbPosition: 'final',
-                clauseType: 'subordinate',
-              },
-            ),
-          );
-        }
-      }
-    }
-  }
-
-  /**
-   * Check if a word is a subordinating conjunction
-   */
-  private isSubordinatingConjunction(word: string): boolean {
-    return this.subordinatingConjunctions.includes(word.toLowerCase());
-  }
-
-  /**
-   * Find the verb at the end of a subordinate clause
-   */
-  private findClauseFinalVerb(tokens: TokenData[], startIndex: number): number {
-    // Look for the last verb in the sentence (simplified - assumes one clause)
-    let lastVerbIndex = -1;
-
-    for (let i = startIndex + 1; i < tokens.length; i++) {
-      if (tokens[i].pos === 'VERB' || tokens[i].pos === 'AUX') {
-        lastVerbIndex = i;
-      }
-    }
-
-    return lastVerbIndex;
   }
 }
