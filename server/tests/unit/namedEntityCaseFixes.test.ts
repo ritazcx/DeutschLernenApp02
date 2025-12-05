@@ -18,12 +18,12 @@ describe('Named Entity and Case Detection Fixes', () => {
 
   describe('Fix #1: Multi-word PROPN (Named Entity) Exclusion', () => {
     it('should exclude "Rio de Janeiro" (multi-word PROPN) from case detection', () => {
-      // Real spaCy output: Rio, de, Janeiro all tagged as PROPN
+      // Real spaCy output: Rio, de, Janeiro all tagged as PROPN + entity_type='LOC'
       const tokens = [
         createMockToken('in', 'in', 'ADP'),
-        createMockToken('Rio', 'rio', 'PROPN', { tag: 'PROPN' }),  // Start of entity
-        createMockToken('de', 'de', 'PROPN', { tag: 'PROPN' }),    // Middle of entity
-        createMockToken('Janeiro', 'janeiro', 'PROPN', { tag: 'PROPN', morph: { Case: 'Dat' } }),  // End of entity
+        createMockToken('Rio', 'rio', 'PROPN', { tag: 'PROPN', entity_type: 'LOC', entity_id: 0 }),  // Start of entity
+        createMockToken('de', 'de', 'PROPN', { tag: 'PROPN', entity_type: 'LOC', entity_id: 0 }),    // Middle of entity
+        createMockToken('Janeiro', 'janeiro', 'PROPN', { tag: 'PROPN', morph: { Case: 'Dat' }, entity_type: 'LOC', entity_id: 0 }),  // End of entity
         createMockToken('.', '.', 'PUNCT'),
       ];
 
@@ -54,22 +54,53 @@ describe('Named Entity and Case Detection Fixes', () => {
       expect(dativeResults.some(r => r.details.word === 'Schluss')).toBe(true);
     });
 
-    it('should detect "Tokio" and "Madrid" as isolated city names', () => {
+    it('should exclude "Tokio" and "Madrid" when recognized as LOC entities by spaCy', () => {
+      // Real spaCy output: Cities are recognized as LOC entities
       const tokens = [
         createMockToken('in', 'in', 'ADP'),
-        createMockToken('Tokio', 'tokio', 'PROPN', { tag: 'PROPN', morph: { Case: 'Dat' } }),
+        createMockToken('Tokio', 'tokio', 'PROPN', { 
+          tag: 'PROPN', 
+          morph: { Case: 'Dat' },
+          entity_type: 'LOC',  // spaCy recognizes as location
+          entity_id: 0 
+        }),
         createMockToken('und', 'und', 'CCONJ'),
-        createMockToken('Madrid', 'madrid', 'PROPN', { tag: 'PROPN', morph: { Case: 'Dat' } }),
+        createMockToken('Madrid', 'madrid', 'PROPN', { 
+          tag: 'PROPN', 
+          morph: { Case: 'Dat' },
+          entity_type: 'LOC',  // spaCy recognizes as location
+          entity_id: 1 
+        }),
         createMockToken('.', '.', 'PUNCT'),
       ];
 
       const sentence = createMockSentence('in Tokio und Madrid.', tokens);
       const results = detector.detect(sentence);
 
-      // Both should be detected as they don't have adjacent PROPNs (und separates them)
+      // Should NOT detect city names that are properly recognized as entities
       const detectedWords = results.map(r => r.details.word);
-      expect(detectedWords).toContain('Tokio');
-      expect(detectedWords).toContain('Madrid');
+      expect(detectedWords).not.toContain('Tokio');
+      expect(detectedWords).not.toContain('Madrid');
+    });
+
+    it('should detect obscure PROPN words without entity_type (fallback for spaCy misses)', () => {
+      // Edge case: spaCy fails to recognize an obscure place name
+      const tokens = [
+        createMockToken('in', 'in', 'ADP'),
+        createMockToken('Krähwinkel', 'krähwinkel', 'PROPN', { 
+          tag: 'PROPN', 
+          morph: { Case: 'Dat' }
+          // No entity_type - spaCy didn't recognize it
+        }),
+        createMockToken('.', '.', 'PUNCT'),
+      ];
+
+      const sentence = createMockSentence('in Krähwinkel.', tokens);
+      const results = detector.detect(sentence);
+
+      // Should detect it as fallback (PROPN without entity_type)
+      const detectedWords = results.map(r => r.details.word);
+      expect(detectedWords).toContain('Krähwinkel');
     });
   });
 
@@ -146,9 +177,9 @@ describe('Named Entity and Case Detection Fixes', () => {
         createMockToken('stand', 'stehen', 'VERB'),
         createMockToken('am', 'an', 'ADP', { morph: { Case: 'Dat' } }),
         createMockToken('Schluss', 'schluss', 'PROPN', { tag: 'PROPN', morph: { Case: 'Dat' } }),
-        createMockToken('Rio', 'rio', 'PROPN', { tag: 'PROPN' }),
-        createMockToken('de', 'de', 'PROPN', { tag: 'PROPN' }),
-        createMockToken('Janeiro', 'janeiro', 'PROPN', { tag: 'PROPN', morph: { Case: 'Dat' } }),
+        createMockToken('Rio', 'rio', 'PROPN', { tag: 'PROPN', entity_type: 'LOC', entity_id: 0 }),
+        createMockToken('de', 'de', 'PROPN', { tag: 'PROPN', entity_type: 'LOC', entity_id: 0 }),
+        createMockToken('Janeiro', 'janeiro', 'PROPN', { tag: 'PROPN', morph: { Case: 'Dat' }, entity_type: 'LOC', entity_id: 0 }),
         createMockToken(',', ',', 'PUNCT'),
         createMockToken('mit', 'mit', 'ADP'),
         createMockToken('der', 'der', 'DET', { morph: { Case: 'Dat' } }),

@@ -36,6 +36,11 @@ export class AgreementDetector extends BaseGrammarDetector {
 
       // Check for article-adjective-noun pattern
       if (this.isArticle(article) && adjective.pos === 'ADJ' && noun.pos === 'NOUN') {
+        // ✅ Entity-Aware: Skip if noun is a named entity
+        if (this.isNamedEntity(noun)) {
+          continue;  // Don't check agreement for entity names
+        }
+        
         // Check if they agree in case, gender, number
         const agreement = this.checkAgreement(article, adjective, noun);
 
