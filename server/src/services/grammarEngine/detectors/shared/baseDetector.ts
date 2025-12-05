@@ -34,7 +34,8 @@ export interface TokenData {
   lemma: string;
   pos: string;
   tag: string;          // Original spaCy POS tag (PROPN, SCONJ, etc.)
-  dep: string;
+  dep: string;              // Dependency relation (ROOT, sb, oa, svp, etc.)
+  head?: string;            // Head token text (for dependency parsing)
   morph: Record<string, string>;
   index: number;
   characterStart: number;

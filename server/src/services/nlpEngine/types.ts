@@ -10,6 +10,8 @@ export interface Token {
   morph: Record<string, string>; // spaCy format: e.g., {Tense: 'Past', VerbForm: 'Fin', ...}
   position: {start: number, end: number};
   tag?: string; // Original spaCy POS tag (PROPN, SCONJ, etc.)
+  dep?: string; // Dependency relation (ROOT, sb, oa, svp, etc.)
+  head?: string; // Head token text (for dependency parsing)
   
   // === Entity-Aware Fields ===
   entity_type?: string;      // NER entity type: LOC, PER, ORG, MISC

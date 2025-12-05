@@ -57,7 +57,9 @@ export class NLPEngine {
         word: spacyToken.text,
         lemma: spacyToken.lemma,
         pos: normalizedPos,
-        tag: spacyToken.pos,  // Store original spaCy POS (PROPN, SCONJ, etc.) for accurate detection
+        tag: spacyToken.tag,  // Store original spaCy tag (PTKVZ, VVFIN, PROPN, etc.) for accurate detection
+        dep: spacyToken.dep,  // Store dependency relation (svp, ROOT, etc.)
+        head: spacyToken.head, // Store head token text for dependency parsing
         morph,
         position: {
           start: 0, // Will be calculated below
@@ -128,16 +130,13 @@ export class NLPEngine {
       const sentenceData: SentenceData = {
         text,
         tokens: parsed.tokens.map((token, idx) => {
-          // Extract dep from spaCy tokens if available
-          const spacyToken = (parsed as any).spacyTokens?.[idx];
-          const dep = spacyToken?.dep || 'ROOT';
-          
           return {
             text: token.word,
             lemma: token.lemma,
             pos: token.pos,
-            tag: (token as any).tag || token.pos, // Use original spaCy tag if available
-            dep,
+            tag: token.tag || token.pos, // Use spaCy tag (PTKVZ, VVFIN, etc.) if available
+            dep: token.dep || 'ROOT',     // Dependency relation (svp, ROOT, etc.)
+            head: token.head,              // Head token text for dependency parsing
             morph: token.morph,
             index: token.id,
             characterStart: token.position.start,
