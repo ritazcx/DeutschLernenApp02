@@ -1,5 +1,5 @@
 import rawPatterns from './B1/collocationPatterns';
-import { CollocationDef } from './types';
+import { CollocationDef } from '../types/collocation';
 
 const GLOBAL_DEFAULTS = {
   verbDeps: ['obj', 'dobj', 'oa', 'obl', 'nk'],
