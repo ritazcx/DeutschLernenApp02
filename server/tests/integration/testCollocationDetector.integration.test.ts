@@ -75,6 +75,14 @@ describe('Collocation Detection Integration Tests', () => {
       if (!expectedVerb) expectedVerb = parts[0];
       const foundInSeparable = separable.some((s: any) => s.details && (s.details.fullVerb === expectedVerb || s.details.verb === expectedVerb));
 
+      // If neither is found, dump debug info to help trace why detection failed
+      if (!(foundInCollocation || foundInSeparable)) {
+        // Log concise debug view
+        console.error('COLLOCATION-DEBUG: sentence=', sentence);
+        console.error('COLLOCATION-DEBUG: collocations=', JSON.stringify(collocations, null, 2));
+        console.error('COLLOCATION-DEBUG: separable=', JSON.stringify(separable, null, 2));
+      }
+
       expect(foundInCollocation || foundInSeparable).toBe(true);
     });
   });

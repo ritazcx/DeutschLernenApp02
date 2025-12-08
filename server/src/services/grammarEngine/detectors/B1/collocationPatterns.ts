@@ -4,6 +4,9 @@
  * Extended to support Fehler machen / aufstehen / anfangen
  */
 
+// Keep this file as the canonical raw pattern list. The loader normalizes
+// depSignature and fills in defaults so patterns here can be minimal.
+
 const patterns = [
   {
     id: 'sich-freuen-auf',

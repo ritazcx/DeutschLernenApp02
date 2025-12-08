@@ -10,7 +10,7 @@
 
 import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
 import { GrammarCategory } from '../../cefr-taxonomy';
-import patterns from './collocationPatterns';
+import patterns from '../loader';
 import depUtils from './dependencyUtils';
 
 type CollocationDef = typeof patterns[number];
