@@ -1,3 +1,4 @@
+
 import { CollocationDetector } from '../../src/services/grammarEngine/detectors/B1/collocationDetector';
 import { createMockSentence, createMockToken } from '../testUtils';
 import { TokenData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
