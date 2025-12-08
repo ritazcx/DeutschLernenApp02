@@ -11,4 +11,4 @@ export interface HighlightRegion {
   level: string;
   rangeIndex: number; // Which range in multi-range group
   groupId: string; // Group related ranges together
-}
+  confidence?: number; // Optional confidence propagated from backend
