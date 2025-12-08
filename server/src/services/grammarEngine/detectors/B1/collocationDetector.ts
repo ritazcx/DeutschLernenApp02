@@ -12,6 +12,7 @@ import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '.
 import { GrammarCategory } from '../../cefr-taxonomy';
 import patterns from '../loader';
 import depUtils from './dependencyUtils';
+import buildGrammarPoint from '../shared/helpers';
 
 type CollocationDef = typeof patterns[number];
 
@@ -56,15 +57,13 @@ export class CollocationDetector extends BaseGrammarDetector {
           humanCollocation = `${def.noun?.lemma || ''} ${def.verb.lemma}`.trim();
         }
 
-        const grammarPoint = {
-          id: `b1-collocation-${def.id}`,
-          category: 'collocation' as const,
-          level: 'B1' as const,
-          name: humanCollocation,
-          description: `Collocation: ${humanCollocation}`,
-          examples: (def as any).examples || [],
-          explanation: 'Common collocation',
-        };
+        const grammarPoint = buildGrammarPoint(def, { idPrefix: 'b1-collocation-', level: 'B1', category: 'collocation' });
+        // prefer the human-friendly label computed by the detector
+        grammarPoint.name = humanCollocation;
+        grammarPoint.description = (def as any).description || `Collocation: ${humanCollocation}`;
+        if (!grammarPoint.explanation || String(grammarPoint.explanation).trim() === '') {
+          grammarPoint.explanation = (def as any).explanation || 'Common collocation';
+        }
 
         const orderedTokens = matchedTokens.slice().sort((a, b) => a.index - b.index);
         const positions = this.calculateMultiplePositions(tokens, indices);
