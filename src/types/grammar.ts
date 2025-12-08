@@ -15,6 +15,7 @@ export interface GrammarPoint {
   level: CEFRLevel;
   text: string;
   explanation: string;
+  confidence?: number;
   position: { start: number; end: number }; // Legacy single range
   positions?: Array<{ start: number; end: number }>; // Multi-range support
   
