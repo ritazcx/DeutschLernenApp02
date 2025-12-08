@@ -1,4 +1,4 @@
-import { SeparableVerbDetector } from '../../src/services/grammarEngine/detectors/B1/separableVerbDetector';
+import { SeparableVerbDetector } from '../../src/services/grammarEngine/detectors/A2/separableVerbDetector';
 import { SentenceData, TokenData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
 
 describe('SeparableVerbDetector', () => {

@@ -69,7 +69,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to look forward to something",
+  "explanation": "to look forward to something",
   "examples": [
     "Ich freue mich auf das Konzert."
   ]
@@ -135,7 +135,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to be interested in something",
+  "explanation": "to be interested in something",
   "examples": [
     "Ich interessiere mich für Kunst."
   ]
@@ -200,7 +200,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to take care of something",
+  "explanation": "to take care of something",
   "examples": [
     "Ich kümmere mich um das Problem."
   ]
@@ -280,7 +280,7 @@ const RAW = [
     "prepDeps include case or obl",
     "reflexiveDeps include refl"
   ],
-  "meaning": "to remember something",
+  "explanation": "to remember something",
   "examples": [
     "Ich erinnere mich an das Gespräch."
   ]
@@ -337,7 +337,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to wait for something",
+  "explanation": "to wait for something",
   "examples": [
     "Ich warte auf dich."
   ]
@@ -394,7 +394,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to think of someone or something",
+  "explanation": "to think of someone or something",
   "examples": [
     "Ich denke an dich."
   ]
@@ -451,7 +451,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to have an opinion about something",
+  "explanation": "to have an opinion about something",
   "examples": [
     "Was hältst du von dem Plan?"
   ]
@@ -507,7 +507,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to be afraid",
+  "explanation": "to be afraid",
   "examples": [
     "Ich habe Angst."
   ]
@@ -563,7 +563,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to be hungry",
+  "explanation": "to be hungry",
   "examples": [
     "Ich habe Hunger."
   ]
@@ -619,7 +619,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to take a vacation",
+  "explanation": "to take a vacation",
   "examples": [
     "Wir machen Urlaub."
   ]
@@ -687,7 +687,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to prepare oneself for something",
+  "explanation": "to prepare oneself for something",
   "examples": [
     "Sie bereitet sich auf die Prüfung vor."
   ]
@@ -743,7 +743,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to make a mistake",
+  "explanation": "to make a mistake",
   "examples": [
     "Du machst einen Fehler.",
     "Ich habe einen Fehler gemacht."
@@ -800,7 +800,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to get up",
+  "explanation": "to get up",
   "examples": [
     "Ich stehe früh auf.",
     "Er steht jeden Tag um sechs auf."
@@ -857,7 +857,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to begin or start",
+  "explanation": "to begin or start",
   "examples": [
     "Ich muss mit der Arbeit anfangen.",
     "Wir fangen sofort an."
@@ -924,7 +924,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to apply for something",
+  "explanation": "to apply for something",
   "examples": [
     "Ich bewerbe mich um den Job."
   ]
@@ -990,7 +990,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to occupy oneself with something",
+  "explanation": "to occupy oneself with something",
   "examples": [
     "Ich beschäftige mich mit dem Thema."
   ]
@@ -1056,7 +1056,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to fall in love with someone",
+  "explanation": "to fall in love with someone",
   "examples": [
     "Er hat sich in sie verliebt."
   ]
@@ -1122,7 +1122,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to contact someone",
+  "explanation": "to contact someone",
   "examples": [
     "Meldest du dich bei mir?"
   ]
@@ -1188,7 +1188,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to long for something",
+  "explanation": "to long for something",
   "examples": [
     "Ich sehne mich nach Ruhe."
   ]
@@ -1254,7 +1254,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to separate from someone",
+  "explanation": "to separate from someone",
   "examples": [
     "Sie trennt sich von ihrem Mann."
   ]
@@ -1320,7 +1320,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to be annoyed about something",
+  "explanation": "to be annoyed about something",
   "examples": [
     "Ich ärgere mich über das Wetter."
   ]
@@ -1377,7 +1377,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to talk about something",
+  "explanation": "to talk about something",
   "examples": [
     "Wir sprechen über das Problem."
   ]
@@ -1434,7 +1434,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to speak with someone",
+  "explanation": "to speak with someone",
   "examples": [
     "Ich spreche mit ihm."
   ]
@@ -1491,7 +1491,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to hope for something",
+  "explanation": "to hope for something",
   "examples": [
     "Ich hoffe auf gutes Wetter."
   ]
@@ -1548,7 +1548,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to give up something",
+  "explanation": "to give up something",
   "examples": [
     "Ich verzichte auf Fleisch."
   ]
@@ -1605,7 +1605,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to depend on something",
+  "explanation": "to depend on something",
   "examples": [
     "Es hängt von dir ab."
   ]
@@ -1662,7 +1662,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to consist of something",
+  "explanation": "to consist of something",
   "examples": [
     "Das Team besteht aus fünf Personen."
   ]
@@ -1719,7 +1719,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to be regarded as something",
+  "explanation": "to be regarded as something",
   "examples": [
     "Er gilt als Experte."
   ]
@@ -1776,7 +1776,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to suffer from something",
+  "explanation": "to suffer from something",
   "examples": [
     "Er leidet an einer Krankheit."
   ]
@@ -1836,7 +1836,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to participate in something",
+  "explanation": "to participate in something",
   "examples": [
     "Ich nehme an der Sitzung teil."
   ]
@@ -1902,7 +1902,7 @@ const RAW = [
     "verbDeps include obj or obl",
     "prepDeps include case"
   ],
-  "meaning": "to rely on someone/something",
+  "explanation": "to rely on someone/something",
   "examples": [
     "Ich verlasse mich auf dich."
   ]
@@ -1959,7 +1959,7 @@ const RAW = [
     "verbDeps include obl or obj",
     "prepDeps include case"
   ],
-  "meaning": "to belong to something",
+  "explanation": "to belong to something",
   "examples": [
     "Das gehört zu meinen Aufgaben."
   ]
@@ -2015,7 +2015,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to make a decision",
+  "explanation": "to make a decision",
   "examples": [
     "Ich treffe eine Entscheidung."
   ]
@@ -2071,7 +2071,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to have a conversation",
+  "explanation": "to have a conversation",
   "examples": [
     "Wir führen ein Gespräch."
   ]
@@ -2127,7 +2127,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to call something into question",
+  "explanation": "to call something into question",
   "examples": [
     "Das stellt die Theorie in Frage."
   ]
@@ -2183,7 +2183,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to accept something",
+  "explanation": "to accept something",
   "examples": [
     "Er nimmt die Einladung an."
   ]
@@ -2239,7 +2239,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to play a role",
+  "explanation": "to play a role",
   "examples": [
     "Das spielt eine große Rolle."
   ]
@@ -2295,7 +2295,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to give attention to someone",
+  "explanation": "to give attention to someone",
   "examples": [
     "Er schenkt ihr viel Aufmerksamkeit."
   ]
@@ -2367,7 +2367,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to keep an overview",
+  "explanation": "to keep an overview",
   "examples": [
     "Er behält den Überblick."
   ]
@@ -2438,7 +2438,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to take measures",
+  "explanation": "to take measures",
   "examples": [
     "Die Regierung ergreift Maßnahmen."
   ]
@@ -2509,7 +2509,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to gain experience",
+  "explanation": "to gain experience",
   "examples": [
     "Sie sammelt Erfahrungen im Praktikum."
   ]
@@ -2581,7 +2581,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to leave an impression",
+  "explanation": "to leave an impression",
   "examples": [
     "Er hinterlässt einen guten Eindruck."
   ]
@@ -2650,7 +2650,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to attract attention",
+  "explanation": "to attract attention",
   "examples": [
     "Das Video erregte viel Aufmerksamkeit."
   ]
@@ -2719,7 +2719,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to take responsibility",
+  "explanation": "to take responsibility",
   "examples": [
     "Sie übernimmt die Verantwortung."
   ]
@@ -2789,7 +2789,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to initiate steps",
+  "explanation": "to initiate steps",
   "examples": [
     "Wir leiten erste Schritte ein."
   ]
@@ -2866,7 +2866,7 @@ const RAW = [
     "prepDeps include case",
     "nounDeps include obj"
   ],
-  "meaning": "to pay attention to details",
+  "explanation": "to pay attention to details",
   "examples": [
     "Achte auf die Details."
   ]
@@ -2937,7 +2937,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to reach an agreement",
+  "explanation": "to reach an agreement",
   "examples": [
     "Die Parteien erzielten eine Einigung."
   ]
@@ -2993,7 +2993,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to give someone trust",
+  "explanation": "to give someone trust",
   "examples": [
     "Ich schenke dir mein Vertrauen."
   ]
@@ -3049,7 +3049,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to make a suggestion",
+  "explanation": "to make a suggestion",
   "examples": [
     "Ich mache einen Vorschlag."
   ]
@@ -3105,7 +3105,7 @@ const RAW = [
     "nounDeps include obj",
     "verbDeps include obj"
   ],
-  "meaning": "to accept something as consequence",
+  "explanation": "to accept something as consequence",
   "examples": [
     "Das nehme ich in Kauf."
   ]
@@ -3161,7 +3161,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to go out (socially)",
+  "explanation": "to go out (socially)",
   "examples": [
     "Wir gehen heute Abend aus."
   ]
@@ -3217,7 +3217,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to invite someone",
+  "explanation": "to invite someone",
   "examples": [
     "Ich lade dich ein."
   ]
@@ -3273,7 +3273,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to come back",
+  "explanation": "to come back",
   "examples": [
     "Er kommt später zurück."
   ]
@@ -3329,7 +3329,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to leave (by vehicle)",
+  "explanation": "to leave (by vehicle)",
   "examples": [
     "Sie fährt morgen weg."
   ]
@@ -3385,7 +3385,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to continue",
+  "explanation": "to continue",
   "examples": [
     "Wir gehen weiter."
   ]
@@ -3441,7 +3441,7 @@ const RAW = [
   "shouldMatch": [
     "particle separated in surface order"
   ],
-  "meaning": "to continue something",
+  "explanation": "to continue something",
   "examples": [
     "Wir setzen die Arbeit fort."
   ]
