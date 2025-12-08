@@ -9,7 +9,7 @@
  */
 export const SEPARABLE_PREFIXES = [
   'ab', 'an', 'auf', 'aus', 'bei', 'durch', 'ein', 'fort', 'her',
-  'hin', 'los', 'mit', 'nach', 'statt', 'vor', 'weg', 'weiter', 'zu', 'zurück'
+  'hin', 'los', 'mit', 'nach', 'teil', 'statt', 'vor', 'weg', 'weiter', 'zu', 'zurück'
 ];
 
 /**

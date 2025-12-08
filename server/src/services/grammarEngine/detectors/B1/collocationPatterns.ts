@@ -14,7 +14,7 @@ const patterns = [
     depSignature: {
       verbDeps: ['obj', 'iobj', 'obl'],
       reflexiveDeps: ['obj', 'refl', 'dobj', 'iobj'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=freuen','prep:lemma=auf','reflexive:required'],
@@ -26,12 +26,12 @@ const patterns = [
     id: 'sich-interessieren-fuer',
     type: 'reflexive-prep',
     verb: { lemma: 'interessieren', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj', 'iobj', 'refl'] },
+    reflexive: { required: true, dep: ['obj', 'iobj', 'refl', 'oa'] },
     prep: { lemma: 'für', dep: 'case' },
     depSignature: {
       verbDeps: ['obj', 'iobj', 'obl'],
-      reflexiveDeps: ['obj', 'refl', 'dobj'],
-      prepDeps: ['case'],
+      reflexiveDeps: ['obj', 'refl', 'dobj', 'oa'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=interessieren','prep:lemma=für','reflexive:required'],
@@ -47,8 +47,8 @@ const patterns = [
     prep: { lemma: 'um', dep: 'case' },
     depSignature: {
       verbDeps: ['obj', 'iobj', 'obl'],
-      reflexiveDeps: ['obj', 'refl', 'dobj'],
-      prepDeps: ['case'],
+      reflexiveDeps: ['obj', 'refl', 'dobj', 'oa'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=kümmern','prep:lemma=um','reflexive:required'],
@@ -63,13 +63,19 @@ const patterns = [
     reflexive: { required: true, dep: ['obj', 'iobj', 'refl'] },
     prep: { lemma: 'an', dep: 'case' },
     depSignature: {
-      verbDeps: ['obj', 'iobj', 'obl'],
-      reflexiveDeps: ['obj', 'refl', 'dobj'],
-      prepDeps: ['case'],
-      headRelation: 'prep->noun'
+      maxDepth: 5,
+      verbDeps: ['obj', 'iobj', 'obl', 'advmod'],
+      reflexiveDeps: ['obj', 'refl', 'dobj', 'iobj', 'oa'],
+      prepDeps: ['case', 'obl', 'op'],
+      mustMatchDeps: ['refl', 'obj'],
+      shouldMatchDeps: ['case', 'obl', 'nmod'],
+      headRelation: 'prep->noun',
+      normalizeVerbForms: true,
+      collapseAux: true,
+      allowParticiple: true
     },
     mustMatch: ['verb:lemma=erinnern','prep:lemma=an','reflexive:required'],
-    shouldMatch: ['verbDeps include obj or obl','prepDeps include case'],
+    shouldMatch: ['verbDeps include obj or obl','prepDeps include case or obl','reflexiveDeps include refl'],
     meaning: 'to remember something',
     examples: ['Ich erinnere mich an das Gespräch.'],
   },
@@ -80,7 +86,7 @@ const patterns = [
     prep: { lemma: 'auf', dep: 'case' },
     depSignature: {
       verbDeps: ['obl','obj','advmod'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=warten','prep:lemma=auf'],
@@ -95,7 +101,7 @@ const patterns = [
     prep: { lemma: 'an', dep: 'case' },
     depSignature: {
       verbDeps: ['obl','obj','advmod'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=denken','prep:lemma=an'],
@@ -110,7 +116,7 @@ const patterns = [
     prep: { lemma: 'von', dep: 'case' },
     depSignature: {
       verbDeps: ['obl','obj','advmod'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=halten','prep:lemma=von'],
@@ -172,8 +178,8 @@ const patterns = [
     separable: { particle: 'vor' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
-      reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      reflexiveDeps: ['obj','refl','dobj','oa'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=vorbereiten','prep:lemma=auf','reflexive:required','separable:particle=vor'],
@@ -258,12 +264,12 @@ const patterns = [
     id: 'sich-bewerben-um',
     type: 'reflexive-prep',
     verb: { lemma: 'bewerben', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj','iobj','refl'] },
+    reflexive: { required: true, dep: ['obj','iobj','refl','oa'] },
     prep: { lemma: 'um', dep: 'case' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
-      reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      reflexiveDeps: ['obj','refl','dobj','oa'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=bewerben','prep:lemma=um','reflexive:required'],
@@ -275,12 +281,12 @@ const patterns = [
     id: 'sich-beschäftigen-mit',
     type: 'reflexive-prep',
     verb: { lemma: 'beschäftigen', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj','iobj','refl'] },
+    reflexive: { required: true, dep: ['obj','iobj','refl','oa'] },
     prep: { lemma: 'mit', dep: 'case' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
-      reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      reflexiveDeps: ['obj','refl','dobj','oa'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=beschäftigen','prep:lemma=mit','reflexive:required'],
@@ -292,12 +298,12 @@ const patterns = [
     id: 'sich-verlieben-in',
     type: 'reflexive-prep',
     verb: { lemma: 'verlieben', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj','iobj','refl'] },
+    reflexive: { required: true, dep: ['obj','iobj','refl','oa'] },
     prep: { lemma: 'in', dep: 'case' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
-      reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      reflexiveDeps: ['obj','refl','dobj','oa'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=verlieben','prep:lemma=in','reflexive:required'],
@@ -309,12 +315,12 @@ const patterns = [
     id: 'sich-melden-bei',
     type: 'reflexive-prep',
     verb: { lemma: 'melden', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj','iobj','refl'] },
+    reflexive: { required: true, dep: ['obj','iobj','refl','oa'] },
     prep: { lemma: 'bei', dep: 'case' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
-      reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      reflexiveDeps: ['obj','refl','dobj','oa'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=melden','prep:lemma=bei','reflexive:required'],
@@ -326,12 +332,12 @@ const patterns = [
     id: 'sich-sehnen-nach',
     type: 'reflexive-prep',
     verb: { lemma: 'sehnen', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj','iobj','refl'] },
+    reflexive: { required: true, dep: ['obj','iobj','refl','oa'] },
     prep: { lemma: 'nach', dep: 'case' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
       reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=sehnen','prep:lemma=nach','reflexive:required'],
@@ -343,12 +349,12 @@ const patterns = [
     id: 'sich-trennen-von',
     type: 'reflexive-prep',
     verb: { lemma: 'trennen', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj','iobj','refl'] },
+    reflexive: { required: true, dep: ['obj','iobj','refl','oa'] },
     prep: { lemma: 'von', dep: 'case' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
       reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=trennen','prep:lemma=von','reflexive:required'],
@@ -360,12 +366,12 @@ const patterns = [
     id: 'sich-ärgern-über',
     type: 'reflexive-prep',
     verb: { lemma: 'ärgern', pos: 'VERB' },
-    reflexive: { required: true, dep: ['obj','iobj','refl'] },
+    reflexive: { required: true, dep: ['obj','iobj','refl','oa'] },
     prep: { lemma: 'über', dep: 'case' },
     depSignature: {
       verbDeps: ['obj','iobj','obl'],
       reflexiveDeps: ['obj','refl','dobj'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=ärgern','prep:lemma=über','reflexive:required'],
@@ -384,7 +390,7 @@ const patterns = [
     prep: { lemma: 'über', dep: 'case' },
     depSignature: {
       verbDeps: ['obl','obj','advmod'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=sprechen','prep:lemma=über'],
@@ -505,13 +511,31 @@ const patterns = [
     separable: { particle: 'teil' },
     depSignature: {
       verbDeps: ['obl','obj','advmod'],
-      prepDeps: ['case'],
+      prepDeps: ['case','op','mnr'],
       headRelation: 'prep->noun'
     },
     mustMatch: ['verb:lemma=teilnehmen','prep:lemma=an','separable:particle=teil'],
     shouldMatch: ['verbDeps include obl or obj','prepDeps include case'],
     meaning: 'to participate in something',
     examples: ['Ich nehme an der Sitzung teil.'],
+  },
+
+  {
+    id: 'sich-verlassen-auf',
+    type: 'reflexive-prep',
+    verb: { lemma: 'verlassen', pos: 'VERB' },
+    reflexive: { required: true, dep: ['obj', 'iobj', 'refl', 'oa'] },
+    prep: { lemma: 'auf', dep: 'case' },
+    depSignature: {
+      verbDeps: ['obj', 'iobj', 'obl'],
+      reflexiveDeps: ['obj', 'refl', 'dobj', 'oa'],
+      prepDeps: ['case', 'op'],
+      headRelation: 'prep->noun'
+    },
+    mustMatch: ['verb:lemma=verlassen','prep:lemma=auf','reflexive:required'],
+    shouldMatch: ['verbDeps include obj or obl','prepDeps include case'],
+    meaning: 'to rely on someone/something',
+    examples: ['Ich verlasse mich auf dich.'],
   },
   {
     id: 'gehören-zu',
@@ -780,7 +804,7 @@ const patterns = [
     depSignature: {
       maxDepth: 3,
       verbDeps: ['obj','dobj','obl'],
-      prepDeps: ['case','prep'],
+      prepDeps: ['case','prep','op'],
       nounDeps: ['obj','nmod','obl'],
       mustMatchDeps: ['prep','case','pobj','obl'],
       shouldMatchDeps: ['det','adj','num','amod'],
