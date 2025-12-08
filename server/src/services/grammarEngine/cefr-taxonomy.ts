@@ -24,7 +24,8 @@ export type GrammarCategory =
   | 'reflexive-verb'
   | 'passive'
   | 'functional-verb'
-  | 'participial-attribute';
+  | 'participial-attribute'
+  | 'collocation';
 
 export interface GrammarPoint {
   id: string;
@@ -244,6 +245,20 @@ export const A2_GRAMMAR: Record<string, GrammarPoint> = {
     explanation: 'Reflexive verbs have a reflexive pronoun (mich, dich, sich) that refers back to the subject.',
     relatedVocabulary: ['sich waschen', 'sich anziehen', 'sich erinnern'],
   },
+  'separable-verbs': {
+    id: 'a2-separable-verbs',
+    category: 'separable-verb',
+    level: 'A2',
+    name: 'Separable Verbs (Trennbare Verben)',
+    description: 'Verbs with prefix that separate: anrufen→rufe an, aufstehen→stehe auf',
+    examples: [
+      'Ich rufe dich an',
+      'Er steht um 6 Uhr auf',
+      'Sie macht die Hausaufgaben auf',
+    ],
+    explanation: 'Separable verbs split: prefix moves to end in main clauses, stays attached in subordinate clauses.',
+    relatedVocabulary: ['anrufen', 'aufstehen', 'ausziehen', 'anfangen', 'aufmachen'],
+  },
   'word-order-subject-verb-object': {
     id: 'a2-svo-word-order',
     category: 'word-order',
@@ -339,20 +354,7 @@ export const B1_GRAMMAR: Record<string, GrammarPoint> = {
       mood: ['Subj'],
     },
   },
-  'separable-verbs': {
-    id: 'b1-separable-verbs',
-    category: 'separable-verb',
-    level: 'B1',
-    name: 'Separable Verbs (Trennbare Verben)',
-    description: 'Verbs with prefix that separate: anrufen→rufe an, aufstehen→stehe auf',
-    examples: [
-      'Ich rufe dich an',
-      'Er steht um 6 Uhr auf',
-      'Sie macht die Hausaufgaben auf',
-    ],
-    explanation: 'Separable verbs split: prefix moves to end in main clauses, stays attached in subordinate clauses.',
-    relatedVocabulary: ['anrufen', 'aufstehen', 'ausziehen', 'anfangen', 'aufmachen'],
-  },
+  
   'modal-verbs': {
     id: 'b1-modal-verbs',
     category: 'modal-verb',

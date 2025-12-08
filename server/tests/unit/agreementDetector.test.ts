@@ -1,105 +1,347 @@
 /**
- * Agreement Detector Tests
- * Tests for article-adjective-noun agreement detection
+ * Unit Tests for AgreementDetector (Final Production Version)
  */
 
-import { AgreementDetector } from '../../src/services/grammarEngine/detectors/B1/agreementDetector';
-import { SentenceData } from '../../src/services/grammarEngine/detectors/shared/baseDetector';
+import { AgreementDetector } from "../../src/services/grammarEngine/detectors/B1/agreementDetector";
+import { createMockSentence, createMockToken } from "../testUtils";
 
-describe('AgreementDetector', () => {
-  const detector = new AgreementDetector();
+describe("AgreementDetector", () => {
+  let detector: AgreementDetector;
 
-  const createMockSentence = (text: string, tokens: any[]): SentenceData => {
-    let charPos = 0;
-    return {
-      text,
-      tokens: tokens.map((t, i) => {
-        const charStart = charPos;
-        const charEnd = charStart + t.text.length;
-        charPos = charEnd + 1;
-        return {
-          text: t.text,
-          lemma: t.lemma || t.text.toLowerCase(),
-          pos: t.pos || 'NOUN',
-          tag: t.tag || 'NN',
-          dep: t.dep || 'nsubj',
-          morph: t.morph || {},
-          index: i,
-          characterStart: charStart,
-          characterEnd: charEnd,
-        };
+  beforeEach(() => {
+    detector = new AgreementDetector();
+  });
+
+  // -------------------------------------------------------------
+  // BASIC: correct NP agreement
+  // -------------------------------------------------------------
+  it("detects correct Masc-Nom-Sing agreement (Der große Mann)", () => {
+    const tokens = [
+      createMockToken("Der", "der", "DET", {
+        dep: "det",
+        head: "Mann",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
       }),
-    };
-  };
+      createMockToken("große", "groß", "ADJ", {
+        dep: "amod",
+        head: "Mann",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("Mann", "Mann", "NOUN", {
+        dep: "nsubj",
+        head: "ist",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("ist", "sein", "VERB"),
+      createMockToken(".", ".", "PUNCT"),
+    ];
 
-  test('should detect correct article-adjective-noun agreement in nominative', () => {
-    const sentence = createMockSentence('Der große Mann ist hier.', [
-      { text: 'Der', pos: 'DET', tag: 'ART', morph: { Case: 'Nom', Gender: 'Masc', Number: 'Sing', Definite: 'Def' } },
-      { text: 'große', pos: 'ADJ', tag: 'ADJA', morph: { Case: 'Nom', Gender: 'Masc', Number: 'Sing' } },
-      { text: 'Mann', pos: 'NOUN', tag: 'NN', morph: { Case: 'Nom', Gender: 'Masc', Number: 'Sing' } },
-      { text: 'ist', pos: 'AUX', tag: 'VAFIN' },
-      { text: 'hier', pos: 'ADV', tag: 'ADV' },
-      { text: '.', pos: 'PUNCT', tag: '$.' },
-    ]);
-
+    const sentence = createMockSentence("Der große Mann ist.", tokens);
     const results = detector.detect(sentence);
-    // Agreement detection may or may not trigger depending on implementation
-    expect(results.length >= 0).toBe(true);
+
+    expect(results.length).toBe(0); // no errors
   });
 
-  test('should detect correct feminine agreement', () => {
-    const sentence = createMockSentence('Die schöne Frau liest.', [
-      { text: 'Die', pos: 'DET', tag: 'ART', morph: { Case: 'Nom', Gender: 'Fem', Number: 'Sing', Definite: 'Def' } },
-      { text: 'schöne', pos: 'ADJ', tag: 'ADJA', morph: { Case: 'Nom', Gender: 'Fem', Number: 'Sing' } },
-      { text: 'Frau', pos: 'NOUN', tag: 'NN', morph: { Case: 'Nom', Gender: 'Fem', Number: 'Sing' } },
-      { text: 'liest', pos: 'VERB', tag: 'VVFIN' },
-      { text: '.', pos: 'PUNCT', tag: '$.' },
-    ]);
+  it("detects correct Fem-Nom-Sing agreement (Die schöne Frau)", () => {
+    const tokens = [
+      createMockToken("Die", "die", "DET", {
+        dep: "det",
+        head: "Frau",
+        morph: { Case: "Nom", Gender: "Fem", Number: "Sing" },
+      }),
+      createMockToken("schöne", "schön", "ADJ", {
+        dep: "amod",
+        head: "Frau",
+        morph: { Case: "Nom", Gender: "Fem", Number: "Sing" },
+      }),
+      createMockToken("Frau", "Frau", "NOUN", {
+        dep: "nsubj",
+        head: "liest",
+        morph: { Case: "Nom", Gender: "Fem", Number: "Sing" },
+      }),
+      createMockToken("liest", "lesen", "VERB"),
+    ];
 
+    const sentence = createMockSentence("Die schöne Frau liest.", tokens);
     const results = detector.detect(sentence);
-    expect(results.length >= 0).toBe(true);
+
+    expect(results.length).toBe(0);
   });
 
-  test('should detect correct neuter agreement', () => {
-    const sentence = createMockSentence('Das kleine Kind spielt.', [
-      { text: 'Das', pos: 'DET', tag: 'ART', morph: { Case: 'Nom', Gender: 'Neut', Number: 'Sing', Definite: 'Def' } },
-      { text: 'kleine', pos: 'ADJ', tag: 'ADJA', morph: { Case: 'Nom', Gender: 'Neut', Number: 'Sing' } },
-      { text: 'Kind', pos: 'NOUN', tag: 'NN', morph: { Case: 'Nom', Gender: 'Neut', Number: 'Sing' } },
-      { text: 'spielt', pos: 'VERB', tag: 'VVFIN' },
-      { text: '.', pos: 'PUNCT', tag: '$.' },
-    ]);
+  it("detects correct Neut-Nom-Sing agreement (Das kleine Kind)", () => {
+    const tokens = [
+      createMockToken("Das", "das", "DET", {
+        dep: "det",
+        head: "Kind",
+        morph: { Case: "Nom", Gender: "Neut", Number: "Sing" },
+      }),
+      createMockToken("kleine", "klein", "ADJ", {
+        dep: "amod",
+        head: "Kind",
+        morph: { Case: "Nom", Gender: "Neut", Number: "Sing" },
+      }),
+      createMockToken("Kind", "Kind", "NOUN", {
+        dep: "nsubj",
+        head: "spielt",
+        morph: { Case: "Nom", Gender: "Neut", Number: "Sing" },
+      }),
+      createMockToken("spielt", "spielen", "VERB"),
+    ];
 
+    const sentence = createMockSentence("Das kleine Kind spielt.", tokens);
     const results = detector.detect(sentence);
-    expect(results.length >= 0).toBe(true);
+
+    expect(results.length).toBe(0);
   });
 
-  test('should detect agreement in dative case', () => {
-    const sentence = createMockSentence('Ich gebe dem großen Mann das Buch.', [
-      { text: 'Ich', pos: 'PRON', tag: 'PPER' },
-      { text: 'gebe', pos: 'VERB', tag: 'VVFIN' },
-      { text: 'dem', pos: 'DET', tag: 'ART', morph: { Case: 'Dat', Gender: 'Masc', Number: 'Sing' } },
-      { text: 'großen', pos: 'ADJ', tag: 'ADJA', morph: { Case: 'Dat', Gender: 'Masc', Number: 'Sing' } },
-      { text: 'Mann', pos: 'NOUN', tag: 'NN', morph: { Case: 'Dat', Gender: 'Masc', Number: 'Sing' } },
-      { text: 'das', pos: 'DET', tag: 'ART', morph: { Case: 'Acc', Gender: 'Neut', Number: 'Sing' } },
-      { text: 'Buch', pos: 'NOUN', tag: 'NN', morph: { Case: 'Acc', Gender: 'Neut', Number: 'Sing' } },
-      { text: '.', pos: 'PUNCT', tag: '$.' },
-    ]);
+  // -------------------------------------------------------------
+  // DATIVE / ACC / PLURAL
+  // -------------------------------------------------------------
+  it("detects correct agreement in Dative NP (dem großen Mann)", () => {
+    const tokens = [
+      createMockToken("dem", "der", "DET", {
+        dep: "det",
+        head: "Mann",
+        morph: { Case: "Dat", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("großen", "groß", "ADJ", {
+        dep: "amod",
+        head: "Mann",
+        morph: { Case: "Dat", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("Mann", "Mann", "NOUN", {
+        dep: "obl",
+        head: "gebe",
+        morph: { Case: "Dat", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("gebe", "geben", "VERB"),
+    ];
 
+    const sentence = createMockSentence("Ich gebe dem großen Mann.", tokens);
     const results = detector.detect(sentence);
-    expect(results.length >= 0).toBe(true);
+
+    expect(results.length).toBe(0);
   });
 
-  test('should detect agreement in plural', () => {
-    const sentence = createMockSentence('Die großen Männer sind hier.', [
-      { text: 'Die', pos: 'DET', tag: 'ART', morph: { Case: 'Nom', Number: 'Plur' } },
-      { text: 'großen', pos: 'ADJ', tag: 'ADJA', morph: { Case: 'Nom', Number: 'Plur' } },
-      { text: 'Männer', pos: 'NOUN', tag: 'NN', morph: { Case: 'Nom', Number: 'Plur' } },
-      { text: 'sind', pos: 'AUX', tag: 'VAFIN' },
-      { text: 'hier', pos: 'ADV', tag: 'ADV' },
-      { text: '.', pos: 'PUNCT', tag: '$.' },
-    ]);
+  it("detects correct plural agreement (Die großen Männer)", () => {
+    const tokens = [
+      createMockToken("Die", "die", "DET", {
+        dep: "det",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" }, // plural → no gender
+      }),
+      createMockToken("großen", "groß", "ADJ", {
+        dep: "amod",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("Männer", "Mann", "NOUN", {
+        dep: "nsubj",
+        head: "sind",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("sind", "sein", "AUX"),
+    ];
 
+    const sentence = createMockSentence("Die großen Männer sind hier.", tokens);
     const results = detector.detect(sentence);
-    expect(results.length >= 0).toBe(true);
+
+    expect(results.length).toBe(0);
+  });
+
+  // -------------------------------------------------------------
+  // ERROR AGREEMENT
+  // -------------------------------------------------------------
+  it("detects incorrect gender (Der große Frau → error)", () => {
+    const tokens = [
+      createMockToken("Der", "der", "DET", {
+        dep: "det",
+        head: "Frau",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("große", "groß", "ADJ", {
+        dep: "amod",
+        head: "Frau",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("Frau", "Frau", "NOUN", {
+        dep: "nsubj",
+        head: "kommt",
+        morph: { Case: "Nom", Gender: "Fem", Number: "Sing" },
+      }),
+      createMockToken("kommt", "kommen", "VERB"),
+    ];
+
+    const sentence = createMockSentence("Der große Frau kommt.", tokens);
+    const results = detector.detect(sentence);
+
+    expect(results.length).toBe(1);
+    expect(results[0].details.state).toBe("error");
+  });
+
+  // -------------------------------------------------------------
+  // UNCERTAIN (missing morph)
+  // -------------------------------------------------------------
+  it("detects uncertain when morph is missing (die alte Mann)", () => {
+    const tokens = [
+      createMockToken("die", "die", "DET", {
+        dep: "det",
+        head: "Mann",
+        morph: { Case: "Nom", Gender: "Fem", Number: "Sing" },
+      }),
+      createMockToken("alte", "alt", "ADJ", {
+        dep: "amod",
+        head: "Mann",
+        morph: {}, // missing all features
+      }),
+      createMockToken("Mann", "Mann", "NOUN", {
+        dep: "nsubj",
+        head: "ist",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("ist", "sein", "VERB"),
+    ];
+
+    const sentence = createMockSentence("die alte Mann ist.", tokens);
+    const results = detector.detect(sentence);
+
+    expect(results.length).toBe(1);
+    expect(results[0].details.state).toBe("uncertain");
+    expect(results[0].details.missing.length).toBeGreaterThan(0);
+  });
+
+  // -------------------------------------------------------------
+  // SKIP PROPER NOUN & NAMED ENTITIES
+  // -------------------------------------------------------------
+  it("skips NP with PROPN", () => {
+    const tokens = [
+      createMockToken("die", "die", "DET", {
+        dep: "det",
+        head: "Polizei",
+        morph: { Case: "Nom", Gender: "Fem", Number: "Sing" },
+      }),
+      createMockToken("berliner", "berliner", "ADJ", {
+        dep: "amod",
+        head: "Polizei",
+        morph: { Case: "Nom", Gender: "Fem", Number: "Sing" },
+      }),
+      createMockToken("Polizei", "Polizei", "PROPN", {
+        dep: "nsubj",
+        head: "kommt",
+        entity_type: "ORG",
+      }),
+      createMockToken("kommt", "kommen", "VERB"),
+    ];
+
+    const sentence = createMockSentence("Die berliner Polizei kommt.", tokens);
+    const results = detector.detect(sentence);
+
+    expect(results.length).toBe(0);
+  });
+
+  // -------------------------------------------------------------
+  // AMOD CHAIN (große, alte, schöne Männer)
+  // -------------------------------------------------------------
+  it("handles amod chains correctly", () => {
+    const tokens = [
+      createMockToken("die", "die", "DET", {
+        dep: "det",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("großen", "groß", "ADJ", {
+        dep: "amod",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("alten", "alt", "ADJ", {
+        dep: "amod",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("Männer", "Mann", "NOUN", {
+        dep: "nsubj",
+        head: "singen",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("singen", "singen", "VERB"),
+    ];
+
+    const sentence = createMockSentence("Die großen alten Männer singen.", tokens);
+    const results = detector.detect(sentence);
+
+    expect(results.length).toBe(0);
+  });
+
+  // -------------------------------------------------------------
+  // CONJ (große und alte Männer)
+  // -------------------------------------------------------------
+  it("handles conj modifiers correctly", () => {
+    const tokens = [
+      createMockToken("die", "die", "DET", {
+        dep: "det",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("großen", "groß", "ADJ", {
+        dep: "amod",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("und", "und", "CONJ", { dep: "conj", head: "großen" }),
+      createMockToken("alten", "alt", "ADJ", {
+        dep: "amod",
+        head: "Männer",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("Männer", "Mann", "NOUN", {
+        dep: "nsubj",
+        head: "kommen",
+        morph: { Case: "Nom", Number: "Plur" },
+      }),
+      createMockToken("kommen", "kommen", "VERB"),
+    ];
+
+    const sentence = createMockSentence("Die großen und alten Männer kommen.", tokens);
+    const results = detector.detect(sentence);
+
+    expect(results.length).toBe(0);
+  });
+
+  // -------------------------------------------------------------
+  // NESTED NP (appos, nmod)
+  // -------------------------------------------------------------
+  it("handles nested NP (Der Mann, der Arzt)", () => {
+    const tokens = [
+      createMockToken("Der", "der", "DET", {
+        dep: "det",
+        head: "Mann",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("Mann", "Mann", "NOUN", {
+        dep: "nsubj",
+        head: "ist",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+
+      // nested NP: "der Arzt"
+      createMockToken("der", "der", "DET", {
+        dep: "det",
+        head: "Arzt",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+      createMockToken("Arzt", "Arzt", "NOUN", {
+        dep: "appos",
+        head: "Mann",
+        morph: { Case: "Nom", Gender: "Masc", Number: "Sing" },
+      }),
+
+      createMockToken("ist", "sein", "VERB"),
+    ];
+
+    const sentence = createMockSentence("Der Mann, der Arzt, ist.", tokens);
+    const results = detector.detect(sentence);
+
+    expect(results.length).toBe(0);
   });
 });

@@ -63,6 +63,7 @@ function convertDetectionResultsToGrammarPoints(
       level: result.grammarPoint.level as CEFRLevel, // Include CEFR level
       text: highlightedText,
       explanation: result.grammarPoint.explanation,
+      confidence: result.confidence,
       position: {
         start: result.position.start,
         end: result.position.end

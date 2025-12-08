@@ -1,132 +1,182 @@
 /**
- * Agreement Detector
- * Identifies agreement errors and correct agreement patterns
+ * Agreement Detector — Final Integrated Version
+ * NP chunking + agreement detection in ONE class.
  */
 
-import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
-import * as MorphAnalyzer from '../../morphologyAnalyzer';
+import {
+  BaseGrammarDetector,
+  DetectionResult,
+  SentenceData,
+  TokenData,
+} from "../shared/baseDetector";
+import { B1_GRAMMAR, GrammarCategory } from "../../cefr-taxonomy";
+import * as MorphAnalyzer from "../../morphologyAnalyzer";
 
 export class AgreementDetector extends BaseGrammarDetector {
-  name = 'AgreementDetector';
-  category: GrammarCategory = 'agreement';
+  name = "AgreementDetector";
+  category: GrammarCategory = "agreement";
 
   /**
-   * Detect agreement patterns in the sentence
-   * Currently focuses on adjective agreement (article-adjective-noun)
+   * MAIN ENTRY — Detect all NP agreement issues
    */
   detect(sentence: SentenceData): DetectionResult[] {
     const results: DetectionResult[] = [];
+    const npChunks = this.extractNPChunks(sentence);
 
-    // Look for adjective agreement patterns
-    this.detectAdjectiveAgreement(sentence, results);
+    for (const np of npChunks) {
+      // Skip NP if contains a named entity or proper noun
+      if (np.some(tok => this.isNamedEntity(tok) || tok.pos === "PROPN")) continue;
+
+      const result = this.checkNPAgreement(np);
+      const isCorrect = result.state === "correct";
+
+      if (result.state !== "correct") {
+        const startIdx = np[0].index;
+        const endIdx = np[np.length - 1].index;
+
+        results.push(
+          this.createResult(
+            B1_GRAMMAR["adjective-agreement"],
+            this.calculatePosition(sentence.tokens, startIdx, endIdx),
+            result.state === "error" ? 0.85 : 0.65,
+            {
+              npTokens: np.map(t => t.text),
+              state: result.state,
+              case: result.case,
+              gender: result.gender,
+              number: result.number,
+              missing: result.missing,
+              correct: isCorrect,
+            }
+          )
+        );
+      }
+    }
 
     return results;
   }
 
+  // --------------------------------------------------------------------------
+  // NP CHUNKER (INTEGRATED)
+  // --------------------------------------------------------------------------
+
   /**
-   * Detect adjective agreement in noun phrases
-   * Pattern: [article] [adjective] [noun]
+   * Extract NP chunks using dependency relations.
+   * Uses token.head (string → token.text) instead of numeric indexes.
    */
-  private detectAdjectiveAgreement(sentence: SentenceData, results: DetectionResult[]): void {
-    for (let i = 0; i < sentence.tokens.length - 2; i++) {
-      const article = sentence.tokens[i];
-      const adjective = sentence.tokens[i + 1];
-      const noun = sentence.tokens[i + 2];
-
-      // Check for article-adjective-noun pattern
-      if (this.isArticle(article) && adjective.pos === 'ADJ' && noun.pos === 'NOUN') {
-        // ✅ Entity-Aware: Skip if noun is a named entity
-        if (this.isNamedEntity(noun)) {
-          continue;  // Don't check agreement for entity names
-        }
-        
-        // Check if they agree in case, gender, number
-        const agreement = this.checkAgreement(article, adjective, noun);
-
-        if (!agreement.isCorrect) {
-          // Agreement error - this is a learning opportunity
-          results.push(
-            this.createResult(
-              B1_GRAMMAR['adjective-agreement'],
-              this.calculatePosition(sentence.tokens, i, i + 2),
-              0.85,
-              {
-                article: article.text,
-                adjective: adjective.text,
-                noun: noun.text,
-                case: agreement.case,
-                gender: agreement.gender,
-                number: agreement.number,
-                correct: false,
-              },
-            ),
-          );
+  private extractNPChunks(sentence: SentenceData): TokenData[][] {
+    const tokens = sentence.tokens;
+    const textToIndexes = new Map<string, number[]>();
+    for (const tok of tokens) {
+      if (!textToIndexes.has(tok.text)) textToIndexes.set(tok.text, []);
+      textToIndexes.get(tok.text)!.push(tok.index);
+    }
+    const resolveHead = (headText?: string): number[] => {
+      if (!headText) return [];
+      return textToIndexes.get(headText) ?? [];
+    };
+    const allowedDeps = new Set([
+      "det", "amod", "compound", "nmod", "appos", "advmod", "case", "conj"
+    ]);
+    const npPOS = new Set(["NOUN", "PROPN", "PRON", "NUM", "ADJ", "DET"]);
+    const visitedGlobal = new Set<number>();
+    const chunks: TokenData[][] = [];
+    // 递归收集 amod/conj 修饰链
+    const collect = (headIndex: number, visited: Set<number>) => {
+      for (const tok of tokens) {
+        if (!allowedDeps.has(tok.dep)) continue;
+        if (visited.has(tok.index)) continue;
+        const headCandidates = resolveHead(tok.head);
+        if (!headCandidates.includes(headIndex)) continue;
+        if (npPOS.has(tok.pos)) {
+          visited.add(tok.index);
+          // 递归收集 amod/conj 修饰链
+          for (const child of tokens) {
+            if (visited.has(child.index)) continue;
+            const childHeadCandidates = resolveHead(child.head);
+            if (!childHeadCandidates.includes(tok.index)) continue;
+            if (child.dep === "amod" || child.dep === "conj") {
+              collect(child.index, visited);
+            }
+          }
+          collect(tok.index, visited);
         }
       }
+    };
+    const npHeads = tokens.filter(t => ["NOUN", "PROPN", "PRON", "NUM"].includes(t.pos));
+    for (const head of npHeads) {
+      if (visitedGlobal.has(head.index)) continue;
+      const visited = new Set<number>();
+      visited.add(head.index);
+      collect(head.index, visited);
+      const chunk = Array.from(visited).map(i => tokens[i]);
+      chunk.sort((a, b) => a.index - b.index);
+      chunks.push(chunk);
+      for (const idx of visited) visitedGlobal.add(idx);
     }
+    return chunks;
   }
 
-  /**
-   * Check if a token is an article
-   */
-  private isArticle(token: TokenData): boolean {
-    return token.pos === 'DET' &&
-           ['der', 'die', 'das', 'den', 'dem', 'des', 'ein', 'eine', 'einen', 'einem', 'eines']
-           .includes(token.text.toLowerCase());
-  }
+  // --------------------------------------------------------------------------
+  // AGREEMENT CHECKING
+  // --------------------------------------------------------------------------
 
-  /**
-   * Check agreement between article, adjective, and noun
-   */
-  private checkAgreement(article: TokenData, adjective: TokenData, noun: TokenData): {
-    isCorrect: boolean;
+  private checkNPAgreement(np: TokenData[]): {
+    state: "correct" | "error" | "uncertain";
     case?: string;
     gender?: string;
     number?: string;
+    missing?: string[];
   } {
-    // Extract morphological features
-    const articleCase = MorphAnalyzer.extractCase(article.morph);
-    const articleGender = MorphAnalyzer.extractGender(article.morph);
-    const articleNumber = MorphAnalyzer.extractNumber(article.morph);
-
-    const adjectiveCase = MorphAnalyzer.extractCase(adjective.morph);
-    const adjectiveGender = MorphAnalyzer.extractGender(adjective.morph);
-    const adjectiveNumber = MorphAnalyzer.extractNumber(adjective.morph);
-
-    const nounCase = MorphAnalyzer.extractCase(noun.morph);
-    const nounGender = MorphAnalyzer.extractGender(noun.morph);
-    const nounNumber = MorphAnalyzer.extractNumber(noun.morph);
-
-    // Must have morphological features to detect agreement
-    // 'unknown' means the feature is missing
-    const hasCaseFeatures = articleCase && articleCase !== 'unknown' && 
-                           adjectiveCase && adjectiveCase !== 'unknown' && 
-                           nounCase && nounCase !== 'unknown';
-    const hasGenderFeatures = articleGender && articleGender !== 'unknown' && 
-                             adjectiveGender && adjectiveGender !== 'unknown' && 
-                             nounGender && nounGender !== 'unknown';
-    const hasNumberFeatures = articleNumber && articleNumber !== 'unknown' && 
-                             adjectiveNumber && adjectiveNumber !== 'unknown' && 
-                             nounNumber && nounNumber !== 'unknown';
-
-    // If we don't have the necessary features, we can't verify agreement
-    if (!hasCaseFeatures && !hasGenderFeatures && !hasNumberFeatures) {
-      return { isCorrect: false };
+    const cases = new Set<string>();
+    const genders = new Set<string>();
+    const numbers = new Set<string>();
+    const missing: string[] = [];
+    let isPlural = false;
+    for (const tok of np) {
+      if (!["DET", "ADJ", "NOUN", "NUM", "PRON"].includes(tok.pos)) continue;
+      const c = MorphAnalyzer.extractCase(tok.morph);
+      const g = MorphAnalyzer.extractGender(tok.morph);
+      const n = MorphAnalyzer.extractNumber(tok.morph);
+      if (!c || c === "unknown") missing.push(`${tok.text}:case`);
+      else cases.add(c);
+      if (!n || n === "unknown") missing.push(`${tok.text}:number`);
+      else numbers.add(n);
+      if (n === "Plur") isPlural = true;
+      // 复数时不记录 gender 缺失
+      if (!g || g === "unknown") {
+        if (!isPlural) missing.push(`${tok.text}:gender`);
+      } else if (!isPlural) {
+        genders.add(g);
+      }
     }
-
-    // Check agreement for features that are present
-    // Note: In German, gender agreement is not required in plural forms
-    const isPlural = (articleNumber === 'Plur' || adjectiveNumber === 'Plur' || nounNumber === 'Plur');
-    const caseAgrees = !hasCaseFeatures || (articleCase === adjectiveCase && adjectiveCase === nounCase);
-    const genderAgrees = !hasGenderFeatures || isPlural || (articleGender === adjectiveGender && adjectiveGender === nounGender);
-    const numberAgrees = !hasNumberFeatures || (articleNumber === adjectiveNumber && adjectiveNumber === nounNumber);
-
+    // 只要 missing 不为空，直接返回 uncertain
+    if (missing.length > 0) {
+      return {
+        state: "uncertain",
+        case: Array.from(cases)[0],
+        gender: Array.from(genders)[0],
+        number: Array.from(numbers)[0],
+        missing,
+      };
+    }
+    // ...existing code...
+    const caseAgrees = cases.size === 1;
+    const numberAgrees = numbers.size === 1;
+    const genderAgrees = isPlural ? true : genders.size === 1;
+    if (caseAgrees && numberAgrees && genderAgrees) {
+      return {
+        state: "correct",
+        case: Array.from(cases)[0],
+        gender: Array.from(genders)[0],
+        number: Array.from(numbers)[0],
+      };
+    }
     return {
-      isCorrect: caseAgrees && genderAgrees && numberAgrees,
-      case: articleCase || adjectiveCase || nounCase,
-      gender: articleGender || adjectiveGender || nounGender,
-      number: articleNumber || adjectiveNumber || nounNumber,
+      state: "error",
+      case: Array.from(cases)[0],
+      gender: Array.from(genders)[0],
+      number: Array.from(numbers)[0],
     };
   }
 }

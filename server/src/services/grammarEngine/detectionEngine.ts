@@ -10,6 +10,7 @@ import { TenseDetector } from './detectors/A1/tenseDetector';
 import { CaseDetector } from './detectors/A2/caseDetector';
 import { PrepositionDetector } from './detectors/A2/prepositionDetector';
 import { ReflexiveVerbDetector } from './detectors/A2/reflexiveVerbDetector';
+import { SeparableVerbDetector } from './detectors/A2/separableVerbDetector';
 import { WordOrderDetector } from './detectors/A2/wordOrderDetector';
 
 // B1 Level Detectors
@@ -18,7 +19,6 @@ import { CollocationDetector } from './detectors/B1/collocationDetector';
 import { ModalVerbDetector } from './detectors/B1/modalVerbDetector';
 import { MorphologicalDetector } from './detectors/B1/morphologicalDetector';
 import { PassiveVoiceDetector } from './detectors/B1/passiveVoiceDetector';
-import { SeparableVerbDetector } from './detectors/B1/separableVerbDetector';
 import { SubjunctiveDetector } from './detectors/B1/subjunctiveDetector';
 import { SubordinateClauseDetector } from './detectors/B1/subordinateClauseDetector';
 
@@ -260,6 +260,7 @@ export class GrammarDetectionEngine {
       passive: [],
       'functional-verb': [],
       'participial-attribute': [],
+      collocation: [],
     };
 
     for (const result of results) {
@@ -308,6 +309,7 @@ export class GrammarDetectionEngine {
       'reflexive-verb': byCategory['reflexive-verb'].length,
       passive: byCategory.passive.length,
       'participial-attribute': byCategory['participial-attribute'].length,
+      collocation: byCategory.collocation.length,
     };
 
     return {

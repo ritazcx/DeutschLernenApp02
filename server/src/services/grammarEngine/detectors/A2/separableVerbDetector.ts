@@ -4,7 +4,7 @@
  */
 
 import { BaseGrammarDetector, DetectionResult, SentenceData, TokenData } from '../shared/baseDetector';
-import { B1_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
+import { A2_GRAMMAR, GrammarCategory } from '../../cefr-taxonomy';
 import { SEPARABLE_PREFIXES } from '../shared/sharedConstants';
 
 export class SeparableVerbDetector extends BaseGrammarDetector {
@@ -57,8 +57,8 @@ export class SeparableVerbDetector extends BaseGrammarDetector {
             const sortedPositions = [verbPos, prefixPos].sort((a, b) => a.start - b.start);
             
             results.push({
-              grammarPointId: B1_GRAMMAR['separable-verbs'].id,
-              grammarPoint: B1_GRAMMAR['separable-verbs'],
+              grammarPointId: A2_GRAMMAR['separable-verbs'].id,
+              grammarPoint: A2_GRAMMAR['separable-verbs'],
               position: this.calculatePosition(sentence.tokens, verb.index, token.index), // Legacy compatibility
               positions: sortedPositions,  // Sorted by character position
               confidence: 0.95,
@@ -101,9 +101,9 @@ export class SeparableVerbDetector extends BaseGrammarDetector {
               
               const confidence = this.calculateConfidence(context);
               
-              results.push(
+                results.push(
                 this.createResult(
-                  B1_GRAMMAR['separable-verbs'],
+                  A2_GRAMMAR['separable-verbs'],
                   this.calculatePosition(sentence.tokens, index, index),
                   confidence,
                   {

@@ -78,16 +78,14 @@ export function createMockToken(
 export function createMockSentence(text: string, tokens: TokenData[]): SentenceData {
   // Update character positions
   let currentPos = 0;
-  const positionedTokens = tokens.map((token, index) => {
+    const positionedTokens = tokens.map((token, index) => {
     const positionedToken = {
       ...token,
       index,
       characterStart: currentPos,
       characterEnd: currentPos + token.text.length,
-      // Ensure morph has realistic values
-      morph: token.morph && Object.keys(token.morph).length > 0 
-        ? token.morph 
-        : createRealisticMorph(token.pos),
+      // Respect explicitly provided morph (even if empty). If not provided, fill with realistic values.
+      morph: token.hasOwnProperty('morph') ? token.morph : createRealisticMorph(token.pos),
     };
     currentPos += token.text.length + 1; // +1 for space
     return positionedToken;

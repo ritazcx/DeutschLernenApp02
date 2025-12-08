@@ -1,5 +1,6 @@
 import express from 'express';
 import { getNLPEngine } from '../services/nlpEngine/singleton';
+import { grammarDetectionEngine } from '../services/grammarEngine/detectionEngine';
 import { splitIntoSentences } from '../utils/sentenceSplitter';
 
 const router = express.Router();
@@ -75,17 +76,72 @@ router.post('/analyze-detection', async (req, res) => {
     // More robust sentence splitting that handles dates and abbreviations
     const sentences = splitIntoSentences(text);
 
+    // If debug=collocation, attach detailed collocation matching trace for each sentence
+    const debugCollocation = req.query.debug === 'collocation';
+
     const sentenceAnalyses = await Promise.all(
       sentences.map(async (sentenceText: string, index: number) => {
         try {
-          const result = await nlpEngine.analyzeGrammar(sentenceText.trim());
+          if (!debugCollocation) {
+            const result = await nlpEngine.analyzeGrammar(sentenceText.trim());
+            return {
+              sentence: sentenceText.trim(),
+              grammarPoints: result.grammarPoints,
+              byLevel: result.byLevel,
+              byCategory: result.byCategory,
+              summary: result.summary,
+              sentenceIndex: index
+            };
+          }
+
+          // Debug flow: parse sentence, run rule-based analysis, then call collocation detector debugAnalyze
+          const parsed = await nlpEngine.parseSentence(sentenceText.trim());
+
+          const sentenceData = {
+            text: sentenceText.trim(),
+            tokens: parsed.tokens.map((token: any) => ({
+              text: token.word,
+              lemma: token.lemma,
+              pos: token.pos,
+              tag: token.tag || token.pos,
+              dep: token.dep || 'ROOT',
+              head: token.head,
+              morph: token.morph,
+              index: token.id,
+              characterStart: token.position?.start || 0,
+              characterEnd: token.position?.end || 0,
+
+              entity_type: (token as any).entity_type,
+              entity_id: (token as any).entity_id,
+              is_entity_start: (token as any).is_entity_start,
+              is_entity_end: (token as any).is_entity_end,
+              entity_text: (token as any).entity_text,
+            })),
+            entities: parsed.entities || []
+          };
+
+          const analysis = await grammarDetectionEngine.analyzeWithMinimalAIFallback(sentenceData as any);
+
+          // Find collocation detector and call debugAnalyze if available
+          const collocationDetector = grammarDetectionEngine.getDetectors().find(d => d.constructor.name === 'CollocationDetector') as any;
+          let collocationDebug = null;
+          if (collocationDetector && typeof collocationDetector.debugAnalyze === 'function') {
+            try {
+              collocationDebug = collocationDetector.debugAnalyze(sentenceData as any);
+            } catch (dbgErr) {
+              console.warn('Collocation debugAnalyze threw an error:', dbgErr);
+              collocationDebug = { error: String(dbgErr) };
+            }
+          }
+
           return {
             sentence: sentenceText.trim(),
-            grammarPoints: result.grammarPoints,
-            byLevel: result.byLevel,
-            byCategory: result.byCategory,
-            summary: result.summary,
-            sentenceIndex: index
+            grammarPoints: analysis.grammarPoints,
+            byLevel: analysis.byLevel,
+            byCategory: analysis.byCategory,
+            summary: analysis.summary,
+            sentenceIndex: index,
+            collocationDebug
           };
         } catch (error) {
           console.warn(`Failed to analyze sentence ${index}:`, error);

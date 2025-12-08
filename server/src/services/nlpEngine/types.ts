@@ -25,6 +25,9 @@ export interface ParsedSentence {
   text: string;
   tokens: Token[];
   usedSpaCy: boolean; // true if spaCy analysis succeeded, false if fallback was used
+  // Optional entity list produced by the NLP pipeline (NER). Kept generic
+  // to allow different engine implementations to attach additional data.
+  entities?: any[];
 }
 
 export interface ExtractedVocabulary {
