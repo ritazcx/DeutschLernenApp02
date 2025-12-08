@@ -260,6 +260,7 @@ export class GrammarDetectionEngine {
       passive: [],
       'functional-verb': [],
       'participial-attribute': [],
+      collocation: [],
     };
 
     for (const result of results) {
@@ -308,6 +309,7 @@ export class GrammarDetectionEngine {
       'reflexive-verb': byCategory['reflexive-verb'].length,
       passive: byCategory.passive.length,
       'participial-attribute': byCategory['participial-attribute'].length,
+      collocation: byCategory.collocation.length,
     };
 
     return {

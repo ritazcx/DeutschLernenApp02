@@ -13,9 +13,9 @@ describe('SubordinateClauseDetector', () => {
   });
 
   describe('Basic Properties', () => {
-    it('should have correct name and category', () => {
+      it('should have correct name and category', () => {
       expect(detector.name).toBe('SubordinateClauseDetector');
-      expect(detector.category).toBe('word-order');
+      expect(detector.category).toBe('clause');
     });
   });
 

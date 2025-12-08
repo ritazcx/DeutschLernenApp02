@@ -24,7 +24,8 @@ export type GrammarCategory =
   | 'reflexive-verb'
   | 'passive'
   | 'functional-verb'
-  | 'participial-attribute';
+  | 'participial-attribute'
+  | 'collocation';
 
 export interface GrammarPoint {
   id: string;

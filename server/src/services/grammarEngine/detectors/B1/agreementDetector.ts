@@ -66,75 +66,54 @@ export class AgreementDetector extends BaseGrammarDetector {
    */
   private extractNPChunks(sentence: SentenceData): TokenData[][] {
     const tokens = sentence.tokens;
-
-    // Map token.text → token.index[]
     const textToIndexes = new Map<string, number[]>();
     for (const tok of tokens) {
       if (!textToIndexes.has(tok.text)) textToIndexes.set(tok.text, []);
       textToIndexes.get(tok.text)!.push(tok.index);
     }
-
     const resolveHead = (headText?: string): number[] => {
       if (!headText) return [];
       return textToIndexes.get(headText) ?? [];
     };
-
     const allowedDeps = new Set([
-      "det",
-      "amod",
-      "compound",
-      "nmod",
-      "appos",
-      "advmod",
-      "case",
-      "conj",
+      "det", "amod", "compound", "nmod", "appos", "advmod", "case", "conj"
     ]);
-
     const npPOS = new Set(["NOUN", "PROPN", "PRON", "NUM", "ADJ", "DET"]);
-
     const visitedGlobal = new Set<number>();
     const chunks: TokenData[][] = [];
-
-    /**
-     * Recursive dependent collector
-     */
+    // 递归收集 amod/conj 修饰链
     const collect = (headIndex: number, visited: Set<number>) => {
       for (const tok of tokens) {
         if (!allowedDeps.has(tok.dep)) continue;
         if (visited.has(tok.index)) continue;
-
         const headCandidates = resolveHead(tok.head);
         if (!headCandidates.includes(headIndex)) continue;
-
-        // Accept only NP-internal POS
         if (npPOS.has(tok.pos)) {
           visited.add(tok.index);
+          // 递归收集 amod/conj 修饰链
+          for (const child of tokens) {
+            if (visited.has(child.index)) continue;
+            const childHeadCandidates = resolveHead(child.head);
+            if (!childHeadCandidates.includes(tok.index)) continue;
+            if (child.dep === "amod" || child.dep === "conj") {
+              collect(child.index, visited);
+            }
+          }
           collect(tok.index, visited);
         }
       }
     };
-
-    // NP heads are nouns/pronouns/propns/numerals
-    const npHeads = tokens.filter(t =>
-      ["NOUN", "PROPN", "PRON", "NUM"].includes(t.pos)
-    );
-
+    const npHeads = tokens.filter(t => ["NOUN", "PROPN", "PRON", "NUM"].includes(t.pos));
     for (const head of npHeads) {
       if (visitedGlobal.has(head.index)) continue;
-
       const visited = new Set<number>();
       visited.add(head.index);
-
       collect(head.index, visited);
-
       const chunk = Array.from(visited).map(i => tokens[i]);
       chunk.sort((a, b) => a.index - b.index);
-
       chunks.push(chunk);
-
       for (const idx of visited) visitedGlobal.add(idx);
     }
-
     return chunks;
   }
 
@@ -153,30 +132,25 @@ export class AgreementDetector extends BaseGrammarDetector {
     const genders = new Set<string>();
     const numbers = new Set<string>();
     const missing: string[] = [];
-
     let isPlural = false;
-
     for (const tok of np) {
       if (!["DET", "ADJ", "NOUN", "NUM", "PRON"].includes(tok.pos)) continue;
-
       const c = MorphAnalyzer.extractCase(tok.morph);
       const g = MorphAnalyzer.extractGender(tok.morph);
       const n = MorphAnalyzer.extractNumber(tok.morph);
-
       if (!c || c === "unknown") missing.push(`${tok.text}:case`);
       else cases.add(c);
-
-      if (!g || g === "unknown") {
-        if (!isPlural) missing.push(`${tok.text}:gender`);
-      }
-      else genders.add(g);
-
       if (!n || n === "unknown") missing.push(`${tok.text}:number`);
       else numbers.add(n);
-
       if (n === "Plur") isPlural = true;
+      // 复数时不记录 gender 缺失
+      if (!g || g === "unknown") {
+        if (!isPlural) missing.push(`${tok.text}:gender`);
+      } else if (!isPlural) {
+        genders.add(g);
+      }
     }
-
+    // 只要 missing 不为空，直接返回 uncertain
     if (missing.length > 0) {
       return {
         state: "uncertain",
@@ -186,11 +160,10 @@ export class AgreementDetector extends BaseGrammarDetector {
         missing,
       };
     }
-
+    // ...existing code...
     const caseAgrees = cases.size === 1;
     const numberAgrees = numbers.size === 1;
     const genderAgrees = isPlural ? true : genders.size === 1;
-
     if (caseAgrees && numberAgrees && genderAgrees) {
       return {
         state: "correct",
@@ -199,7 +172,6 @@ export class AgreementDetector extends BaseGrammarDetector {
         number: Array.from(numbers)[0],
       };
     }
-
     return {
       state: "error",
       case: Array.from(cases)[0],
