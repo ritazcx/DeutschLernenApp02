@@ -14,6 +14,7 @@ import {
   IconRefresh,
 } from "@/components/ui/Icons";
 import { fetchWordOfTheDay, searchDictionaryWord } from '@/services/apiAdapter';
+import { getUserFriendlyMessage, logError } from '@/utils/errorHandler';
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.HOME);
@@ -84,8 +85,13 @@ const App: React.FC = () => {
       const data = await searchDictionaryWord(searchQuery);
       setWordData(data);
     } catch (error) {
-      console.error("Search failed", error);
-      // Optionally handle error state in UI
+      const errorMessage = getUserFriendlyMessage(error instanceof Error ? error : new Error(String(error)));
+      logError(error instanceof Error ? error : new Error(String(error)), {
+        context: 'App.handleSearch',
+        searchQuery,
+      });
+      // TODO: Display error message to user (currently only logged)
+      console.error("Search failed:", errorMessage);
     } finally {
       setLoading(false);
     }

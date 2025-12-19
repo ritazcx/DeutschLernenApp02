@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { SentenceAnalysis, GrammarPoint, GrammarType, CEFRLevel, ALL_GRAMMAR_TYPES, GRAMMAR_CATEGORIES } from '../../types/grammar';
 import { analyzeTextWithDetection } from '../../services/grammarService';
+import { getUserFriendlyMessage, logError } from '../../utils/errorHandler';
 import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 import CEFRLevelFilter from './CEFRLevelFilter';
@@ -62,8 +63,13 @@ const ArticleAnalyzer: React.FC = () => {
         timestamp: new Date().toISOString(),
       });
       localStorage.setItem('analyzed_articles', JSON.stringify(saved.slice(0, 10))); // Keep last 10
-    } catch (err: any) {
-      setError(err?.message || 'Analysis failed');
+    } catch (err) {
+      const errorMessage = getUserFriendlyMessage(err instanceof Error ? err : new Error(String(err)));
+      logError(err instanceof Error ? err : new Error(String(err)), {
+        context: 'ArticleAnalyzer.handleAnalyze',
+        textLength: inputText.length,
+      });
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }

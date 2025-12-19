@@ -4,6 +4,7 @@ import dictionaryRouter from './routes/dictionary';
 import proxyRouter from './routes/proxy';
 import grammarRouter from './routes/grammar';
 import vocabularyRouter from './routes/vocabulary';
+import { errorHandler } from './middleware/errorHandler';
 
 export function createApp() {
   const app = express();
@@ -28,6 +29,9 @@ export function createApp() {
   app.use('/api/vocabulary', vocabularyRouter);
 
   app.get('/health', (req, res) => res.json({ status: 'ok' }));
+
+  // Error handler must be registered last, after all routes
+  app.use(errorHandler);
 
   return app;
 }

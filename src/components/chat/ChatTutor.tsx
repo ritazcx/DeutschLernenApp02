@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ChatMessage } from '@/types';
 // Removed Gemini imports
 import { generateChat } from '@/services/apiAdapter';
+import { getUserFriendlyMessage, logError } from '@/utils/errorHandler';
 import { IconSend } from "@/components/ui/Icons";
-;
 
 const ChatTutor: React.FC = () => {
   const [messages, setMessages] = useState<ChatMessage[]>([
@@ -69,7 +69,18 @@ Rules:
 
       setMessages(prev => [...prev, botMsg]);
     } catch (error) {
-      console.error("Chat error", error);
+      const errorMessage = getUserFriendlyMessage(error instanceof Error ? error : new Error(String(error)));
+      logError(error instanceof Error ? error : new Error(String(error)), {
+        context: 'ChatTutor.handleSend',
+        inputLength: input.length,
+      });
+      // Show error to user
+      const errorMsg: ChatMessage = {
+        id: (Date.now() + 2).toString(),
+        role: 'model',
+        text: `Sorry, I encountered an error: ${errorMessage}. Please try again.`
+      };
+      setMessages(prev => [...prev, errorMsg]);
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { DictionaryEntry, ChatMessage } from '@/types';
+import { fetchWithErrorHandling, logError } from '../utils/errorHandler';
 
 // Use the server-side proxy for all DeepSeek calls from the browser.
 // Configure `VITE_DICTIONARY_API_BASE` in the frontend deploy to point to the server.
@@ -8,19 +9,22 @@ const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
 export async function generateFromDeepSeek(messages: ChatMessage[]) {
   // Proxy the request to the server so the API key is never exposed to the browser.
   const base = SERVER_API_BASE || '';
-  const res = await fetch(`${base}/api/proxy/chat`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ messages }),
-  });
-
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`DeepSeek proxy error: ${res.status} ${err}`);
+  
+  try {
+    const data = await fetchWithErrorHandling<{ content?: string; result?: string }>(`${base}/api/proxy/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages }),
+    });
+    
+    return data?.content ?? data?.result ?? JSON.stringify(data);
+  } catch (error) {
+    logError(error instanceof Error ? error : new Error(String(error)), {
+      context: 'generateFromDeepSeek',
+      messageCount: messages.length,
+    });
+    throw error;
   }
-
-  const data = await res.json();
-  return data?.content ?? data?.result ?? JSON.stringify(data);
 }
 
 // --- Word of the Day ---
@@ -42,10 +46,14 @@ Return a JSON object with word, gender, translation, definition, exampleSentence
       try {
         parsed = JSON.parse(m[0]);
       } catch (err2) {
-        throw new Error('Failed to parse DeepSeek response as JSON');
+        const parseError = new Error('Failed to parse DeepSeek response as JSON');
+        logError(parseError, { context: 'fetchWordOfTheDay', responseText });
+        throw parseError;
       }
     } else {
-      throw new Error('DeepSeek response is not JSON');
+      const parseError = new Error('DeepSeek response is not JSON');
+      logError(parseError, { context: 'fetchWordOfTheDay', responseText });
+      throw parseError;
     }
   }
 
@@ -78,7 +86,23 @@ Return JSON object with word, gender, translation, definition, exampleSentenceGe
   } catch (err) {
     const m = String(responseText).match(/\{[\s\S]*\}/);
     if (m) {
-      try { parsed = JSON.parse(m[0]); } catch (e) { parsed = null; }
+      try { 
+        parsed = JSON.parse(m[0]); 
+      } catch (e) { 
+        logError(e instanceof Error ? e : new Error(String(e)), {
+          context: 'searchDictionaryWord',
+          term,
+          responseText,
+        });
+        parsed = null; 
+      }
+    } else {
+      logError(new Error('Failed to parse DeepSeek response'), {
+        context: 'searchDictionaryWord',
+        term,
+        responseText,
+      });
+      parsed = null;
     }
   }
 
