@@ -94,10 +94,9 @@ describe('fetchWithErrorHandling', () => {
         json: async () => errorResponse,
       });
 
-      await expect(fetchWithErrorHandling('/api/test')).rejects.toThrow(AppError);
-
       try {
         await fetchWithErrorHandling('/api/test');
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         if (error instanceof AppError) {
@@ -118,10 +117,9 @@ describe('fetchWithErrorHandling', () => {
         json: async () => ({ message: 'Server error' }),
       });
 
-      await expect(fetchWithErrorHandling('/api/test')).rejects.toThrow(AppError);
-
       try {
         await fetchWithErrorHandling('/api/test');
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         if (error instanceof AppError) {
@@ -157,10 +155,9 @@ describe('fetchWithErrorHandling', () => {
       const networkError = new TypeError('Failed to fetch');
       (global.fetch as any).mockRejectedValueOnce(networkError);
 
-      await expect(fetchWithErrorHandling('/api/test')).rejects.toThrow(AppError);
-
       try {
         await fetchWithErrorHandling('/api/test');
+        expect.fail('Should have thrown an error');
       } catch (error) {
         expect(error).toBeInstanceOf(AppError);
         if (error instanceof AppError) {
