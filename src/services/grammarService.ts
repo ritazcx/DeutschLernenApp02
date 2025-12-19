@@ -1,5 +1,6 @@
 import { ArticleAnalysis, GrammarType, CEFRLevel, SentenceAnalysis, GrammarPoint } from '../types/grammar';
 import { translateOrExplain, translateGermanToEnglish } from './apiAdapter';
+import { fetchWithErrorHandling, logError, getUserFriendlyMessage } from '../utils/errorHandler';
 
 const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
 
@@ -10,41 +11,53 @@ export async function analyzeTextWithDetection(text: string): Promise<{
   sentences: SentenceAnalysis[];
 }> {
   const base = SERVER_API_BASE || '';
-  const res = await fetch(`${base}/api/grammar/analyze-detection`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
-  });
+  
+  try {
+    const data = await fetchWithErrorHandling<{
+      success: boolean;
+      sentences: any[];
+      summary: any;
+    }>(`${base}/api/grammar/analyze-detection`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
 
-  if (!res.ok) {
-    const err = await res.text();
-    throw new Error(`Grammar detection analysis error: ${res.status} ${err}`);
+    // Convert backend format to frontend SentenceAnalysis format
+    const sentences: SentenceAnalysis[] = await Promise.all(
+      data.sentences.map(async (sentenceData: any) => {
+        // Get translation for each sentence
+        let translation = '';
+        try {
+          translation = await translateGermanToEnglish(sentenceData.sentence);
+        } catch (error) {
+          // Log error but continue with translation unavailable
+          logError(error instanceof Error ? error : new Error(String(error)), {
+            context: 'translateGermanToEnglish',
+            sentence: sentenceData.sentence,
+          });
+          translation = 'Translation unavailable';
+        }
+
+        return {
+          sentence: sentenceData.sentence,
+          translation,
+          grammarPoints: convertDetectionResultsToGrammarPoints(sentenceData.grammarPoints, sentenceData.sentence),
+          vocabularyPoints: []
+        };
+      })
+    );
+
+    return { sentences };
+  } catch (error) {
+    // Log error with context
+    logError(error instanceof Error ? error : new Error(String(error)), {
+      context: 'analyzeTextWithDetection',
+      textLength: text.length,
+    });
+    // Re-throw to let caller handle
+    throw error;
   }
-
-  const data = await res.json();
-
-  // Convert backend format to frontend SentenceAnalysis format
-  const sentences: SentenceAnalysis[] = await Promise.all(
-    data.sentences.map(async (sentenceData: any) => {
-      // Get translation for each sentence
-      let translation = '';
-      try {
-        translation = await translateGermanToEnglish(sentenceData.sentence);
-      } catch (error) {
-        console.warn('Failed to get translation for sentence:', sentenceData.sentence, error);
-        translation = 'Translation unavailable';
-      }
-
-      return {
-        sentence: sentenceData.sentence,
-        translation,
-        grammarPoints: convertDetectionResultsToGrammarPoints(sentenceData.grammarPoints, sentenceData.sentence),
-        vocabularyPoints: []
-      };
-    })
-  );
-
-  return { sentences };
 }
 
 /**

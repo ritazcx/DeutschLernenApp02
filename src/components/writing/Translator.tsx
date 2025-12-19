@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { translateOrExplain } from "@/services/apiAdapter";
+import { getUserFriendlyMessage, logError } from "@/utils/errorHandler";
 import { IconPen } from "@/components/ui/Icons";
 
 const Translator: React.FC = () => {
@@ -14,7 +15,12 @@ const Translator: React.FC = () => {
       const text = await translateOrExplain(query);
       setResult(text);
     } catch (error) {
-      setResult("Error processing request.");
+      const errorMessage = getUserFriendlyMessage(error instanceof Error ? error : new Error(String(error)));
+      logError(error instanceof Error ? error : new Error(String(error)), {
+        context: 'Translator.handleTranslate',
+        queryLength: query.length,
+      });
+      setResult(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
     }

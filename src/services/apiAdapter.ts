@@ -1,6 +1,7 @@
 import * as deepseek from './deepseekService';
 import * as gemini from '../legacy/geminiService';
 import * as mockDictionary from './dictionaryService';
+import { fetchWithErrorHandling, logError } from '../utils/errorHandler';
 
 const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
 
@@ -35,9 +36,26 @@ export async function fetchWordOfTheDay(level: string = 'A2') {
   // Fast-fallback behavior: if DeepSeek is slow, return mock quickly and update later.
   const deepseekPromise = (async () => {
     if (PREFERRED_PROVIDER === 'gemini' && gemini.fetchWordOfTheDay) {
-      try { return await gemini.fetchWordOfTheDay(level); } catch { /* fallback */ }
+      try { 
+        return await gemini.fetchWordOfTheDay(level); 
+      } catch (error) {
+        // Log but continue to fallback
+        logError(error instanceof Error ? error : new Error(String(error)), {
+          context: 'fetchWordOfTheDay.gemini',
+          level,
+        });
+      }
     }
-    return await deepseek.fetchWordOfTheDay(level);
+    try {
+      return await deepseek.fetchWordOfTheDay(level);
+    } catch (error) {
+      // Log but continue to fallback
+      logError(error instanceof Error ? error : new Error(String(error)), {
+        context: 'fetchWordOfTheDay.deepseek',
+        level,
+      });
+      throw error; // Re-throw to let timeout handler catch it
+    }
   })();
 
   // If DeepSeek resolves quickly (< 900ms), use it. Otherwise return mock and dispatch update when ready.
@@ -80,28 +98,41 @@ export async function searchDictionaryWord(term: string) {
 
   try {
     const base = SERVER_API_BASE || '';
-    const resp = await fetch(`${base}/api/dictionary/${encodeURIComponent(term)}`);
-    
-    if (!resp.ok) {
-      throw new Error(`Server error: ${resp.status}`);
-    }
-    
-    const json = await resp.json();
+    const json = await fetchWithErrorHandling(`${base}/api/dictionary/${encodeURIComponent(term)}`);
     setCache(searchCache, cacheKey, json, 1000 * 60 * 60); // Cache for 1 hour
     return json;
-  } catch (error: any) {
-    console.error(`Failed to search dictionary for "${term}":`, error);
+  } catch (error) {
+    logError(error instanceof Error ? error : new Error(String(error)), {
+      context: 'searchDictionaryWord',
+      term,
+    });
     throw error;
   }
 }
 
 export async function translateOrExplain(query: string) {
-  if (PREFERRED_PROVIDER === 'deepseek') return deepseek.translateOrExplain(query);
-  return gemini.translateOrExplain ? gemini.translateOrExplain(query) : deepseek.translateOrExplain(query);
+  try {
+    if (PREFERRED_PROVIDER === 'deepseek') return await deepseek.translateOrExplain(query);
+    return gemini.translateOrExplain ? await gemini.translateOrExplain(query) : await deepseek.translateOrExplain(query);
+  } catch (error) {
+    logError(error instanceof Error ? error : new Error(String(error)), {
+      context: 'translateOrExplain',
+      queryLength: query.length,
+    });
+    throw error;
+  }
 }
 
 export async function translateGermanToEnglish(germanText: string) {
-  return deepseek.translateGermanToEnglish(germanText);
+  try {
+    return await deepseek.translateGermanToEnglish(germanText);
+  } catch (error) {
+    logError(error instanceof Error ? error : new Error(String(error)), {
+      context: 'translateGermanToEnglish',
+      textLength: germanText.length,
+    });
+    throw error;
+  }
 }
 
 // TTS left to provider preference, but default to gemini if available (per your request to leave TTS alone)
@@ -114,10 +145,22 @@ export const createTutorChat = () => {
 };
 
 export async function generateChat(messages: any[]) {
-  if (PREFERRED_PROVIDER === 'deepseek' && deepseek.generateFromDeepSeek) return deepseek.generateFromDeepSeek(messages);
-  if (gemini.generateFromGemini) return gemini.generateFromGemini(messages as any);
-  // fallback to deepseek if nothing else
-  return deepseek.generateFromDeepSeek(messages);
+  try {
+    if (PREFERRED_PROVIDER === 'deepseek' && deepseek.generateFromDeepSeek) {
+      return await deepseek.generateFromDeepSeek(messages);
+    }
+    if (gemini.generateFromGemini) {
+      return await gemini.generateFromGemini(messages as any);
+    }
+    // fallback to deepseek if nothing else
+    return await deepseek.generateFromDeepSeek(messages);
+  } catch (error) {
+    logError(error instanceof Error ? error : new Error(String(error)), {
+      context: 'generateChat',
+      messageCount: messages.length,
+    });
+    throw error;
+  }
 }
 
 export default {
