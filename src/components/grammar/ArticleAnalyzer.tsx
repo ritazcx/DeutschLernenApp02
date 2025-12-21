@@ -29,7 +29,6 @@ const ArticleAnalyzer: React.FC = () => {
 
   // Persistent settings using custom localStorage hook
   const [selectedGrammarTypes] = useLocalStorage<GrammarType[]>('grammar_filters', ALL_GRAMMAR_TYPES);
-  const [selectedVocabularyLevels] = useLocalStorage<string[]>('vocabulary_levels', ['B1', 'B2']);
   const [selectedCEFRLevels, setSelectedCEFRLevels] = useLocalStorage<CEFRLevel[]>('cefr_levels', CEFR_LEVELS);
 
 

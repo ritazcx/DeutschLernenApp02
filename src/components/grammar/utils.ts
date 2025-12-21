@@ -14,19 +14,6 @@ export const isValidPosition = (start: number, end: number, sentenceLength: numb
 };
 
 /**
- * Get all regions that overlap with a given position range
- */
-export const getOverlappingRegions = (
-  start: number,
-  end: number,
-  regions: HighlightRegion[]
-): HighlightRegion[] => {
-  return regions.filter(region =>
-    !(region.end <= start || region.start >= end) // Overlaps if not completely separate
-  );
-};
-
-/**
  * Find vocabulary point at a given position
  */
 export const getVocabAtPosition = (

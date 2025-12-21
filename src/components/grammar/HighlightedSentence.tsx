@@ -2,7 +2,7 @@ import React from 'react';
 import { SentenceAnalysis, GrammarPoint, VocabularyPoint, CEFRLevel } from '../../types/grammar';
 import { GRAMMAR_COLOR_MAP, VOCAB_LEVEL_COLORS, DEFAULT_GRAMMAR_COLOR } from './constants';
 import { HighlightRegion } from './types';
-import { isValidPosition, getOverlappingRegions, getVocabAtPosition } from './utils';
+import { isValidPosition, getVocabAtPosition } from './utils';
 
 interface HighlightedSentenceProps {
   sentence: SentenceAnalysis;

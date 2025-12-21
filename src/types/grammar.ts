@@ -55,6 +55,9 @@ export interface ArticleAnalysis {
 
 export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
+// Import CEFR level descriptions to avoid duplication
+import { CEFR_LEVEL_DESCRIPTIONS } from '../components/grammar/cefrConfig';
+
 export interface GrammarCategory {
   level: CEFRLevel;
   types: GrammarType[];
@@ -65,68 +68,35 @@ export interface GrammarCategory {
 export const GRAMMAR_CATEGORIES: GrammarCategory[] = [
   {
     level: 'A1',
-    label: 'A1 - Beginner',
+    label: `A1 - ${CEFR_LEVEL_DESCRIPTIONS.A1}`,
     types: ['article', 'noun', 'pronoun']
   },
   {
     level: 'A2',
-    label: 'A2 - Elementary',
+    label: `A2 - ${CEFR_LEVEL_DESCRIPTIONS.A2}`,
     types: ['tense', 'case', 'preposition', 'conjunction', 'adjective']
   },
   {
     level: 'B1',
-    label: 'B1 - Intermediate',
+    label: `B1 - ${CEFR_LEVEL_DESCRIPTIONS.B1}`,
     types: ['verb-form', 'agreement', 'word-order', 'modal-verb', 'separable-verb']
   },
   {
     level: 'B2',
-    label: 'B2 - Upper Intermediate',
+    label: `B2 - ${CEFR_LEVEL_DESCRIPTIONS.B2}`,
     types: ['mood', 'voice', 'collocation', 'special-construction']
   },
   {
     level: 'C1',
-    label: 'C1 - Advanced',
+    label: `C1 - ${CEFR_LEVEL_DESCRIPTIONS.C1}`,
     types: ['tense', 'case', 'preposition', 'conjunction', 'adjective', 'verb-form', 'agreement', 'word-order', 'modal-verb', 'separable-verb', 'mood', 'voice', 'collocation', 'special-construction']
   },
   {
     level: 'C2',
-    label: 'C2 - Mastery',
+    label: `C2 - ${CEFR_LEVEL_DESCRIPTIONS.C2}`,
     types: ['tense', 'case', 'preposition', 'conjunction', 'adjective', 'verb-form', 'agreement', 'word-order', 'modal-verb', 'separable-verb', 'mood', 'voice', 'collocation', 'special-construction']
   }
 ];
 
 // Helper to get all grammar types
 export const ALL_GRAMMAR_TYPES: GrammarType[] = GRAMMAR_CATEGORIES.flatMap(cat => cat.types);
-
-// Helper to get label for grammar type
-export const GRAMMAR_TYPE_LABELS: Record<GrammarType, string> = {
-  // Backend categories
-  'tense': 'Verb Tense',
-  'case': 'Grammatical Case',
-  'mood': 'Verb Mood',
-  'voice': 'Voice (Active/Passive)',
-  'verb-form': 'Verb Forms',
-  'preposition': 'Prepositions',
-  'conjunction': 'Conjunctions',
-  'agreement': 'Subject-Verb Agreement',
-  'word-order': 'Word Order',
-  'article': 'Articles (der/die/das)',
-  'pronoun': 'Pronouns',
-  'adjective': 'Adjectives',
-  'noun': 'Nouns',
-  'separable-verb': 'Separable Verbs',
-  'modal-verb': 'Modal Verbs',
-  'collocation': 'Word Collocations',
-  'special-construction': 'Special Constructions',
-  // Legacy types (backward compatibility)
-  'verb': 'Verb Conjugation',
-  'clause': 'Subordinate Clauses',
-  'special': 'Special Constructions',
-  'special_construction': 'Special Verb Constructions',
-  'subjunctive': 'Subjunctive Mood (Konjunktiv)',
-  'modal': 'Modal Verbs',
-  'functional_verb': 'Functional Verbs',
-  'advanced_conjunction': 'Advanced Conjunctions',
-  'nominalization': 'Nominalization',
-  'passive': 'Passive Voice'
-};
