@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { SentenceAnalysis, GrammarPoint, CEFRLevel } from '../../types/grammar';
 import { GrammarPointCard, VocabularyCard } from './GrammarCards';
-import { CEFR_LEVELS } from './cefrConfig';
+import { CEFR_LEVELS } from '../../types/grammar/cefrConfig';
 
 interface GrammarExplanationPanelProps {
   sentence: SentenceAnalysis;

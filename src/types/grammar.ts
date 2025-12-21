@@ -56,7 +56,7 @@ export interface ArticleAnalysis {
 export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 // Import CEFR level descriptions to avoid duplication
-import { CEFR_LEVEL_DESCRIPTIONS } from '../components/grammar/cefrConfig';
+import { CEFR_LEVEL_DESCRIPTIONS } from './grammar/cefrConfig';
 
 export interface GrammarCategory {
   level: CEFRLevel;

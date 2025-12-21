@@ -1,6 +1,6 @@
 import React from 'react';
 import { CEFRLevel } from '../../types/grammar';
-import { CEFR_LEVEL_PAIRS } from './cefrConfig';
+import { CEFR_LEVEL_PAIRS } from '../../types/grammar/cefrConfig';
 
 interface CEFRLevelFilterProps {
   selectedLevels: CEFRLevel[];

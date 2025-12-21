@@ -6,7 +6,7 @@ import HighlightedSentence from './HighlightedSentence';
 import GrammarExplanationPanel from './GrammarExplanationPanel';
 import CEFRLevelFilter from './CEFRLevelFilter';
 import { useLocalStorage } from './hooks';
-import { CEFR_LEVELS } from './cefrConfig';
+import { CEFR_LEVELS } from '../../types/grammar/cefrConfig';
 
 const ArticleAnalyzer: React.FC = () => {
   const [inputText, setInputText] = useState('');
