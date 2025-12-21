@@ -69,54 +69,6 @@ Return a JSON object with word, gender, translation, definition, exampleSentence
   return entry;
 }
 
-// --- Search Word ---
-export async function searchDictionaryWord(term: string): Promise<DictionaryEntry> {
-  const prompt = `
-You are a German dictionary assistant.
-Provide a dictionary entry for the word or phrase: "${term}".
-Return JSON object with word, gender, translation, definition, exampleSentenceGerman, exampleSentenceEnglish, difficulty.
-`;
-  const responseText = await generateFromDeepSeek([{ role: "system", content: prompt }]);
-  let parsed: any;
-  try {
-    parsed = typeof responseText === 'string' ? JSON.parse(responseText) : responseText;
-  } catch (err) {
-    const m = String(responseText).match(/\{[\s\S]*\}/);
-    if (m) {
-      try { 
-        parsed = JSON.parse(m[0]); 
-      } catch (e) { 
-        logError(e instanceof Error ? e : new Error(String(e)), {
-          context: 'searchDictionaryWord',
-          term,
-          responseText,
-        });
-        parsed = null; 
-      }
-    } else {
-      logError(new Error('Failed to parse DeepSeek response'), {
-        context: 'searchDictionaryWord',
-        term,
-        responseText,
-      });
-      parsed = null;
-    }
-  }
-
-  const entry: DictionaryEntry = {
-    word: parsed?.word || term,
-    gender: parsed?.gender || parsed?.article || '',
-    translation: parsed?.translation || '',
-    definition: parsed?.definition || parsed?.def || '',
-    exampleSentenceGerman: parsed?.exampleSentenceGerman || parsed?.example || parsed?.examples?.[0] || '',
-    exampleSentenceEnglish: parsed?.exampleSentenceEnglish || parsed?.example_en || '',
-    difficulty: parsed?.difficulty || '',
-    imageUrl: parsed?.imageUrl || undefined,
-  };
-
-  return entry;
-}
-
 // --- Translator / Writing Assistant ---
 export async function translateOrExplain(query: string): Promise<string> {
   const prompt = `User Query: "${query}"

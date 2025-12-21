@@ -25,6 +25,9 @@ dist-ssr
 
 # Server env
 server/.env
+server/.env.test
 
 # Local env
 .env
+.env.test
+.env.local
