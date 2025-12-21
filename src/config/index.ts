@@ -7,7 +7,7 @@
 
 export interface ClientConfig {
   serverApiBase: string;
-  preferredAiProvider: 'deepseek' | 'gemini';
+  preferredAiProvider: 'deepseek';
 }
 
 /**
@@ -17,7 +17,7 @@ export interface ClientConfig {
  */
 function loadConfig(): ClientConfig {
   const serverApiBase = import.meta.env.VITE_DICTIONARY_API_BASE || '';
-  const preferredAiProvider = (import.meta.env.VITE_PREFERRED_AI_PROVIDER || 'deepseek') as 'deepseek' | 'gemini';
+  const preferredAiProvider = 'deepseek' as const;
 
   return {
     serverApiBase,

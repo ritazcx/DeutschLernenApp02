@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ChatMessage } from '@/types';
-// Removed Gemini imports
 import { generateChat } from '@/services/apiAdapter';
 import { getUserFriendlyMessage, logError } from '@/utils/errorHandler';
 import { IconSend } from "@/components/ui/Icons";

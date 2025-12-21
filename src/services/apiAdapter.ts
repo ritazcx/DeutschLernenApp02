@@ -1,5 +1,4 @@
 import * as deepseek from './deepseekService';
-import * as gemini from '../legacy/geminiService';
 import * as mockDictionary from './dictionaryService';
 import { fetchWithErrorHandling, logError } from '../utils/errorHandler';
 import { config } from '../config';
@@ -32,17 +31,6 @@ export async function fetchWordOfTheDay(level: string = 'A2') {
 
   // Fast-fallback behavior: if DeepSeek is slow, return mock quickly and update later.
   const deepseekPromise = (async () => {
-    if (config.preferredAiProvider === 'gemini' && gemini.fetchWordOfTheDay) {
-      try { 
-        return await gemini.fetchWordOfTheDay(level); 
-      } catch (error) {
-        // Log but continue to fallback
-        logError(error instanceof Error ? error : new Error(String(error)), {
-          context: 'fetchWordOfTheDay.gemini',
-          level,
-        });
-      }
-    }
     try {
       return await deepseek.fetchWordOfTheDay(level);
     } catch (error) {
@@ -109,8 +97,7 @@ export async function searchDictionaryWord(term: string) {
 
 export async function translateOrExplain(query: string) {
   try {
-    if (config.preferredAiProvider === 'deepseek') return await deepseek.translateOrExplain(query);
-    return gemini.translateOrExplain ? await gemini.translateOrExplain(query) : await deepseek.translateOrExplain(query);
+    return await deepseek.translateOrExplain(query);
   } catch (error) {
     logError(error instanceof Error ? error : new Error(String(error)), {
       context: 'translateOrExplain',
@@ -132,24 +119,13 @@ export async function translateGermanToEnglish(germanText: string) {
   }
 }
 
-// TTS left to provider preference, but default to gemini if available (per your request to leave TTS alone)
+// TTS functionality removed (previously used Gemini)
 export async function generateSpeech(text: string) {
-  return gemini.generateSpeech ? gemini.generateSpeech(text) : undefined;
+  return undefined;
 }
-
-export const createTutorChat = () => {
-  return gemini.createTutorChat ? gemini.createTutorChat() : undefined;
-};
 
 export async function generateChat(messages: any[]) {
   try {
-    if (config.preferredAiProvider === 'deepseek' && deepseek.generateFromDeepSeek) {
-      return await deepseek.generateFromDeepSeek(messages);
-    }
-    if (gemini.generateFromGemini) {
-      return await gemini.generateFromGemini(messages as any);
-    }
-    // fallback to deepseek if nothing else
     return await deepseek.generateFromDeepSeek(messages);
   } catch (error) {
     logError(error instanceof Error ? error : new Error(String(error)), {
@@ -166,5 +142,4 @@ export default {
   translateOrExplain,
   translateGermanToEnglish,
   generateSpeech,
-  createTutorChat,
 };

@@ -1,4 +1,4 @@
-// Utility to handle raw PCM audio from Gemini TTS
+// Utility to handle raw PCM audio data
 
 function decodeBase64(base64: string): Uint8Array {
   const binaryString = atob(base64);
