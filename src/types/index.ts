@@ -1,14 +1,3 @@
-export interface DictionaryEntry {
-  word: string;
-  gender?: 'der' | 'die' | 'das' | '';
-  translation: string;
-  definition?: string;
-  exampleSentenceGerman?: string;
-  exampleSentenceEnglish?: string;
-  difficulty?: string;
-  imageUrl?: string;
-}
-
 export interface ChatMessage {
   id?: string;
   role: 'user' | 'model' | 'assistant' | 'system';
