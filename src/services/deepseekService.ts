@@ -1,14 +1,11 @@
 import { DictionaryEntry, ChatMessage } from '@/types';
 import { fetchWithErrorHandling, logError } from '../utils/errorHandler';
-
-// Use the server-side proxy for all DeepSeek calls from the browser.
-// Configure `VITE_DICTIONARY_API_BASE` in the frontend deploy to point to the server.
-const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
+import { config } from '../config';
 
 // --- Chat ---
 export async function generateFromDeepSeek(messages: ChatMessage[]) {
   // Proxy the request to the server so the API key is never exposed to the browser.
-  const base = SERVER_API_BASE || '';
+  const base = config.serverApiBase || '';
   
   try {
     const data = await fetchWithErrorHandling<{ content?: string; result?: string }>(`${base}/api/proxy/chat`, {

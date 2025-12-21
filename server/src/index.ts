@@ -5,11 +5,11 @@ import path from 'path';
 dotenv.config({ path: path.resolve(process.cwd(), '.env') });
 
 import { createApp } from './app';
+import { config } from './config';
 
-const port = Number(process.env.PORT || 4000);
 const app = createApp();
 
-app.listen(port, () => {
+app.listen(config.port, () => {
   // eslint-disable-next-line no-console
-  console.log(`Server listening on http://localhost:${port}`);
+  console.log(`Server listening on http://localhost:${config.port}`);
 });

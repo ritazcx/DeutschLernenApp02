@@ -1,8 +1,7 @@
 import { ArticleAnalysis, GrammarType, CEFRLevel, SentenceAnalysis, GrammarPoint } from '../types/grammar';
 import { translateOrExplain, translateGermanToEnglish } from './apiAdapter';
 import { fetchWithErrorHandling, logError, getUserFriendlyMessage } from '../utils/errorHandler';
-
-const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
+import { config } from '../config';
 
 /**
  * Analyze text using rule-based grammar detection
@@ -10,7 +9,7 @@ const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
 export async function analyzeTextWithDetection(text: string): Promise<{
   sentences: SentenceAnalysis[];
 }> {
-  const base = SERVER_API_BASE || '';
+  const base = config.serverApiBase || '';
   
   try {
     const data = await fetchWithErrorHandling<{

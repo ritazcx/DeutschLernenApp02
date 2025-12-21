@@ -1,11 +1,10 @@
 import axios from 'axios';
 import { DictionaryEntry } from '../types';
+import { config } from '../config';
 
 const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
-const API_KEY = process.env.DEEPSEEK_API_KEY;
 
 export async function fetchDictionaryEntry(word: string): Promise<DictionaryEntry> {
-  if (!API_KEY) throw new Error('DEEPSEEK_API_KEY not set');
 
   const prompt = `You are a German dictionary expert. For the German word or phrase "${word}", provide a JSON object with these fields:
 - word: the German word
@@ -32,7 +31,7 @@ Be accurate with CEFR levels. Return valid JSON only.`;
     },
     {
       headers: {
-        Authorization: `Bearer ${API_KEY}`,
+        Authorization: `Bearer ${config.deepseekApiKey}`,
         'Content-Type': 'application/json',
       },
       timeout: 20000,

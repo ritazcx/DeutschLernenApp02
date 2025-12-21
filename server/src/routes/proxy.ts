@@ -2,23 +2,13 @@ import express from 'express';
 import axios from 'axios';
 import { createValidationError, ErrorCode, AppError } from '../utils/errors';
 import { asyncHandler } from '../middleware/errorHandler';
+import { config } from '../config';
 
 const router = express.Router();
 
 const DEEPSEEK_URL = 'https://api.deepseek.com/chat/completions';
-const API_KEY = process.env.DEEPSEEK_API_KEY;
 
 router.post('/api/proxy/chat', asyncHandler(async (req, res) => {
-  if (!API_KEY) {
-    throw new AppError(
-      ErrorCode.INTERNAL_ERROR,
-      'Server configuration error: API key is missing',
-      500,
-      undefined,
-      false // Programming error - should be configured
-    );
-  }
-
   const { messages } = req.body || {};
   if (!messages || !Array.isArray(messages) || messages.length === 0) {
     throw createValidationError('Messages array is required and must not be empty');
@@ -28,7 +18,7 @@ router.post('/api/proxy/chat', asyncHandler(async (req, res) => {
     const r = await axios.post(
       DEEPSEEK_URL,
       { model: 'deepseek-chat', messages, temperature: 0.7, stream: false },
-      { headers: { Authorization: `Bearer ${API_KEY}`, 'Content-Type': 'application/json' }, timeout: 20000 }
+      { headers: { Authorization: `Bearer ${config.deepseekApiKey}`, 'Content-Type': 'application/json' }, timeout: 20000 }
     );
 
     const body = r.data;

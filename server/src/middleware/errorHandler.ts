@@ -7,6 +7,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { AppError, ErrorResponse } from '../utils/errors';
+import { config } from '../config';
 
 /**
  * Check if error is an operational error (expected) or programming error (unexpected)
@@ -22,7 +23,7 @@ function isOperationalError(error: Error): boolean {
  * Log error with request context
  */
 function logError(error: Error, req: Request): void {
-  const isDev = process.env.NODE_ENV !== 'production';
+  const isDev = config.nodeEnv !== 'production';
   
   const logData = {
     timestamp: new Date().toISOString(),
@@ -67,7 +68,7 @@ export function errorHandler(
   logError(error, req);
 
   // Determine if we should include error details (only in development)
-  const isDev = process.env.NODE_ENV !== 'production';
+  const isDev = config.nodeEnv !== 'production';
   const includeDetails = isDev;
 
   // Handle AppError instances (our custom errors)

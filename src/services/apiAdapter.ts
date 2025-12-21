@@ -2,8 +2,7 @@ import * as deepseek from './deepseekService';
 import * as gemini from '../legacy/geminiService';
 import * as mockDictionary from './dictionaryService';
 import { fetchWithErrorHandling, logError } from '../utils/errorHandler';
-
-const SERVER_API_BASE = import.meta.env.VITE_DICTIONARY_API_BASE || '';
+import { config } from '../config';
 
 // Simple in-memory caches
 const wordOfDayCache: Map<string, { value: any; expires: number }> = new Map();
@@ -25,8 +24,6 @@ function getCache(map: Map<string, { value: any; expires: number }>, key: string
   return item.value;
 }
 
-const PREFERRED_PROVIDER = import.meta.env.VITE_PREFERRED_AI_PROVIDER || 'deepseek';
-
 export async function fetchWordOfTheDay(level: string = 'A2') {
   // Check cache first (1 hour TTL)
   const cacheKey = `wod:${level}`;
@@ -35,7 +32,7 @@ export async function fetchWordOfTheDay(level: string = 'A2') {
 
   // Fast-fallback behavior: if DeepSeek is slow, return mock quickly and update later.
   const deepseekPromise = (async () => {
-    if (PREFERRED_PROVIDER === 'gemini' && gemini.fetchWordOfTheDay) {
+    if (config.preferredAiProvider === 'gemini' && gemini.fetchWordOfTheDay) {
       try { 
         return await gemini.fetchWordOfTheDay(level); 
       } catch (error) {
@@ -97,7 +94,7 @@ export async function searchDictionaryWord(term: string) {
   if (cached) return cached;
 
   try {
-    const base = SERVER_API_BASE || '';
+    const base = config.serverApiBase || '';
     const json = await fetchWithErrorHandling(`${base}/api/dictionary/${encodeURIComponent(term)}`);
     setCache(searchCache, cacheKey, json, 1000 * 60 * 60); // Cache for 1 hour
     return json;
@@ -112,7 +109,7 @@ export async function searchDictionaryWord(term: string) {
 
 export async function translateOrExplain(query: string) {
   try {
-    if (PREFERRED_PROVIDER === 'deepseek') return await deepseek.translateOrExplain(query);
+    if (config.preferredAiProvider === 'deepseek') return await deepseek.translateOrExplain(query);
     return gemini.translateOrExplain ? await gemini.translateOrExplain(query) : await deepseek.translateOrExplain(query);
   } catch (error) {
     logError(error instanceof Error ? error : new Error(String(error)), {
@@ -146,7 +143,7 @@ export const createTutorChat = () => {
 
 export async function generateChat(messages: any[]) {
   try {
-    if (PREFERRED_PROVIDER === 'deepseek' && deepseek.generateFromDeepSeek) {
+    if (config.preferredAiProvider === 'deepseek' && deepseek.generateFromDeepSeek) {
       return await deepseek.generateFromDeepSeek(messages);
     }
     if (gemini.generateFromGemini) {

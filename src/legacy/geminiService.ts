@@ -1,4 +1,5 @@
 import { DictionaryEntry } from '@/types';
+import { config } from '../config';
 
 // This legacy module previously used the Google GenAI SDK in the browser, which caused
 // the runtime error "An API Key must be set when running in a browser" because the
@@ -9,7 +10,7 @@ import { DictionaryEntry } from '@/types';
 const isBrowser = typeof window !== 'undefined';
 
 async function proxyChat(messages: any[]) {
-  const base = typeof window !== 'undefined' ? (import.meta.env.VITE_DICTIONARY_API_BASE || '') : '';
+  const base = typeof window !== 'undefined' ? (config.serverApiBase || '') : '';
   const resp = await fetch(`${base}/api/proxy/chat`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages })
   });
@@ -38,7 +39,7 @@ export const searchDictionaryWord = async (term: string): Promise<DictionaryEntr
   if (isBrowser) {
     // prefer server cache endpoint
     try {
-      const base = import.meta.env.VITE_DICTIONARY_API_BASE || '';
+      const base = config.serverApiBase || '';
       const resp = await fetch(`${base}/api/dictionary/${encodeURIComponent(term)}`);
       if (resp.ok) return await resp.json();
     } catch (e) {}
@@ -77,7 +78,7 @@ export const generateSpeech = async (text: string): Promise<string | undefined> 
   if (isBrowser) {
     try {
       // Proxy to server TTS endpoint if available (reuse proxy chat may not return audio); fallback: no-op
-      const base = import.meta.env.VITE_DICTIONARY_API_BASE || '';
+      const base = config.serverApiBase || '';
       const resp = await fetch(`${base}/api/tts`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) });
       if (resp.ok) {
         const json = await resp.json();
